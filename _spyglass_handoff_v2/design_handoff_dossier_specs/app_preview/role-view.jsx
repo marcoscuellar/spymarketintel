@@ -1,6 +1,16 @@
-import React, { useState, useMemo } from "react";
-import { MapPin, Users, Clock, TrendingUp, Briefcase, Search, ArrowRight, Calendar, AlertTriangle } from "lucide-react";
-import { useIsMobile } from "./useIsMobile.js";
+(function(){
+const { useState, useMemo } = React;
+const { MapPin, Users, Clock, TrendingUp, Briefcase, Search, ArrowRight, Calendar, AlertTriangle } = window.LucideIcons;
+
+function useIsMobile(bp = 760) {
+  const [m, setM] = useState(typeof window !== "undefined" && window.innerWidth <= bp);
+  React.useEffect(() => {
+    const on = () => setM(window.innerWidth <= bp);
+    window.addEventListener("resize", on);
+    return () => window.removeEventListener("resize", on);
+  }, [bp]);
+  return m;
+}
 
 /* ── Brand constants (accent + type) ── */
 const BRAND = {
@@ -390,12 +400,10 @@ function SearchBrief({ P, hideIntro, companyLevel, editable }) {
         </React.Fragment>
       )}
 
-      {/* four facts — full-width row (elevated cards on Client Home) */}
-      <div style={{ display: "grid", gridTemplateColumns: mobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: companyLevel ? 14 : 1, ...(companyLevel ? {} : { background: P.line, border: `1px solid ${P.cardBd}`, borderRadius: 14, overflow: "hidden" }), marginBottom: 32 }}>
+      {/* four facts — full-width row */}
+      <div style={{ display: "grid", gridTemplateColumns: mobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: 1, background: P.line, border: `1px solid ${P.cardBd}`, borderRadius: 14, overflow: "hidden", marginBottom: 32 }}>
         {ROLE.impact.map((s, i) => (
-          <div key={i} style={companyLevel
-            ? { background: P.card, border: `1px solid ${P.cardBd}`, borderRadius: 14, boxShadow: P.sh, padding: "20px 18px" }
-            : { background: P.statTile, padding: "18px 16px" }}>
+          <div key={i} style={{ background: P.statTile, padding: "18px 16px" }}>
             <div style={{ fontFamily: P.font, fontWeight: 800, fontSize: 30, letterSpacing: "-0.04em", lineHeight: 1, color: i === ROLE.impact.length - 1 ? P.goldTxt : P.text }}><EditableText P={P} id={`fact-${i}-n`} fallback={s.n} editable={editable} onEdit={onEdit} /></div>
             <div style={{ ...monoS(P, { fontSize: 9.5, marginTop: 9, lineHeight: 1.4 }) }}><EditableText P={P} id={`fact-${i}-l`} fallback={s.l} editable={editable} onEdit={onEdit} /></div>
           </div>
@@ -512,7 +520,7 @@ function RoomIntelSummary({ P }) {
 }
 
 function RoleView() {
-  const theme = "light"; // production: single Light theme (prototype theme switcher dropped)
+  const [theme, setTheme] = useState("light");
   const [selected, setSelected] = useState(null);
   const mobile = useIsMobile();
   const P = useMemo(() => ({ ...BRAND, ...THEMES[theme] }), [theme]);
@@ -535,7 +543,15 @@ function RoleView() {
               <span style={{ display: "inline-flex", transform: "rotate(180deg)" }}><ArrowRight size={12} strokeWidth={2} /></span> All searches
             </button>
           </div>
-          <span style={{ ...monoS(P, { fontSize: 11, color: P.pgText3 }) }}>For {ROLE.client} · Confidential</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+            <span style={{ ...monoS(P, { fontSize: 11, color: P.pgText3 }) }}>For {ROLE.client} · Confidential</span>
+            <div style={{ display: "inline-flex", borderRadius: 9, border: `1px solid ${P.pgLine}`, padding: 3, gap: 3 }}>
+              {[["light", "Light"], ["blue", "Blue"], ["navy", "Navy"]].map(([k, l]) => {
+                const on = theme === k;
+                return <button key={k} onClick={() => setTheme(k)} style={{ border: "none", cursor: "pointer", padding: "5px 12px", borderRadius: 6, fontFamily: P.mono, fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", background: on ? P.gold : "transparent", color: on ? "#241a05" : P.pgText3 }}>{l}</button>;
+              })}
+            </div>
+          </div>
         </div>
         <div style={{ height: 1, background: P.pgLine }} />
 
@@ -586,4 +602,6 @@ function RoleView() {
   );
 }
 
-export { BRAND, THEMES, ROLE, CANDS, SearchBrief, GrowthGapChart, CompChart, Mark, monoS, sectionH, cardS, FitRing, statusStyle, RoleView };
+window.RoleView = RoleView;
+window.SpyglassRoom = { BRAND, THEMES, ROLE, CANDS, SearchBrief, GrowthGapChart, CompChart, Mark, monoS, sectionH, cardS, FitRing, statusStyle };
+})();

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spyglass · Dossier Specs Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #fff; font-family: 'Geist', sans-serif; }
+  @keyframes spgFade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes spgPop { from { opacity: 0; transform: translateY(14px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  #toolbar {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: 16px;
+    padding: 12px 24px; background: rgba(255,255,255,0.86);
+    backdrop-filter: blur(12px); border-bottom: 1px solid #e7e5e4;
+  }
+  #toolbar .label {
+    font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; color: #a3a3a3;
+  }
+  #toolbar .seg { display: inline-flex; gap: 4px; background: #f5f5f4; border: 1px solid #e7e5e4; border-radius: 10px; padding: 3px; }
+  #toolbar .seg button {
+    border: none; background: none; cursor: pointer; padding: 8px 16px; border-radius: 7px;
+    font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 600; color: #525252; transition: all .18s cubic-bezier(0.16,1,0.3,1);
+  }
+  #toolbar .seg button[data-on="true"] { background: #0a0a0a; color: #fff; }
+</style>
+</head>
+<body>
+  <div id="toolbar">
+    <span class="label">Spyglass · spec preview</span>
+    <div class="seg" id="seg">
+      <button data-view="portfolio" data-on="true">Client Home</button>
+      <button data-view="role" data-on="false">Search Room</button>
+      <button data-view="dossier" data-on="false">Candidate Dossier</button>
+      <button data-view="gauge" data-on="false">Placeability Gauge</button>
+    </div>
+  </div>
+  <div id="root"></div>
+
+  <!-- React + Babel (pinned) -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <!-- lucide icons (vanilla UMD) -->
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+
+  <!-- lucide -> React shim (plain JS, runs before babel scripts) -->
+  <script>
+    (function () {
+      var L = window.lucide || {};
+      function toKebab(s) { return s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').replace(/([A-Z])([A-Z][a-z])/g, '$1-$2').toLowerCase(); }
+      function lookup(name) {
+        if (!L) return null;
+        if (L.icons && L.icons[name]) return L.icons[name];
+        if (L[name]) return L[name];
+        var kb = toKebab(name);
+        if (L.icons && L.icons[kb]) return L.icons[kb];
+        return null;
+      }
+      function makeIcon(name) {
+        return function Icon(props) {
+          props = props || {};
+          var size = props.size || 24;
+          var color = props.color || 'currentColor';
+          var sw = props.strokeWidth != null ? props.strokeWidth : 2;
+          var rest = {};
+          for (var k in props) { if (['size','color','strokeWidth'].indexOf(k) === -1) rest[k] = props[k]; }
+          var node = lookup(name);
+          // lucide icon node = ["svg", svgAttrs, [ [tag, attrs], ... ]]
+          var children = (Array.isArray(node) && Array.isArray(node[2])) ? node[2] : [];
+          var kids = children.map(function (child, i) {
+            if (!Array.isArray(child) || !child[0]) return null;
+            return React.createElement(child[0], Object.assign({ key: i }, child[1] || {}));
+          });
+          var svgProps = Object.assign({
+            width: size, height: size, viewBox: '0 0 24 24', fill: 'none',
+            stroke: color, strokeWidth: sw, strokeLinecap: 'round', strokeLinejoin: 'round'
+          }, rest);
+          return React.createElement('svg', svgProps, kids);
+        };
+      }
+      window.LucideIcons = new Proxy({}, { get: function (_, name) { return makeIcon(name); } });
+    })();
+  </script>
+
+  <script type="text/babel" src="app_preview/role-view.jsx"></script>
+  <script type="text/babel" src="app_preview/portfolio.jsx"></script>
+  <script type="text/babel" src="app_preview/dossier.jsx"></script>
+  <script type="text/babel" src="app_preview/placeability.jsx"></script>
+  <script type="text/babel">
+    function Harness() {
+      const [view, setView] = React.useState('portfolio');
+      const syncSeg = (v) => {
+        const seg = document.getElementById('seg');
+        [...seg.querySelectorAll('button')].forEach(x => x.setAttribute('data-on', String(x.getAttribute('data-view') === v)));
+      };
+      React.useEffect(() => {
+        const seg = document.getElementById('seg');
+        const onClick = (e) => {
+          const b = e.target.closest('button[data-view]');
+          if (!b) return;
+          const v = b.getAttribute('data-view');
+          setView(v); syncSeg(v); window.scrollTo(0, 0);
+        };
+        seg.addEventListener('click', onClick);
+        const go = (v) => () => { setView(v); syncSeg(v); window.scrollTo(0, 0); };
+        const onDossier = go('dossier'), onRoom = go('role'), onPortfolio = go('portfolio');
+        window.addEventListener('spg-open-dossier', onDossier);
+        window.addEventListener('spg-open-room', onRoom);
+        window.addEventListener('spg-open-portfolio', onPortfolio);
+        return () => {
+          seg.removeEventListener('click', onClick);
+          window.removeEventListener('spg-open-dossier', onDossier);
+          window.removeEventListener('spg-open-room', onRoom);
+          window.removeEventListener('spg-open-portfolio', onPortfolio);
+        };
+      }, []);
+      const C = view === 'portfolio' ? window.PortfolioView : view === 'role' ? window.RoleView : view === 'dossier' ? window.CandidateDossier : window.PlaceabilityGauge;
+      return C ? React.createElement(C) : null;
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Harness));
+  </script>
+</body>
+</html>

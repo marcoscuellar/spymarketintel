@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from "react";
-import { Mic, FileText, DollarSign, MapPin, ShieldCheck, Quote, Calendar, MessageSquareText, XCircle, Send, GraduationCap, Award, Briefcase, Plus, StickyNote, Search } from "lucide-react";
+(function(){
+const { useState, useMemo } = React;
+const { Mic, FileText, DollarSign, MapPin, ShieldCheck, Quote, Calendar, MessageSquareText, XCircle, Send, GraduationCap, Award, Briefcase, Plus, StickyNote, Search } = window.LucideIcons;
 
 /* ── Spyglass brand · white surfaces, ink text, metallic-gold accent, navy structure, red = Pass only ── */
 const T = {
@@ -335,4 +336,5 @@ function ta(T) {
   return { width: "100%", boxSizing: "border-box", border: `1px solid ${T.line}`, borderRadius: T.r.field, padding: 12,
     fontFamily: T.font, fontSize: 14, resize: "vertical", outline: "none", background: T.bg, color: T.ink };
 }
-export { CandidateDossier };
+window.CandidateDossier = CandidateDossier;
+})();
