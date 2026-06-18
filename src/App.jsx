@@ -8,8 +8,15 @@ import { CandidateDossier } from "./spyglass/dossier.jsx";
    (clicking a role row, "Open full dossier", "All searches", etc.) which the
    views dispatch as window events. The internal spec-preview toolbar has been
    removed. */
+const VALID_VIEWS = ["portfolio", "role", "dossier"];
+function initialView() {
+  if (typeof window === "undefined") return "portfolio";
+  const v = new URLSearchParams(window.location.search).get("view");
+  return VALID_VIEWS.includes(v) ? v : "portfolio";
+}
+
 export default function App() {
-  const [view, setView] = useState("portfolio");
+  const [view, setView] = useState(initialView);
 
   const go = (v) => {
     setView(v);
