@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GLVE Design System v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* === Surfaces (exact match to glve.it.com) ====================== */
+  --bg:        #ffffff;
+  --bg-card:   #ffffff;
+  --ink:       #0a0a0a;   /* primary text, dark surfaces */
+  --ink-2:     #525252;   /* secondary text */
+  --ink-3:     #a3a3a3;   /* tertiary, mono labels */
+  --ink-4:     #d4d4d4;   /* disabled, dot rest */
+  --line:      #e7e5e4;   /* default hairline */
+  --line-soft: #ededeb;   /* nested hairline */
+  --paper:     #f5f5f4;   /* recessed background — handoff pills, nested panels */
+
+  /* === Amber set · Engine 02 (Buying Signals · multi-vertical) === */
+  --amber:     #f59e0b;
+  --amber-d:   #d97706;
+  --amber-dd:  #b45309;
+  --amber-ddd: #92400e;
+  --amber-pale:#fef3c7;
+  --amber-bg:  #fffbeb;
+
+  /* === Navy set · Standalones (Signal Audit · Seasonal Timing) === */
+  --navy:      #0A1F3D;
+  --navy-2:    #1a3052;
+  --navy-3:    #1a3556;
+  --navy-mid:  #4B6177;
+  --navy-soft: #8FA3B8;
+  --navy-fade: #B8C5D1;
+  --navy-on:   #93c5fd;   /* "what" icon color on dark surface */
+
+  /* === Signals ================================================== */
+  --green:     #10b981;   /* live status */
+  --green-d:   #059669;   /* output label, light */
+  --green-on:  #4ade80;   /* output label, dark surface */
+
+  /* === Typography =============================================== */
+  --font:      'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono:      'Geist Mono', ui-monospace, Menlo, monospace;
+
+  /* === Radii ==================================================== */
+  --r-1:    4px;
+  --r-2:    8px;    /* logo mark, small chips */
+  --r-3:    12px;   /* buttons, flow pills */
+  --r-4:    14px;   /* cap cards */
+  --r-5:    16px;   /* selector panels */
+  --r-6:    20px;   /* carousel cards */
+  --r-7:    28px;   /* pipeline section */
+  --r-8:    32px;   /* modal */
+  --r-pill: 100px;  /* handoff pills */
+
+  /* === Shadows ================================================== */
+  --sh-card:    0 12px 32px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.04);
+  --sh-hover:   0 12px 28px rgba(0,0,0,0.18);
+  --sh-active:  0 30px 60px -10px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.05);
+  --sh-modal:   0 30px 80px -20px rgba(0,0,0,0.25);
+
+  /* === Motion =================================================== */
+  --ease:      cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-pop:  cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast:  0.18s;
+  --dur:       0.25s;
+  --dur-slow:  0.6s;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-weight: 400;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(0,0,0,0.012) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(0,0,0,0.012) 0%, transparent 50%);
+}
+
+.wrap { max-width: 1480px; margin: 0 auto; padding: 32px 48px 96px; position: relative; z-index: 1; }
+
+/* ============================================================ */
+/* Topbar — mirrors the live site                               */
+/* ============================================================ */
+.topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-bottom: 24px; margin-bottom: 56px;
+}
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; letter-spacing: -0.02em; }
+.logo-mark {
+  width: 28px; height: 28px; background: var(--ink); border-radius: var(--r-2);
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-mark svg { stroke: #fff; stroke-width: 2.2; fill: none; }
+.nav-meta {
+  display: flex; gap: 28px;
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em;
+}
+.nav-meta span { display: flex; align-items: center; gap: 6px; }
+.nav-meta .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
+}
+
+/* ============================================================ */
+/* Page hero                                                    */
+/* ============================================================ */
+.hero { padding: 32px 0 88px; margin-bottom: 56px; border-bottom: 1px solid var(--line); }
+.hero .eyebrow {
+  font-family: var(--mono); font-size: 13px; font-weight: 500;
+  color: var(--ink-2); margin-bottom: 36px;
+  display: inline-flex; align-items: center; gap: 14px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.hero .eyebrow::before, .hero .eyebrow::after {
+  content: ''; width: 48px; height: 1px; background: var(--ink);
+}
+.hero h1 {
+  font-weight: 800;
+  font-size: clamp(56px, 8.5vw, 128px);
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+  margin-bottom: 32px;
+  max-width: 16ch;
+}
+.hero h1 .light { font-weight: 400; color: var(--ink-3); display: block; }
+.hero .sub {
+  font-size: 20px; color: var(--ink-2); line-height: 1.5;
+  max-width: 64ch; letter-spacing: -0.01em;
+}
+.hero-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--line); border: 1px solid var(--line);
+  border-radius: var(--r-5); overflow: hidden;
+  margin-top: 48px;
+}
+.hero-grid .cell {
+  background: #fff; padding: 24px;
+}
+.hero-grid .k {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 10px;
+}
+.hero-grid .v {
+  font-weight: 800; font-size: 40px; line-height: 1; letter-spacing: -0.04em;
+}
+.hero-grid .n {
+  font-size: 13px; color: var(--ink-2); margin-top: 10px; line-height: 1.4;
+}
+
+/* ============================================================ */
+/* Section primitive                                            */
+/* ============================================================ */
+section.sys { padding: 72px 0; border-bottom: 1px solid var(--line); }
+.sec-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 32px; margin-bottom: 40px; padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+.sec-head h2 {
+  font-weight: 700; font-size: clamp(32px, 4vw, 48px);
+  letter-spacing: -0.035em; line-height: 1.02;
+  max-width: 720px;
+}
+.sec-head h2 .light { font-weight: 400; color: var(--ink-3); }
+.sec-head .meta {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em;
+  flex-shrink: 0; text-align: right;
+}
+
+.sub-label {
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3);
+  display: flex; align-items: center; gap: 14px;
+  margin: 56px 0 20px;
+}
+.sub-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.sub-label.first { margin-top: 0; }
+
+/* ============================================================ */
+/* 02 · IDENTITY                                                */
+/* ============================================================ */
+.id-grid {
+  display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px;
+}
+.id-card {
+  border: 1px solid var(--line); border-radius: var(--r-5);
+  padding: 40px; background: #fff;
+}
+.id-card .label {
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3);
+  margin-bottom: 24px;
+}
+.id-card .specs {
+  margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--line);
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px;
+  font-family: var(--mono); font-size: 12px;
+}
+.id-card .specs .k { color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.05em; font-size: 10px; }
+.id-card .specs .v { color: var(--ink); font-weight: 500; }
+
+.logo-display {
+  display: flex; align-items: center; gap: 14px;
+  font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
+}
+.logo-display .logo-mark { width: 40px; height: 40px; }
+.logo-display .logo-mark svg { width: 20px; height: 20px; }
+
+.status-row { display: flex; gap: 28px; flex-wrap: wrap; }
+.status-row .status-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 12px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-2);
+}
+.status-pill .dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
+}
+.status-pill.idle .dot { background: var(--ink-4); box-shadow: 0 0 0 3px rgba(0,0,0,0.05); }
+.status-pill.urgent .dot { background: var(--amber); box-shadow: 0 0 0 3px rgba(245,158,11,0.20); }
+
+/* ============================================================ */
+/* 03 · COLOR                                                   */
+/* ============================================================ */
+.sw-set {
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px;
+}
+.sw {
+  border: 1px solid var(--line); border-radius: var(--r-4); overflow: hidden;
+  background: #fff;
+}
+.sw .chip { aspect-ratio: 1.5 / 1; }
+.sw .meta { padding: 14px 14px 16px; }
+.sw .name { font-weight: 600; font-size: 13px; letter-spacing: -0.01em; }
+.sw .var { font-family: var(--mono); font-size: 11px; color: var(--ink-3); margin: 2px 0 8px; }
+.sw .hex { font-family: var(--mono); font-size: 11px; color: var(--ink); }
+
+.color-note {
+  margin-top: 24px;
+  background: var(--paper);
+  border-radius: var(--r-5); padding: 24px 28px;
+  display: grid; grid-template-columns: 140px 1fr; gap: 24px;
+  align-items: start;
+}
+.color-note .lbl {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+.color-note p { font-size: 14px; color: var(--ink); max-width: 80ch; }
+.color-note p + p { margin-top: 10px; }
+
+/* ============================================================ */
+/* 04 · TYPE                                                    */
+/* ============================================================ */
+.type-row {
+  display: grid; grid-template-columns: 240px 1fr;
+  gap: 40px; padding: 32px 0;
+  border-bottom: 1px solid var(--line);
+}
+.type-row.first { border-top: 1px solid var(--line); }
+.type-meta { font-family: var(--mono); font-size: 11px; color: var(--ink-3); line-height: 1.8; }
+.type-meta .name { font-family: var(--font); font-weight: 600; color: var(--ink); font-size: 14px; margin-bottom: 6px; }
+.type-meta .spec { display: block; }
+
+.sample-display {
+  font-weight: 800; font-size: clamp(56px, 7vw, 88px);
+  line-height: 0.92; letter-spacing: -0.05em;
+}
+.sample-display .light { font-weight: 400; color: var(--ink-3); }
+.sample-h {
+  font-weight: 700; font-size: 36px; letter-spacing: -0.035em; line-height: 1.05;
+}
+.sample-h .light { font-weight: 400; color: var(--ink-3); }
+.sample-body {
+  font-size: 16px; line-height: 1.55; color: var(--ink); max-width: 60ch;
+}
+.sample-mono {
+  font-family: var(--mono); font-size: 13px; font-weight: 500;
+  color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em;
+}
+.sample-note { font-size: 13px; color: var(--ink-3); margin-top: 12px; max-width: 56ch; }
+
+.scale-tbl {
+  display: grid; grid-template-columns: 90px 1fr 220px 70px 70px;
+  border: 1px solid var(--line); border-radius: var(--r-4); overflow: hidden;
+  margin-top: 8px;
+}
+.scale-tbl > div {
+  padding: 14px 18px; border-top: 1px solid var(--line);
+  font-size: 13px; display: flex; align-items: center;
+}
+.scale-tbl > div:nth-child(-n+5) { border-top: 0; background: var(--paper); }
+.scale-tbl .h {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+.scale-tbl .tk { font-family: var(--mono); color: var(--ink-3); font-size: 12px; }
+.scale-tbl .px { font-family: var(--mono); color: var(--ink-2); font-size: 12px; }
+
+/* ============================================================ */
+/* 05 · BUTTONS                                                 */
+/* ============================================================ */
+.btn-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 16px 26px; border-radius: var(--r-3);
+  font-size: 14px; font-weight: 600; letter-spacing: -0.01em;
+  cursor: pointer; transition: all var(--dur) var(--ease);
+  text-decoration: none; border: none; font-family: inherit;
+}
+.btn-primary { background: var(--ink); color: #fff; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: var(--sh-hover); }
+.btn-primary svg { transition: transform var(--dur) var(--ease); }
+.btn-primary:hover svg { transform: translateX(3px); }
+.btn-secondary { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn-secondary:hover { border-color: var(--ink); background: #fff; }
+
+.btn-amber { background: var(--amber); color: #1c0a00; }
+.btn-amber:hover { background: var(--amber-d); transform: translateY(-2px); }
+
+.btn-mono {
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em;
+  text-transform: uppercase; font-weight: 600;
+  padding: 12px 18px; border-radius: var(--r-2);
+  background: var(--paper); color: var(--ink); border: 1px solid var(--line);
+}
+.btn-mono:hover { background: #fff; border-color: var(--ink); }
+
+.btn-note {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+  color: var(--ink-3); text-transform: uppercase; margin-top: 16px;
+}
+
+/* ============================================================ */
+/* 06 · TAGS                                                    */
+/* ============================================================ */
+.tags-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.tag {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 6px 10px; border-radius: var(--r-1);
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  background: #fff; color: var(--ink-2); border: 1px solid var(--line);
+}
+.tag.pipeline   { background: var(--paper); color: var(--ink-2); border-color: var(--line); }
+.tag.standalone { background: var(--ink);   color: #fff; border-color: var(--ink); }
+.tag.amber      { background: var(--amber-pale); color: var(--amber-ddd); border-color: rgba(245,158,11,0.35); }
+.tag.navy       { background: rgba(75,97,119,0.10); color: var(--navy); border-color: rgba(75,97,119,0.30); }
+.tag.live       { background: rgba(16,185,129,0.10); color: var(--green-d); border-color: rgba(16,185,129,0.30); }
+.tag .vbadge {
+  font-size: 9px; padding: 1px 5px; border-radius: 3px;
+  background: rgba(0,0,0,0.08); font-weight: 600;
+}
+
+.tag-table {
+  margin-top: 24px;
+  display: grid; grid-template-columns: 220px 1fr 1fr;
+  border: 1px solid var(--line); border-radius: var(--r-4); overflow: hidden;
+}
+.tag-table > div { padding: 14px 18px; border-top: 1px solid var(--line); font-size: 13px; display: flex; align-items: center; }
+.tag-table > div:nth-child(-n+3) { background: var(--paper); border-top: 0; font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+
+/* ============================================================ */
+/* 07 · ENGINE CARDS                                            */
+/* ============================================================ */
+.engine-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+
+.engine-card {
+  width: 100%;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-6);
+  padding: 32px 28px 28px;
+  display: flex; flex-direction: column;
+  box-shadow: var(--sh-card);
+  height: 420px;
+  transition: all var(--dur) var(--ease);
+  position: relative;
+}
+.engine-card.amber {
+  border: 2px solid var(--amber);
+  animation: amberPulse 4s ease-in-out infinite;
+}
+.engine-card.navy {
+  border: 2px solid var(--navy);
+  animation: navyPulse 4s ease-in-out infinite;
+}
+@keyframes amberPulse {
+  0%, 100% { box-shadow: 0 0 18px rgba(245,158,11,0.14), 0 8px 18px rgba(245,158,11,0.06); }
+  50%      { box-shadow: 0 0 30px rgba(245,158,11,0.24), 0 10px 22px rgba(245,158,11,0.09); }
+}
+@keyframes navyPulse {
+  0%, 100% { box-shadow: 0 0 18px rgba(10,31,61,0.14), 0 8px 18px rgba(10,31,61,0.06); }
+  50%      { box-shadow: 0 0 30px rgba(10,31,61,0.24), 0 10px 22px rgba(10,31,61,0.09); }
+}
+
+.engine-card .et-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+.engine-card .et-num { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--ink-3); }
+.engine-card.amber .et-num { color: var(--amber-d); }
+.engine-card.navy  .et-num { color: var(--navy-mid); }
+.engine-card .et-icon { margin-bottom: 20px; }
+.engine-card .et-icon svg { width: 32px; height: 32px; stroke: var(--ink); stroke-width: 1.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.engine-card.amber .et-icon svg { stroke: var(--amber); stroke-width: 1.6; }
+.engine-card.navy  .et-icon svg { stroke: var(--navy-mid); stroke-width: 1.6; }
+.engine-card .et-title { font-weight: 700; font-size: 26px; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 12px; }
+.engine-card .et-desc { font-size: 14px; color: var(--ink-2); line-height: 1.5; margin-bottom: auto; }
+.engine-card .et-foot {
+  display: flex; align-items: center; gap: 8px; margin-top: 20px;
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  color: var(--ink); text-transform: uppercase; letter-spacing: 0.04em;
+}
+.engine-card.amber .et-foot { color: var(--amber-d); }
+.engine-card.navy  .et-foot { color: var(--navy-mid); }
+
+/* anatomy callouts on the first sample */
+.anatomy-wrap { display: grid; grid-template-columns: 360px 1fr; gap: 56px; align-items: center; }
+.anatomy-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+.anatomy-list li {
+  display: grid; grid-template-columns: 36px 1fr;
+  gap: 14px; align-items: start;
+  font-size: 13px; color: var(--ink); line-height: 1.5;
+}
+.anatomy-list li .n {
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  background: var(--paper); border: 1px solid var(--line);
+  padding: 3px 6px; border-radius: 4px; text-align: center;
+  color: var(--ink-2); height: max-content;
+}
+.anatomy-list li strong { font-weight: 600; }
+.anatomy-list li .m { color: var(--ink-2); }
+
+.card-tone-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 24px; }
+.tone-cell {
+  border: 1px solid var(--line); border-radius: var(--r-4); padding: 18px;
+  background: #fff;
+}
+.tone-cell .label {
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-3);
+  margin-bottom: 8px;
+}
+.tone-cell .name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+.tone-cell .name.amber { color: var(--amber-d); }
+.tone-cell .name.navy  { color: var(--navy); }
+.tone-cell .desc { font-size: 12px; color: var(--ink-2); line-height: 1.5; }
+
+/* ============================================================ */
+/* 08 · CAPABILITY CARDS + HANDOFF                              */
+/* ============================================================ */
+.caps-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.cap {
+  background: #fff; border: 1px solid var(--line);
+  border-radius: var(--r-4); padding: 22px 18px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+}
+.cap .ico svg { width: 32px; height: 32px; stroke: var(--ink); stroke-width: 1.3; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0.75; }
+.cap .lbl {
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.07em;
+}
+.cap .lbl.what   { color: var(--navy-3); }
+.cap .lbl.how    { color: var(--ink-2); }
+.cap .lbl.output { color: var(--green-d); }
+.cap .tag-line { font-size: 13px; color: var(--ink-2); line-height: 1.5; letter-spacing: -0.005em; }
+
+.handoff-row { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; margin-top: 28px; }
+
+.handoff-in {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--paper); border: 1px solid var(--line);
+  border-radius: var(--r-pill); padding: 8px 18px 8px 10px;
+  font-size: 13px; color: var(--ink-2);
+}
+.handoff-in .icon-circle {
+  width: 22px; height: 22px; border-radius: 50%; background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--ink-3); flex-shrink: 0;
+}
+.handoff-in strong { color: var(--ink); font-weight: 600; }
+
+.handoff-out {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--ink); color: #fff;
+  border-radius: var(--r-pill); padding: 10px 20px 10px 12px;
+  font-size: 13px; font-weight: 500;
+}
+.handoff-out .icon-circle {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(255,255,255,0.16);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; flex-shrink: 0;
+}
+.handoff-out.amber { background: var(--amber); color: #1c0a00; }
+.handoff-out.amber .icon-circle { background: rgba(0,0,0,0.12); }
+
+/* ============================================================ */
+/* 09 · FLOW PILLS  (dark pipeline)                             */
+/* ============================================================ */
+.dark-block {
+  background: var(--ink); color: #fff;
+  border-radius: var(--r-7); padding: 56px 48px;
+  margin: 16px 0 0; position: relative; overflow: hidden;
+}
+.dark-block::before {
+  content: ''; position: absolute;
+  top: -30%; right: -10%; width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(255,255,255,0.045), transparent 65%);
+  pointer-events: none;
+}
+.dark-block .eyebrow {
+  font-family: var(--mono); font-size: 11px;
+  color: rgba(255,255,255,0.55); text-transform: uppercase;
+  letter-spacing: 0.08em; font-weight: 500; margin-bottom: 20px;
+}
+.dark-block h3 {
+  font-weight: 700; font-size: clamp(32px, 4vw, 48px);
+  letter-spacing: -0.035em; line-height: 1.02;
+  max-width: 760px; margin-bottom: 36px;
+}
+.dark-block h3 .light { color: rgba(255,255,255,0.45); font-weight: 400; }
+.flow-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.flow-pill {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 20px; background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12); border-radius: var(--r-3);
+  font-family: var(--mono); font-size: 12px; font-weight: 500;
+  transition: all var(--dur) ease;
+}
+.flow-pill:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.28); }
+.flow-pill .num { color: rgba(255,255,255,0.5); }
+.flow-arrow { color: rgba(255,255,255,0.35); font-size: 18px; font-weight: 300; }
+.standalone-row {
+  display: inline-flex; align-items: center; gap: 14px;
+  padding: 14px 22px; background: rgba(255,255,255,0.04);
+  border-radius: var(--r-3); font-family: var(--mono); font-size: 12px;
+  color: rgba(255,255,255,0.7); margin-top: 24px;
+}
+.standalone-row strong { color: #fff; font-weight: 600; }
+
+/* ============================================================ */
+/* 10 · MODAL                                                   */
+/* ============================================================ */
+.modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.modal-preview {
+  background: #fff; border: 1px solid var(--line);
+  border-radius: var(--r-8); padding: 32px;
+  box-shadow: var(--sh-modal);
+}
+.modal-preview.standalone-theme {
+  background: var(--navy); color: #fff; border-color: var(--navy-2);
+}
+.modal-preview .modal-etag {
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-3);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 10px;
+}
+.modal-preview.standalone-theme .modal-etag { color: var(--navy-soft); }
+.modal-preview .modal-etag .mtag {
+  font-size: 9px; padding: 3px 8px; border-radius: 4px; font-weight: 700;
+  letter-spacing: 0.06em;
+}
+.modal-preview .modal-etag .mtag.pipeline { background: var(--paper); color: var(--ink-2); }
+.modal-preview .modal-etag .mtag.amber { background: var(--amber-pale); color: var(--amber-ddd); }
+.modal-preview .modal-etag .mtag.standalone { background: rgba(75,97,119,0.30); color: var(--navy-fade); }
+.modal-preview .modal-title { font-weight: 800; font-size: 32px; letter-spacing: -0.04em; line-height: 1; margin-bottom: 12px; }
+.modal-preview.standalone-theme .modal-title { color: #fff; }
+.modal-preview .modal-why { font-size: 14px; color: var(--ink-2); line-height: 1.55; margin-bottom: 20px; max-width: 60ch; }
+.modal-preview.standalone-theme .modal-why { color: var(--navy-fade); }
+.modal-preview.standalone-theme .handoff-in { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.12); color: var(--navy-fade); }
+.modal-preview.standalone-theme .handoff-in strong { color: #fff; }
+.modal-preview.standalone-theme .handoff-in .icon-circle { background: rgba(255,255,255,0.10); color: var(--navy-fade); }
+.modal-preview.standalone-theme .cap { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.10); }
+.modal-preview.standalone-theme .cap .ico svg { stroke: var(--navy-on); opacity: 1; }
+.modal-preview.standalone-theme .cap .lbl.what { color: var(--navy-on); }
+.modal-preview.standalone-theme .cap .lbl.how { color: var(--navy-soft); }
+.modal-preview.standalone-theme .cap .lbl.output { color: var(--green-on); }
+.modal-preview.standalone-theme .cap .tag-line { color: var(--navy-fade); }
+.modal-preview.standalone-theme .handoff-out { background: rgba(255,255,255,0.10); color: #fff; }
+.modal-preview.standalone-theme .handoff-out .icon-circle { background: rgba(255,255,255,0.18); }
+
+.modal-preview .caps-grid { grid-template-columns: 1fr 1fr 1fr; margin: 16px 0; gap: 10px; }
+.modal-preview .cap { padding: 16px 14px; }
+.modal-preview .cap .ico svg { width: 24px; height: 24px; }
+.modal-preview .cap .tag-line { font-size: 11px; }
+
+/* ============================================================ */
+/* 11 · IMPACT BAR                                              */
+/* ============================================================ */
+.impact-demo {
+  padding: 32px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+}
+.impact-demo .ib-eb {
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.08em;
+  text-align: center; margin-bottom: 32px;
+}
+.impact-demo .grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 40px 56px; max-width: 1040px; margin: 0 auto;
+}
+.impact-demo .cell { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; }
+.impact-demo .lbl { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.07em; }
+.impact-demo .v { font-size: clamp(40px, 4.6vw, 60px); font-weight: 700; letter-spacing: -0.04em; line-height: 0.95; }
+.impact-demo .desc { font-size: 14px; color: var(--ink-2); }
+
+/* ============================================================ */
+/* 12 · ICONOGRAPHY                                             */
+/* ============================================================ */
+.icon-grid {
+  display: grid; grid-template-columns: repeat(8, 1fr); gap: 12px;
+}
+.icon-tile {
+  border: 1px solid var(--line); border-radius: var(--r-4);
+  padding: 18px; background: #fff;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+.icon-tile svg { stroke: var(--ink); stroke-width: 1.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.icon-tile .lbl { font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; color: var(--ink-3); text-transform: uppercase; text-align: center; }
+
+/* ============================================================ */
+/* 13 · MOTION                                                  */
+/* ============================================================ */
+.motion-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.motion-cell {
+  border: 1px solid var(--line); border-radius: var(--r-5);
+  padding: 24px; background: #fff;
+}
+.motion-cell .name { font-weight: 600; font-size: 15px; margin-bottom: 6px; }
+.motion-cell .code {
+  font-family: var(--mono); font-size: 11px; color: var(--ink-2);
+  background: var(--paper); border-radius: 6px; padding: 6px 10px;
+  display: inline-block; margin: 8px 0;
+}
+.motion-cell .desc { font-size: 13px; color: var(--ink-2); margin-top: 8px; line-height: 1.5; }
+
+/* ============================================================ */
+/* 14 · VOICE                                                   */
+/* ============================================================ */
+.voice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.voice-card {
+  border: 1px solid var(--line); border-radius: var(--r-5);
+  padding: 28px; background: #fff;
+}
+.voice-card.dont { border-color: rgba(220,38,38,0.25); background: #fff; }
+.voice-card .hd {
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--ink-3); margin-bottom: 18px;
+}
+.voice-card.dont .hd { color: #dc2626; }
+.voice-card ul { list-style: none; padding: 0; margin: 0; }
+.voice-card li {
+  padding: 10px 0; border-bottom: 1px solid var(--line-soft);
+  font-size: 14px; line-height: 1.5; color: var(--ink);
+  display: grid; grid-template-columns: 14px 1fr; gap: 10px;
+}
+.voice-card li:last-child { border-bottom: 0; }
+.voice-card li::before {
+  content: '✓'; font-family: var(--mono); color: var(--green-d); font-size: 13px;
+  font-weight: 600;
+}
+.voice-card.dont li::before { content: '✕'; color: #dc2626; }
+
+.voice-principles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 28px; }
+.voice-principles .p {
+  border-top: 1px solid var(--ink); padding-top: 18px;
+}
+.voice-principles .n {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;
+  color: var(--ink-3); text-transform: uppercase; margin-bottom: 6px;
+}
+.voice-principles h4 { font-weight: 700; font-size: 18px; letter-spacing: -0.02em; margin-bottom: 10px; }
+.voice-principles p { font-size: 14px; color: var(--ink-2); line-height: 1.55; }
+
+/* ============================================================ */
+/* 15 · FOUNDER                                                 */
+/* ============================================================ */
+.founder-block {
+  display: grid; grid-template-columns: 360px 1fr; gap: 56px;
+  align-items: center;
+  background: var(--paper);
+  border-radius: var(--r-7); padding: 48px;
+}
+.founder-photo {
+  border-radius: var(--r-6); overflow: hidden;
+  aspect-ratio: 4 / 5; background: #fff;
+  box-shadow: var(--sh-card);
+}
+.founder-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.founder-block .etag {
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--ink-3); margin-bottom: 16px;
+}
+.founder-block h3 {
+  font-weight: 800; font-size: 48px; letter-spacing: -0.04em; line-height: 1;
+  margin-bottom: 20px;
+}
+.founder-block h3 .light { font-weight: 400; color: var(--ink-3); display: block; }
+.founder-block p { font-size: 15px; color: var(--ink-2); line-height: 1.6; max-width: 60ch; margin-bottom: 12px; }
+.founder-stamps { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
+
+/* ============================================================ */
+/* footer                                                       */
+/* ============================================================ */
+footer {
+  padding: 40px 0 0; margin-top: 24px;
+  border-top: 1px solid var(--line);
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--mono); font-size: 11px;
+  color: var(--ink-3); font-weight: 500;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+
+/* responsive */
+@media (max-width: 1100px) {
+  .sw-set { grid-template-columns: repeat(3, 1fr); }
+  .icon-grid { grid-template-columns: repeat(4, 1fr); }
+  .engine-row { grid-template-columns: 1fr; }
+  .anatomy-wrap { grid-template-columns: 1fr; }
+  .id-grid { grid-template-columns: 1fr; }
+  .modal-row { grid-template-columns: 1fr; }
+  .founder-block { grid-template-columns: 1fr; }
+  .founder-photo { max-width: 320px; }
+}
+@media (max-width: 700px) {
+  .wrap { padding: 24px 20px 56px; }
+  .sw-set { grid-template-columns: repeat(2, 1fr); }
+  .icon-grid { grid-template-columns: repeat(3, 1fr); }
+  .hero-grid, .caps-grid, .impact-demo .grid, .voice-grid, .voice-principles,
+  .motion-row, .card-tone-grid { grid-template-columns: 1fr; }
+  .type-row { grid-template-columns: 1fr; gap: 16px; }
+  .scale-tbl { grid-template-columns: 70px 1fr 70px 50px 50px; }
+  .dark-block { padding: 36px 24px; border-radius: var(--r-5); }
+  .founder-block { padding: 28px; gap: 28px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- TOPBAR -->
+  <nav class="topbar">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" width="14" height="14"><polyline points="3 17 9 11 13 15 21 7"></polyline><polyline points="14 7 21 7 21 14"></polyline></svg>
+      </div>
+      GLVE: Design System
+    </div>
+    <div class="nav-meta">
+      <span>v1.0</span>
+      <span>Inferred from glve.it.com</span>
+      <span><span class="dot"></span>Tokens Live</span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="eyebrow">The system behind the workflow</div>
+    <h1>
+      Designed for output.
+      <span class="light">Not for show.</span>
+    </h1>
+    <p class="sub">Every token here comes from <strong>glve.it.com</strong> — same fonts, same colors, same radii, same easing curves. This is the manual for anyone building new GLVE surfaces (engines, modals, decks, comms) without breaking what's already true to the brand.</p>
+
+    <div class="hero-grid">
+      <div class="cell">
+        <div class="k">PRODUCT</div>
+        <div class="v">Revenue Workflow</div>
+        <div class="n">Six engines · one unified system</div>
+      </div>
+      <div class="cell">
+        <div class="k">CORE FLOW</div>
+        <div class="v">01 → 05</div>
+        <div class="n">Validate, signal, intel, outreach</div>
+      </div>
+      <div class="cell">
+        <div class="k">STRATEGIC FLEX</div>
+        <div class="v">SA · ST</div>
+        <div class="n">Signal Audit + Seasonal Timing</div>
+      </div>
+      <div class="cell">
+        <div class="k">FREES UP</div>
+        <div class="v">60%</div>
+        <div class="n">Of a rep's manual day</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================ -->
+  <!-- 02 · IDENTITY                                                -->
+  <!-- ============================================================ -->
+  <section class="sys">
+    <div class="sec-head">
+      <h2>Identity. <span class="light">The wordmark and its companions.</span></h2>
+      <div class="meta">02 · IDENTITY</div>
+    </div>
+
+    <div class="id-grid">
+      <div class="id-card">
+        <div class="label">[ THE LOCKUP ]</div>
+        <div class="logo-display">
+          <div class="logo-mark">
+            <svg viewBox="0 0 24 24" width="20" height="20"><polyline points="3 17 9 11 13 15 21 7"></polyline><polyline points="14 7 21 7 21 14"></polyline></svg>
+          </div>
+          GLVE: Revenue Workflow
+        </div>
+        <p style="font-size: 14px; color: var(--ink-2); margin-top: 24px; max-width: 50ch;">A black rounded square holds the chart-up glyph. Geist 700, −2% tracking, set at 17px in nav and 22px on splash screens. The colon between <strong>GLVE</strong> and <strong>Revenue Workflow</strong> is fixed — never replace it with an em-dash or pipe.</p>
+        <div class="specs">
+          <div class="k">MARK SIZE</div><div class="v">28×28 (nav) / 40×40 (hero)</div>
+          <div class="k">MARK RADIUS</div><div class="v">8px (--r-2)</div>
+          <div class="k">MARK FILL</div><div class="v">#0a0a0a (--ink)</div>
+          <div class="k">GLYPH STROKE</div><div class="v">#ffffff · 2.2px</div>
+          <div class="k">WORDMARK</div><div class="v">Geist 700, −2% tracking</div>
+          <div class="k">GAP</div><div class="v">10px between mark + wordmark</div>
+        </div>
+      </div>
+
+      <div class="id-card">
+        <div class="label">[ SYSTEM STATUS ]</div>
+        <p style="font-size: 14px; color: var(--ink-2); margin-bottom: 20px; max-width: 44ch;">The dot is GLVE's system-on signal. Green halo (16,185,129) tells the operator the workflow is live. Use it sparingly — one per view, always in the top-right alongside meta.</p>
+        <div class="status-row">
+          <span class="status-pill"><span class="dot"></span>All Systems Live</span>
+          <span class="status-pill urgent"><span class="dot"></span>Urgent · Move This Week</span>
+          <span class="status-pill idle"><span class="dot"></span>Idle</span>
+        </div>
+        <div class="specs">
+          <div class="k">DOT</div><div class="v">6×6 · radius 50%</div>
+          <div class="k">HALO</div><div class="v">0 0 0 3px @ 15% alpha</div>
+          <div class="k">LIVE</div><div class="v">--green · #10b981</div>
+          <div class="k">URGENT</div><div class="v">--amber · #f59e0b</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 03 · COLOR                                                   -->
+  <!-- ============================================================ -->
+  <section class="sys">
+    <div class="sec-head">
+      <h2>Color. <span class="light">Three palettes. Strict assignment.</span></h2>
+      <div class="meta">03 · COLOR</div>
+    </div>
+
+    <div class="sub-label first">[ NEUTRAL · THE 80% ]</div>
+    <div class="sw-set">
+      <div class="sw"><div class="chip" style="background: #fff; border-right: 1px solid var(--line);"></div><div class="meta"><div class="name">BG</div><div class="var">--bg</div><div class="hex">#FFFFFF</div></div></div>
+      <div class="sw"><div class="chip" style="background: var(--paper);"></div><div class="meta"><div class="name">Paper</div><div class="var">--paper</div><div class="hex">#F5F5F4</div></div></div>
+      <div class="sw"><div class="chip" style="background: var(--line);"></div><div class="meta"><div class="name">Line</div><div class="var">--line</div><div class="hex">#E7E5E4</div></div></div>
+      <div class="sw"><div class="chip" style="background: var(--ink-4);"></div><div class="meta"><div class="name">Ink·4</div><div class="var">--ink-4</div><div class="hex">#D4D4D4</div></div></div>
+      <div class="sw"><div class="chip" style="background: var(--ink-3);"></div><div class="meta"><div class="name">Ink·3</div><div class="var">--ink-3</div><div class="hex">#A3A3A3</div></div></div>
+      <div class="sw"><div class="chip" style="background: var(--ink-2);"></div><div class="meta"><div class="name">Ink·2</div><div class="var">--ink-2</div><div class="hex">#525252</div></div></div>
+    </div>
+    <div class="sw-set" style="margin-top: 16px;">
+      <div class="sw"><div class="chip" style="background: var(--ink);"></div><div class="meta"><div class="name">Ink</div><div class="var">--ink</div><div class="hex">#0A0A0A</div></div></div>
+      <div class="sw"><div class="chip" style="background: var(--line-soft);"></div><div class="meta"><div class="name">Line·Soft</div><div class="var">--line-soft</div><div class="hex">#EDEDEB</div></div></div>
+    </div>
+
+    <div class="sub-label">[ AMBER · ENGINE 02 · MULTI-VERTICAL INTELLIGENCE ]</div>
+    <div class="sw-set">
+      <div class="sw"><div class="chip" style="background: var(--amber-bg);"></div><div class="meta"><div class="name">Amber·BG</div><div class="var">--amber-bg</div><div class="hex">#FFFBEB</div></div></div>
+      <div class="sw"><div class="chip" style="background: var(--amber-pale);"></div><div class="meta"><div class="name">Amber·Pale</div><div class="var">--amber-pale</div><div class="hex">#FEF3C7</div></div></div>
+      <div class="sw"><div class="chip" style="background: var(--amber);"></div><div class="meta"><div class="name">Amber</div><div class="var">--amber</div><div class="hex">#F59E0B</div></div></div>
+      <div class="sw"><div class="chip" style="background: var(--amber-d);"></div><div class="meta"><div class="name">Amber·D</div><div class="var">--amber-d</div><div class="hex">#D97706</div></div></div>
+      <div class="sw"><div class="chip" style="background: var(--amber-dd);"></div><div class="meta"><div class="name">Amber·DD</div><div class="var">--amber-dd</div><div class="hex">#B45309</div></div></div>
+      <div class="sw"><div class="chip" style="background: var(--amber-ddd);"></div><div class="meta"><div class="name">Amber·DDD</div><div class="var">--amber-ddd</div><div class="hex">#92400E</div></div></div>
+    </div>
+
+    <div class="sub-label">[ NAVY · STANDALONE ENGINES · SIGNAL AUDIT + SEASONAL TIMING ]</div>
+    <div class="sw-set">
+      <div class="sw"><div class="chip" style="background: var(--navy);"></div><div class="meta"><div class="name">Navy</div><div class="var">--navy</div><div class="hex">#0A1F3D</div></div></div>
+      <div class="sw"><div class="chip" style="background: var(--navy-2);"></div><div class="meta"><div class="name">Navy·2</div><div class="var">--navy-2</div><div class="hex">#1A3052</div></div></div>
+      <div class="sw"><div class="chip" style="background: var(--navy-mid);"></div><div class="meta"><div class="name">Navy·Mid</div><div class="var">--navy-mid</div><div class="hex">#4B6177</div></div></div>
+      <div class="sw"><div class="chip" style="background: var(--navy-soft);"></div><div class="meta"><div class="name">Navy·Soft</div><div class="var">--navy-soft</div><div class="hex">#8FA3B8</div></div></div>
+      <div class="sw"><div class="chip" style="background: var(--navy-fade);"></div><div class="meta"><div class="name">Navy·Fade</div><div class="var">--navy-fade</div><div class="hex">#B8C5D1</div></div></div>
+      <div class="sw"><div class="chip" style="background: var(--navy-on);"></div><div class="meta"><div class="name">Navy·On</div><div class="var">--navy-on</div><div class="hex">#93C5FD</div></div></div>
+    </div>
+
+    <div class="sub-label">[ SIGNALS · GREEN ONLY ]</div>
+    <div class="sw-set">
+      <div class="sw"><div class="chip" style="background: var(--green);"></div><div class="meta"><div class="name">Live</div><div class="var">--green</div><div class="hex">#10B981</div></div></div>
+      <div class="sw"><div class="chip" style="background: var(--green-d);"></div><div class="meta"><div class="name">Output·Light</div><div class="var">--green-d</div><div class="hex">#059669</div></div></div>
+      <div class="sw"><div class="chip" style="background: var(--green-on);"></div><div class="meta"><div class="name">Output·Dark</div><div class="var">--green-on</div><div class="hex">#4ADE80</div></div></div>
+    </div>
+
+    <div class="color-note">
+      <div class="lbl">[ ASSIGNMENT RULE ]</div>
+      <div>
+        <p><strong>Neutrals dominate.</strong> White, paper, ink and line carry ~80% of any view. The amber set is reserved for <strong>Engine 02 (Buying Signals)</strong> and its multi-vertical UI — never used as a generic warning color. The navy set is reserved for <strong>Standalone engines (Signal Audit · Seasonal Timing)</strong> and their dark-themed modals — never used as a generic brand blue.</p>
+        <p><strong>Green is system-only.</strong> Live indicator dot, "Output" capability label, and the rare positive confirmation. Never a fill color on a card or button.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 04 · TYPE                                                    -->
+  <!-- ============================================================ -->
+  <section class="sys">
+    <div class="sec-head">
+      <h2>Type. <span class="light">Geist does everything. Geist Mono labels the system.</span></h2>
+      <div class="meta">04 · TYPE</div>
+    </div>
+
+    <div class="type-row first">
+      <div class="type-meta">
+        <div class="name">Geist</div>
+        <span class="spec">DISPLAY · 800</span>
+        <span class="spec">−5% TRACKING</span>
+        <span class="spec">0.92 LINE-HEIGHT</span>
+        <span class="spec">.light = 400 + Ink·3</span>
+      </div>
+      <div>
+        <div class="sample-display">Stop guessing.<span class="light">Start closing.</span></div>
+        <p class="sample-note">Hero headlines. Always two clauses: bold full-color statement on line one, light Ink-3 follow-up on line two. The "light" class makes the secondary clause feel less like a sub-line and more like a thought rounding off.</p>
+      </div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="name">Geist</div>
+        <span class="spec">SECTION · 700</span>
+        <span class="spec">−3.5% TRACKING</span>
+        <span class="spec">1.02 LINE-HEIGHT</span>
+      </div>
+      <div>
+        <div class="sample-h">The Revenue Workflow. <span class="light">Built for Output.</span></div>
+        <p class="sample-note">Section dividers across the marketing site and every internal surface. Same two-tone treatment — the .light fragment is the quiet half. Pairs with a mono meta label, right-aligned, sharing the baseline.</p>
+      </div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="name">Geist</div>
+        <span class="spec">BODY · 400 / 500</span>
+        <span class="spec">−1% TRACKING</span>
+        <span class="spec">1.5 LINE-HEIGHT</span>
+      </div>
+      <div>
+        <p class="sample-body">Your team is losing 60% of their day to manual research and administrative drift. This workflow automates the grunt work to drive a 22% increase in high-intent pipeline. Body copy stays at 15px (compact) or 22px (hero sub), Ink-2 by default, never centered outside the hero block.</p>
+      </div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="name">Geist Mono</div>
+        <span class="spec">SYSTEM · 500 / 600</span>
+        <span class="spec">+6% TRACKING</span>
+        <span class="spec">ALWAYS UPPERCASE IN UI</span>
+      </div>
+      <div>
+        <div class="sample-mono">v1.0 · Unified Workflow · All Systems Live</div>
+        <p class="sample-note">Nav meta, engine numbers, status tags, "input" labels inside modals, capability headings, every footer line. Mono is the system's voice — it never narrates, it labels.</p>
+      </div>
+    </div>
+
+    <div class="sub-label">[ THE SCALE ]</div>
+    <div class="scale-tbl">
+      <div class="h">TOKEN</div><div class="h">SAMPLE</div><div class="h">USE</div><div class="h">PX</div><div class="h">WT</div>
+
+      <div class="tk">display/xl</div>
+      <div><span style="font-weight: 800; font-size: 56px; letter-spacing: -0.05em; line-height: 0.92;">Hero</span></div>
+      <div class="px">Hero · clamp(64,9.5vw,144)</div>
+      <div class="px">128</div><div class="px">800</div>
+
+      <div class="tk">display/lg</div>
+      <div><span style="font-weight: 800; font-size: 38px; letter-spacing: -0.04em;">Modal title</span></div>
+      <div class="px">Modal title · founder hd</div>
+      <div class="px">38</div><div class="px">800</div>
+
+      <div class="tk">section/lg</div>
+      <div><span style="font-weight: 700; font-size: 36px; letter-spacing: -0.035em;">Section divider</span></div>
+      <div class="px">Section dividers</div>
+      <div class="px">36</div><div class="px">700</div>
+
+      <div class="tk">card/lg</div>
+      <div><span style="font-weight: 700; font-size: 26px; letter-spacing: -0.03em;">Engine name</span></div>
+      <div class="px">Engine card titles</div>
+      <div class="px">26</div><div class="px">700</div>
+
+      <div class="tk">card/md</div>
+      <div><span style="font-weight: 700; font-size: 17px; letter-spacing: -0.02em;">Panel title</span></div>
+      <div class="px">Selector panels, sub-headings</div>
+      <div class="px">17</div><div class="px">700</div>
+
+      <div class="tk">sub/lg</div>
+      <div><span style="font-size: 22px; color: var(--ink-2); letter-spacing: -0.01em;">Hero sub</span></div>
+      <div class="px">Hero sub-copy</div>
+      <div class="px">22</div><div class="px">400</div>
+
+      <div class="tk">body</div>
+      <div><span style="font-size: 15px;">Body copy</span></div>
+      <div class="px">Default paragraphs</div>
+      <div class="px">15</div><div class="px">400</div>
+
+      <div class="tk">card/body</div>
+      <div><span style="font-size: 14px; color: var(--ink-2);">Card description</span></div>
+      <div class="px">Card descriptions</div>
+      <div class="px">14</div><div class="px">400</div>
+
+      <div class="tk">sm</div>
+      <div><span style="font-size: 13px;">Dense data</span></div>
+      <div class="px">Cap card body, modal why</div>
+      <div class="px">13</div><div class="px">400</div>
+
+      <div class="tk">mono/btn</div>
+      <div><span style="font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500;">FLOW PILL</span></div>
+      <div class="px">Buttons, flow pills, nav meta</div>
+      <div class="px">12</div><div class="px">500</div>
+
+      <div class="tk">mono/tag</div>
+      <div><span style="font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-3); font-weight: 500;">EYEBROW · ENGINE NUM</span></div>
+      <div class="px">Eyebrows, engine numbers, meta</div>
+      <div class="px">11</div><div class="px">500</div>
+
+      <div class="tk">mono/xs</div>
+      <div><span style="font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-3); font-weight: 600;">CAP LABEL · STAMP</span></div>
+      <div class="px">Capability labels, mini stamps</div>
+      <div class="px">10</div><div class="px">600</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 05 · BUTTONS                                                 -->
+  <!-- ============================================================ -->
+  <section class="sys">
+    <div class="sec-head">
+      <h2>Actions. <span class="light">Pill primary. Mono for system.</span></h2>
+      <div class="meta">05 · BUTTONS</div>
+    </div>
+
+    <div class="sub-label first">[ HERO ACTIONS · 12PX RADIUS ]</div>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="#">
+        See the engines
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </a>
+      <a class="btn btn-secondary" href="#">See how it works</a>
+      <a class="btn btn-amber" href="#">
+        Run Engine 02
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </a>
+    </div>
+    <div class="btn-note">[ PRIMARY · SECONDARY · AMBER (E02 ONLY) ]</div>
+
+    <div class="sub-label">[ SYSTEM CONTROLS · 8PX RADIUS · MONO ]</div>
+    <div class="btn-row">
+      <button class="btn btn-mono">[ HANDOFF QUERY ]</button>
+      <button class="btn btn-mono">[ VIEW SOURCE ]</button>
+      <button class="btn btn-mono">[ ENGINE 04 ]</button>
+    </div>
+    <div class="btn-note">[ INSIDE WORKFLOW · NEVER AS A HERO CTA ]</div>
+
+    <div class="sub-label">[ RULES ]</div>
+    <p style="font-size: 14px; color: var(--ink-2); max-width: 70ch;">
+      Hero CTAs are 14px Geist 600, 16/26 padding, 12px radius. The primary lifts on hover — <code style="font-family: var(--mono); font-size: 12px; background: var(--paper); padding: 2px 6px; border-radius: 4px;">translateY(-2px)</code> + a soft shadow + arrow translateX. <strong>Never scale on press.</strong> Secondary stays flat; its border goes Ink on hover. The Amber CTA only appears inside Engine 02 contexts (Buying Signals panels and the vertical selector). Mono buttons are reserved for inside-the-workflow controls — they read as system actions, not decisions.
+    </p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 06 · TAGS                                                    -->
+  <!-- ============================================================ -->
+  <section class="sys">
+    <div class="sec-head">
+      <h2>Tags &amp; badges. <span class="light">Mono uppercase, 4px radius.</span></h2>
+      <div class="meta">06 · TAGS</div>
+    </div>
+
+    <div class="sub-label first">[ TYPE TAG · ENGINE CARD HEADER ]</div>
+    <div class="tags-row">
+      <span class="tag pipeline">Pipeline</span>
+      <span class="tag amber">Multi-Vertical Intelligence</span>
+      <span class="tag standalone">Standalone</span>
+      <span class="tag live">All Systems Live</span>
+      <span class="tag navy">Standalone · SA</span>
+      <span class="tag">Default</span>
+    </div>
+
+    <div class="sub-label">[ STATUS TAGS WITH BADGE ]</div>
+    <div class="tags-row">
+      <span class="tag pipeline">Logistics & Digital Transformation <span class="vbadge">Built</span></span>
+      <span class="tag amber">Agencies & Creative Shops <span class="vbadge">Live</span></span>
+      <span class="tag pipeline">Pure Tech / SaaS <span class="vbadge">Soon</span></span>
+    </div>
+
+    <div class="sub-label">[ WHEN TO USE WHICH ]</div>
+    <div class="tag-table">
+      <div>TAG</div><div>USE</div><div>EXAMPLE</div>
+
+      <div><span class="tag pipeline">Pipeline</span></div>
+      <div style="color: var(--ink-2);">Marks an engine that runs in the Core Flow (sequential 01–05).</div>
+      <div style="font-family: var(--mono); font-size: 11px; color: var(--ink-2);">Role Validation · Outreach</div>
+
+      <div><span class="tag amber">Amber</span></div>
+      <div style="color: var(--ink-2);">Reserved for Engine 02 and its multi-vertical capabilities.</div>
+      <div style="font-family: var(--mono); font-size: 11px; color: var(--ink-2);">Buying Signals · vertical chips</div>
+
+      <div><span class="tag standalone">Standalone</span></div>
+      <div style="color: var(--ink-2);">Strategic Flex engines — invoked on demand, outside the sequence.</div>
+      <div style="font-family: var(--mono); font-size: 11px; color: var(--ink-2);">Signal Audit · Seasonal Timing</div>
+
+      <div><span class="tag live">Live</span></div>
+      <div style="color: var(--ink-2);">System status — live engine, completed verification.</div>
+      <div style="font-family: var(--mono); font-size: 11px; color: var(--ink-2);">"All Systems Live" · nav</div>
+
+      <div><span class="tag navy">Navy</span></div>
+      <div style="color: var(--ink-2);">Standalone identity inside dark-themed modals + meta.</div>
+      <div style="font-family: var(--mono); font-size: 11px; color: var(--ink-2);">SA · ST engine modal etag</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 07 · ENGINE CARDS                                            -->
+  <!-- ============================================================ -->
+  <section class="sys">
+    <div class="sec-head">
+      <h2>The engine card. <span class="light">GLVE's signature pattern.</span></h2>
+      <div class="meta">07 · CARDS</div>
+    </div>
+
+    <div class="sub-label first">[ ANATOMY ]</div>
+    <div class="anatomy-wrap">
+      <article class="engine-card">
+        <div class="et-top">
+          <div class="et-num">01</div>
+          <div class="tag pipeline">Pipeline</div>
+        </div>
+        <div class="et-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2.5 L4.5 6.5 L4.5 14.5 C4.5 18.8 12 21.5 12 21.5 C12 21.5 19.5 18.8 19.5 14.5 L19.5 6.5 Z"/><polyline points="8.5,12 11,14.5 16,9.5"/></svg>
+        </div>
+        <h3 class="et-title">Role Validation</h3>
+        <p class="et-desc">Stop the "bounce." Ensure your reps are talking to humans with budget, not ghost profiles.</p>
+        <div class="et-foot">Open Engine <span>→</span></div>
+      </article>
+      <ol class="anatomy-list">
+        <li><span class="n">01</span><div><strong>Engine number</strong> — top-left, Geist Mono 12 / 600 / Ink-3. Always two characters: numerals for Pipeline, alpha for Standalone (SA, ST).</div></li>
+        <li><span class="n">02</span><div><strong>Type tag</strong> — top-right. Pipeline, Multi-Vertical Intelligence (amber), or Standalone (solid ink).</div></li>
+        <li><span class="n">03</span><div><strong>Icon</strong> — Lucide-style, 32×32, 1.4–1.6px stroke, opacity 0.75 (default) / 1 (themed). Single shape per icon, no fill.</div></li>
+        <li><span class="n">04</span><div><strong>Title</strong> — Geist 700 / 26px / −3% tracking. Two words max. Never more than 18 characters.</div></li>
+        <li><span class="n">05</span><div><strong>Blurb</strong> — Geist 400 / 14px / Ink-2. <em>Always</em> opens with the operator pain ("Stop the bounce") or the metaphor ("The Clean Slate"). Never describes the feature first.</div></li>
+        <li><span class="n">06</span><div><strong>Foot</strong> — "Open Engine →" in Geist Mono 11 / 600. The arrow nudges +4px when the card is active.</div></li>
+        <li><span class="n">07</span><div><strong>Card</strong> — 1px line border, 20px radius, soft layered shadow, fixed 420px height so cards row evenly.</div></li>
+      </ol>
+    </div>
+
+    <div class="sub-label">[ THE THREE TONES ]</div>
+    <div class="engine-row">
+      <article class="engine-card">
+        <div class="et-top"><div class="et-num">04</div><div class="tag pipeline">Pipeline</div></div>
+        <div class="et-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="3" r="1.8"/><circle cx="21" cy="7.5" r="1.8"/><circle cx="21" cy="16.5" r="1.8"/><circle cx="3" cy="7.5" r="1.8"/><circle cx="3" cy="16.5" r="1.8"/><line x1="12" y1="9" x2="12" y2="4.8"/><line x1="14.6" y1="10.2" x2="19.3" y2="8.3"/><line x1="14.6" y1="13.8" x2="19.3" y2="15.7"/><line x1="9.4" y1="10.2" x2="4.7" y2="8.3"/><line x1="9.4" y1="13.8" x2="4.7" y2="15.7"/></svg>
+        </div>
+        <h3 class="et-title">Intelligence Hub</h3>
+        <p class="et-desc">Eliminate the "Pre-Call Panic." Centralize every data point so the rep enters the meeting as an expert.</p>
+        <div class="et-foot">Open Engine <span>→</span></div>
+      </article>
+
+      <article class="engine-card amber">
+        <div class="et-top"><div class="et-num">02</div><div class="tag amber">Multi-Vertical Intelligence</div></div>
+        <div class="et-icon">
+          <svg viewBox="0 0 24 24"><polyline points="1,12.5 5.5,12.5 8,5.5 10.5,19.5 13,12.5 23,12.5"/><circle cx="8" cy="5.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <h3 class="et-title">Buying Signals</h3>
+        <p class="et-desc">Catch the "Hand-Raisers." Focus 100% of team energy on accounts currently showing intent.</p>
+        <div class="et-foot">Open Engine <span>→</span></div>
+      </article>
+
+      <article class="engine-card navy">
+        <div class="et-top"><div class="et-num">SA</div><div class="tag standalone">Standalone</div></div>
+        <div class="et-icon">
+          <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="7"/><line x1="15.5" y1="15.5" x2="21.5" y2="21.5"/><circle cx="10.5" cy="10.5" r="2.5"/><line x1="10.5" y1="6" x2="10.5" y2="7.5"/><line x1="10.5" y1="13.5" x2="10.5" y2="15"/><line x1="6" y1="10.5" x2="7.5" y2="10.5"/><line x1="13.5" y1="10.5" x2="15" y2="10.5"/></svg>
+        </div>
+        <h3 class="et-title">Signal Audit</h3>
+        <p class="et-desc">The "Clean Slate." Strip out the noise and refocus the team on the highest-probability revenue.</p>
+        <div class="et-foot">Open Engine <span>→</span></div>
+      </article>
+    </div>
+
+    <div class="card-tone-grid">
+      <div class="tone-cell">
+        <div class="label">[ DEFAULT ]</div>
+        <div class="name">Pipeline · Sequential</div>
+        <div class="desc">1px Line border. Static. No pulse. Used for engines 01, 04, 05 — the workhorse pipeline.</div>
+      </div>
+      <div class="tone-cell">
+        <div class="label">[ AMBER GLOW ]</div>
+        <div class="name amber">Engine 02 · only</div>
+        <div class="desc">2px Amber border, 4s amber pulse. Only Engine 02. Never repurpose the pulse for any other engine.</div>
+      </div>
+      <div class="tone-cell">
+        <div class="label">[ NAVY GLOW ]</div>
+        <div class="name navy">Standalones · only</div>
+        <div class="desc">2px Navy border, 4s navy pulse. Reserved for Signal Audit (SA) and Seasonal Timing (ST).</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 08 · CAPABILITIES + HANDOFF                                  -->
+  <!-- ============================================================ -->
+  <section class="sys">
+    <div class="sec-head">
+      <h2>Capabilities &amp; handoffs. <span class="light">How engines explain themselves.</span></h2>
+      <div class="meta">08 · CAP CARDS</div>
+    </div>
+
+    <p style="font-size: 15px; color: var(--ink-2); max-width: 72ch; margin-bottom: 32px;">Every engine modal explains itself in exactly three cards — <strong>What it does · How · Output</strong> — bracketed by two handoff pills (the input it takes in, and the output that goes to the next engine). Always three. Never four. Never two.</p>
+
+    <div class="sub-label first">[ THE TRIPTYCH ]</div>
+    <div class="caps-grid">
+      <div class="cap">
+        <div class="ico">
+          <svg viewBox="0 0 24 24"><path d="M12 2.5 L4.5 6.5 L4.5 14.5 C4.5 18.8 12 21.5 12 21.5 C12 21.5 19.5 18.8 19.5 14.5 L19.5 6.5 Z"/><polyline points="8.5,12 11,14.5 16,9.5"/></svg>
+        </div>
+        <div class="lbl what">What it does</div>
+        <div class="tag-line">Confirms every opportunity is real before we invest a minute of effort.</div>
+      </div>
+      <div class="cap">
+        <div class="ico">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <div class="lbl how">How</div>
+        <div class="tag-line">Multi-source verification across job ecosystems and company career pages.</div>
+      </div>
+      <div class="cap">
+        <div class="ico">
+          <svg viewBox="0 0 24 24"><polyline points="9,11 12,14 22,4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </div>
+        <div class="lbl output">Output</div>
+        <div class="tag-line">A verified record — company, role, status, and direct source link.</div>
+      </div>
+    </div>
+
+    <div class="sub-label">[ HANDOFF PILLS · INPUT (PAPER) → OUTPUT (INK / AMBER) ]</div>
+    <div class="handoff-row">
+      <div class="handoff-in">
+        <div class="icon-circle">↓</div>
+        <span><strong>Input:</strong> A company name, segment, or market — that's all you need to start</span>
+      </div>
+      <div class="handoff-out">
+        <div class="icon-circle">→</div>
+        Validated companies pass to Engine 02 — Buying Signals
+      </div>
+      <div class="handoff-out amber">
+        <div class="icon-circle">→</div>
+        Signal-verified prospects pass to Engine 04 — Intelligence Hub
+      </div>
+      <div class="handoff-out" style="background: var(--green-d);">
+        <div class="icon-circle">✓</div>
+        Campaign live — pipeline logged, touches tracked
+      </div>
+    </div>
+    <p style="font-size: 13px; color: var(--ink-3); margin-top: 16px; max-width: 70ch;">The output handoff is the engine's <em>commit</em>. Ink for default Pipeline engines, amber when E02 hands off, green only for the terminal Engine 05 ("Campaign live"). Always full-pill radius (100px), 13px label, single sentence.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 09 · FLOW BLOCK                                              -->
+  <!-- ============================================================ -->
+  <section class="sys">
+    <div class="sec-head">
+      <h2>The dark block. <span class="light">Where the workflow gets named.</span></h2>
+      <div class="meta">09 · DARK BLOCK</div>
+    </div>
+
+    <div class="dark-block">
+      <div class="eyebrow">Management Levers</div>
+      <h3>The Strategic Flex. <span class="light">Tactical strikes used to accelerate specific deals or clean up the funnel.</span></h3>
+      <div class="flow-row">
+        <div class="flow-pill"><span class="num">01</span> Role Validation</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-pill"><span class="num">02</span> Buying Signals</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-pill"><span class="num">03</span> Intelligence Hub</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-pill"><span class="num">04</span> Outreach</div>
+      </div>
+      <div class="standalone-row">
+        <strong>The Strategic Flex — "Jump-In" Boosters:</strong> Signal Audit (The Clean Slate) + Seasonal Timing (The Budget Hunter) — tactical strikes used to accelerate specific deals or clean up the funnel.
+      </div>
+    </div>
+    <p style="font-size: 13px; color: var(--ink-3); margin-top: 20px; max-width: 70ch;">Used once per page maximum. Ink background, 28px radius, 56–72px padding, a faint radial wash bleeding off the top-right corner. The flow-pill row + standalone-row pair is the canonical use; don't put generic body copy inside.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 10 · MODAL PREVIEWS                                          -->
+  <!-- ============================================================ -->
+  <section class="sys">
+    <div class="sec-head">
+      <h2>Modals. <span class="light">Light by default. Navy for Standalones.</span></h2>
+      <div class="meta">10 · MODAL</div>
+    </div>
+
+    <div class="modal-row">
+      <div class="modal-preview">
+        <div class="modal-etag">Engine 04 <span class="mtag pipeline">Pipeline</span></div>
+        <h3 class="modal-title">Intelligence Hub</h3>
+        <p class="modal-why">A signal gets us in the room. Intelligence is what closes it. This engine turns a verified prospect into a complete operational file before anyone picks up the phone.</p>
+        <div class="handoff-in" style="margin-bottom: 18px;">
+          <div class="icon-circle">↓</div>
+          <span><strong>Input:</strong> Signal-verified company from Engine 02</span>
+        </div>
+        <div class="caps-grid">
+          <div class="cap"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="3" r="1.8"/><circle cx="21" cy="7.5" r="1.8"/><circle cx="3" cy="7.5" r="1.8"/></svg></div><div class="lbl what">What it does</div><div class="tag-line">Builds a complete operational picture of every prospect.</div></div>
+          <div class="cap"><div class="ico"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="lbl how">How</div><div class="tag-line">Eight pillars pulled from primary sources — nothing assumed.</div></div>
+          <div class="cap"><div class="ico"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/></svg></div><div class="lbl output">Output</div><div class="tag-line">A ready-to-use file — org map, hiring history, recent news.</div></div>
+        </div>
+        <div class="handoff-out" style="margin-top: 16px;"><div class="icon-circle">→</div>Intelligence file passes to Engine 05 — Outreach</div>
+      </div>
+
+      <div class="modal-preview standalone-theme">
+        <div class="modal-etag">Engine SA <span class="mtag standalone">Standalone</span></div>
+        <h3 class="modal-title">Signal Audit</h3>
+        <p class="modal-why">Runs on demand. Before committing to outreach, this engine independently re-verifies any signal — catching bad data before it wastes a relationship.</p>
+        <div class="handoff-in" style="margin-bottom: 18px;">
+          <div class="icon-circle">↓</div>
+          <span><strong>Input:</strong> Any company + the signal Engine 02 flagged</span>
+        </div>
+        <div class="caps-grid">
+          <div class="cap"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="7"/><line x1="15.5" y1="15.5" x2="21.5" y2="21.5"/></svg></div><div class="lbl what">What it does</div><div class="tag-line">Independently re-verifies any signal before outreach.</div></div>
+          <div class="cap"><div class="ico"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><div class="lbl how">How</div><div class="tag-line">Fresh sources, timeline check, pillar validation.</div></div>
+          <div class="cap"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></svg></div><div class="lbl output">Output</div><div class="tag-line">VERIFIED / PARTIAL / NOT VERIFIED with reasoning.</div></div>
+        </div>
+        <div class="handoff-out" style="margin-top: 16px;"><div class="icon-circle">→</div>Audited prospect → re-enters the Core Flow</div>
+      </div>
+    </div>
+
+    <p style="font-size: 13px; color: var(--ink-3); margin-top: 24px; max-width: 70ch;">Modal radius is 32px. Backdrop is 55% white at 20px blur. Open animation: <code style="font-family: var(--mono); font-size: 11px;">scale(0.95) → 1, cubic-bezier(0.34, 1.56, 0.64, 1), 0.45s</code> — the only place a pop-easing is allowed in GLVE.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 11 · IMPACT BAR                                              -->
+  <!-- ============================================================ -->
+  <section class="sys">
+    <div class="sec-head">
+      <h2>The impact bar. <span class="light">Stats, three across, hairlines only.</span></h2>
+      <div class="meta">11 · IMPACT</div>
+    </div>
+
+    <div class="impact-demo">
+      <div class="ib-eb">Total System Impact</div>
+      <div class="grid">
+        <div class="cell"><div class="lbl">01 · Role Validation</div><div class="v">98%</div><div class="desc">Verified Roles</div></div>
+        <div class="cell"><div class="lbl">02 · Buying Signals</div><div class="v">4.5×</div><div class="desc">Higher Conversion</div></div>
+        <div class="cell"><div class="lbl">04 · Intelligence Hub</div><div class="v">10×</div><div class="desc">Faster Pre-Call Prep</div></div>
+        <div class="cell"><div class="lbl">05 · Outreach</div><div class="v">15+ Hrs</div><div class="desc">Saved Per Rep / Week</div></div>
+        <div class="cell"><div class="lbl">SA · Signal Audit</div><div class="v">100%</div><div class="desc">Source Verification</div></div>
+        <div class="cell"><div class="lbl">ST · Seasonal Timing</div><div class="v">3×</div><div class="desc">Higher Win Rate</div></div>
+      </div>
+    </div>
+    <p style="font-size: 13px; color: var(--ink-3); margin-top: 20px; max-width: 70ch;">Hairlines top &amp; bottom, no card. Mono label (Engine NN · Name) → big Geist 700 stat → 14px description. Stats run 40–60px clamped. Always three-across on desktop; collapses to single column under 600px.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 12 · ICONOGRAPHY                                             -->
+  <!-- ============================================================ -->
+  <section class="sys">
+    <div class="sec-head">
+      <h2>Iconography. <span class="light">Lucide-style, 1.4–1.6px stroke.</span></h2>
+      <div class="meta">12 · ICONS</div>
+    </div>
+
+    <p style="font-size: 15px; color: var(--ink-2); max-width: 72ch; margin-bottom: 28px;">Every icon is built as a flat SVG: <code style="font-family: var(--mono); font-size: 12px; background: var(--paper); padding: 2px 6px; border-radius: 4px;">stroke: currentColor</code>, no fill, round caps and joins. 1.4px stroke for default Ink, 1.6px when stroke goes amber or navy (compensates for the lighter perceived weight). Each engine owns its glyph — never reuse a glyph across engines.</p>
+
+    <div class="icon-grid">
+      <div class="icon-tile"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 L4.5 6.5 L4.5 14.5 C4.5 18.8 12 21.5 12 21.5 C12 21.5 19.5 18.8 19.5 14.5 L19.5 6.5 Z"/><polyline points="8.5,12 11,14.5 16,9.5"/></svg><div class="lbl">01 · Validate</div></div>
+      <div class="icon-tile"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="1,12.5 5.5,12.5 8,5.5 10.5,19.5 13,12.5 23,12.5"/><circle cx="8" cy="5.5" r="1.2" fill="currentColor" stroke="none"/></svg><div class="lbl">02 · Signal</div></div>
+      <div class="icon-tile"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="3" r="1.8"/><circle cx="21" cy="7.5" r="1.8"/><circle cx="21" cy="16.5" r="1.8"/><circle cx="3" cy="7.5" r="1.8"/><circle cx="3" cy="16.5" r="1.8"/><line x1="12" y1="9" x2="12" y2="4.8"/><line x1="14.6" y1="10.2" x2="19.3" y2="8.3"/></svg><div class="lbl">04 · Intel</div></div>
+      <div class="icon-tile"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polygon points="22,2 2,9.5 10,13.5 14,22"/><line x1="10" y1="13.5" x2="22" y2="2"/></svg><div class="lbl">05 · Outreach</div></div>
+      <div class="icon-tile"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="7"/><line x1="15.5" y1="15.5" x2="21.5" y2="21.5"/><circle cx="10.5" cy="10.5" r="2.5"/></svg><div class="lbl">SA · Audit</div></div>
+      <div class="icon-tile"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="12,4 10.5,9.5 12,11 13.5,9.5"/><polygon points="12,20 10.5,14.5 12,13 13.5,14.5"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg><div class="lbl">ST · Timing</div></div>
+      <div class="icon-tile"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg><div class="lbl">Handoff</div></div>
+      <div class="icon-tile"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9,11 12,14 22,4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><div class="lbl">Verified</div></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 13 · MOTION                                                  -->
+  <!-- ============================================================ -->
+  <section class="sys">
+    <div class="sec-head">
+      <h2>Motion. <span class="light">Restrained. Predictable. Earned.</span></h2>
+      <div class="meta">13 · MOTION</div>
+    </div>
+
+    <div class="motion-row">
+      <div class="motion-cell">
+        <div class="name">Hero fade-up</div>
+        <div class="code">fadeUp · 0.7s · stagger 80ms</div>
+        <p class="desc">Eyebrow → h1 → sub → CTAs land in sequence, each with a 20px upward translate. Used on first render only; never on route changes.</p>
+      </div>
+      <div class="motion-cell">
+        <div class="name">Card hover lift</div>
+        <div class="code">translateY(-2px) · 0.25s · ease</div>
+        <p class="desc">Primary CTAs lift 2px and gain a soft shadow. The inner arrow translates +3px. Never scale on press.</p>
+      </div>
+      <div class="motion-cell">
+        <div class="name">Active-state amber pulse</div>
+        <div class="code">amberPulse · 4s · infinite</div>
+        <p class="desc">Box-shadow alternates between 18px and 30px amber glow. Engine 02 only. Never fast — 4 seconds keeps it ambient.</p>
+      </div>
+      <div class="motion-cell">
+        <div class="name">Standalone navy pulse</div>
+        <div class="code">navyPulse · 4s · infinite</div>
+        <p class="desc">Mirrors amberPulse with navy rgba. Reserved for Signal Audit + Seasonal Timing. Never combine pulses on the same surface.</p>
+      </div>
+      <div class="motion-cell">
+        <div class="name">Modal pop</div>
+        <div class="code">scale(0.95) → 1 · 0.45s · pop</div>
+        <p class="desc">The only place a pop-curve (<code style="font-family: var(--mono); font-size: 11px;">0.34, 1.56, 0.64, 1</code>) is allowed. Modal box overshoots and settles.</p>
+      </div>
+      <div class="motion-cell">
+        <div class="name">Standard ease</div>
+        <div class="code">cubic-bezier(0.16, 1, 0.3, 1)</div>
+        <p class="desc">Default for every other transition. 180–250ms for hovers, 600ms for the 3D carousel rotation. Backdrop blur fades over 300ms.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 14 · VOICE                                                   -->
+  <!-- ============================================================ -->
+  <section class="sys">
+    <div class="sec-head">
+      <h2>Voice. <span class="light">Operator-first. Output-focused. Zero hype.</span></h2>
+      <div class="meta">14 · VOICE</div>
+    </div>
+
+    <div class="voice-grid">
+      <div class="voice-card">
+        <div class="hd">[ THIS IS GLVE ]</div>
+        <ul>
+          <li>"Stop guessing. Start closing."</li>
+          <li>"Catch the Hand-Raisers."</li>
+          <li>"Eliminate the Pre-Call Panic."</li>
+          <li>"The Clean Slate."</li>
+          <li>"The Budget Hunter."</li>
+          <li>"A signal gets us in the room. Intelligence is what closes it."</li>
+          <li>"This is what lands in your hands."</li>
+        </ul>
+      </div>
+      <div class="voice-card dont">
+        <div class="hd">[ NEVER THIS ]</div>
+        <ul>
+          <li>"Revolutionize your sales workflow with AI ⚡"</li>
+          <li>"Empower your team to crush quota."</li>
+          <li>"Unlock unprecedented pipeline velocity."</li>
+          <li>"AI-powered, future-ready, next-gen revenue suite."</li>
+          <li>"Trusted by leaders. Loved by reps."</li>
+          <li>"Game-changing platform for modern teams."</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="voice-principles">
+      <div class="p">
+        <div class="n">[ 01 ]</div>
+        <h4>Name the pain in quotes.</h4>
+        <p>Every engine blurb opens with the rep-felt pain in quotation marks — "the bounce," "the Pre-Call Panic," "the Clean Slate." Quotes signal it's the operator's word, not marketing's.</p>
+      </div>
+      <div class="p">
+        <div class="n">[ 02 ]</div>
+        <h4>Specific over general.</h4>
+        <p>"60% of their day," "22% increase," "15+ hours saved." Every claim lands with a number that makes it auditable. Generic verbs ("accelerate," "scale," "empower") are banned unless followed by a metric.</p>
+      </div>
+      <div class="p">
+        <div class="n">[ 03 ]</div>
+        <h4>System speaks in mono.</h4>
+        <p>Anything the system says — status, engine name, timestamp, label — is Geist Mono in brackets or uppercase. The serif/sans is for humans. The mono is for the machine. Don't blur the two.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 15 · FOUNDER                                                 -->
+  <!-- ============================================================ -->
+  <section class="sys">
+    <div class="sec-head">
+      <h2>Founder surface. <span class="light">Photo + name + reason. In that order.</span></h2>
+      <div class="meta">15 · FOUNDER</div>
+    </div>
+
+    <div class="founder-block">
+      <div class="founder-photo">
+        <img src="assets/founder-marcos.png" alt="Marcos Cuellar, founder of GLVE">
+      </div>
+      <div>
+        <div class="etag">[ FOUNDER · BUILT BY THE OPERATOR ]</div>
+        <h3>Marcos Cuellar. <span class="light">The operator who got tired of guessing.</span></h3>
+        <p>GLVE started in late 2022 as a personal experiment — what if AI could automate the manual sales drudgery I kept hitting? The first engines were prototypes for my own pipeline. They worked. They got sharper. Today they run as one workflow.</p>
+        <p>The system is here because the problem was real. The voice is operator-first because the operator built it. Anything else would be marketing.</p>
+        <div class="founder-stamps">
+          <span class="tag">Built · 2022</span>
+          <span class="tag pipeline">Operator · not VC-built</span>
+          <span class="tag amber">DOS · sibling product</span>
+          <span class="tag live">Active · 2026</span>
+        </div>
+      </div>
+    </div>
+    <p style="font-size: 13px; color: var(--ink-3); margin-top: 20px; max-width: 70ch;">The founder block is the only place a portrait appears on a GLVE surface. Always 4:5 aspect, 20px radius, on Paper background. Headline uses the two-tone display pattern. Stamps replace any "as featured in" rail — never use logos to borrow credibility.</p>
+  </section>
+
+  <footer>
+    <span>[ GLVE DESIGN SYSTEM · V1.0 ]</span>
+    <span>&copy; 2026 Marcos Cuellar · WhiteGlove Revenue Workflow</span>
+  </footer>
+
+</div>
+</body>
+</html>

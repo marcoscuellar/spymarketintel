@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spyglass · Screen Designs</title>
+<link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body { font-family: 'Geist', -apple-system, sans-serif; background: #f0eee9; }
+  #root { height: 100vh; }
+
+  /* artboard inner frame: thin browser-ish chrome above each screenshot */
+  .scr { width: 100%; height: 100%; display: flex; flex-direction: column; background: #fff; }
+  .scr-bar {
+    flex: 0 0 auto; height: 34px; display: flex; align-items: center; gap: 14px;
+    padding: 0 14px; background: #faf9f7; border-bottom: 1px solid #e7e5e4;
+  }
+  .scr-dots { display: flex; gap: 6px; }
+  .scr-dots i { width: 10px; height: 10px; border-radius: 99px; background: #dcd9d3; display: block; }
+  .scr-url {
+    font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em;
+    color: #a3a3a3; background: #fff; border: 1px solid #ececea; border-radius: 7px;
+    padding: 4px 12px; flex: 1 1 auto; max-width: 360px;
+  }
+  .scr-img { flex: 1 1 auto; width: 100%; min-height: 0; object-fit: cover; object-position: top center; display: block; }
+</style>
+</head>
+<body>
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#0a0a0a"/>
+    <rect x="22" y="30" width="56" height="40" rx="6" fill="none" stroke="#f5f5f4" stroke-width="3"/>
+    <circle cx="62" cy="50" r="9" fill="#C2A24C"/>
+    <rect x="22" y="46" width="56" height="8" fill="#f5f5f4"/>
+    <circle cx="62" cy="50" r="9" fill="#0a0a0a"/>
+  </svg>
+</template>
+
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel">
+const { DesignCanvas, DCSection, DCArtboard, DCPostIt } = window;
+
+// 1269 x 748 source captures. Display at ~0.74 for a tight board; focus mode
+// (click the expand icon) shows each at full size.
+const W = 940, H = 554;
+
+function Screen({ src, url }) {
+  return (
+    <div className="scr">
+      <div className="scr-bar">
+        <div className="scr-dots"><i></i><i></i><i></i></div>
+        <div className="scr-url">{url}</div>
+      </div>
+      <img className="scr-img" src={src} alt="" />
+    </div>
+  );
+}
+
+function Board() {
+  return (
+    <DesignCanvas>
+      <DCSection id="recruiter" title="A · The Recruiter" subtitle="Where every search is run — intake becomes strategy becomes a screen.">
+        <DCArtboard id="pipeline" label="Pipeline · all engagements" width={W} height={H}>
+          <Screen src="screens/01-recruiter.png" url="spyglass.app/pipeline" />
+        </DCArtboard>
+        <DCArtboard id="intake" label="Intake · the client meeting" width={W} height={H}>
+          <Screen src="screens/04-recruiter.png" url="spyglass.app/meridian/intake" />
+        </DCArtboard>
+        <DCArtboard id="matrix-r" label="The Matrix · recruiter strategy" width={W} height={H}>
+          <Screen src="screens/02-recruiter.png" url="spyglass.app/meridian/matrix" />
+        </DCArtboard>
+        <DCArtboard id="matrix-c" label="The Matrix · candidate-safe view" width={W} height={H}>
+          <Screen src="screens/03-recruiter.png" url="spyglass.app/meridian/matrix" />
+        </DCArtboard>
+        <DCArtboard id="kanban" label="Candidate Pipeline · scored on the Matrix" width={W} height={H}>
+          <Screen src="screens/05-recruiter.png" url="spyglass.app/meridian/pipeline" />
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="manager" title="B · The Manager" subtitle="The sign-off gate — nothing reaches the client until a manager releases it.">
+        <DCArtboard id="review" label="Internal Review · approval gate" width={W} height={H}>
+          <Screen src="screens/02-persona.png" url="spyglass.app/meridian/review" />
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="client" title="C · The Client" subtitle="The one surface Meridian ever sees — sanitized, editorial, on the navy housing.">
+        <DCArtboard id="portal" label="Shortlist Portal · prepared by Spyglass" width={W} height={H}>
+          <Screen src="screens/01-persona.png" url="meridian.spyglass.app/shortlist" />
+        </DCArtboard>
+        <DCArtboard id="dossier" label="Candidate Dossier · the case for the hire" width={W} height={H}>
+          <Screen src="screens/02-client-dossier.png" url="meridian.spyglass.app/eleanor-pace" />
+        </DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Board />);
+</script>
+</body>
+</html>

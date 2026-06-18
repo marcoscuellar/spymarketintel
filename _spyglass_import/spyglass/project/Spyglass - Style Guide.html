@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spyglass · Style Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#ffffff; --bg-card:#ffffff; --paper:#f5f5f4;
+    --ink:#0a0a0a; --ink-2:#525252; --ink-3:#a3a3a3; --ink-4:#d4d4d4;
+    --line:#e7e5e4; --line-soft:#ededeb;
+    --amber:#C2A24C; --amber-d:#A6862F; --amber-dd:#876B1E; --amber-ddd:#6B541A; --amber-pale:#F1E7C9; --amber-bg:#FAF6EA; --gold-line:#E5D29B;
+    --navy:#0A1F3D; --navy-2:#1a3052; --navy-mid:#4B6177; --navy-soft:#8FA3B8; --navy-fade:#B8C5D1; --navy-on:#93c5fd;
+    --font:'Geist',-apple-system,BlinkMacSystemFont,sans-serif;
+    --mono:'Geist Mono',ui-monospace,Menlo,monospace;
+    --r-1:4px; --r-2:8px; --r-3:12px; --r-4:14px; --r-5:16px; --r-6:20px; --r-7:28px; --r-pill:100px;
+    --sh-card:0 12px 32px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.04);
+    --sh-hover:0 18px 40px rgba(0,0,0,0.09), 0 3px 8px rgba(0,0,0,0.05);
+    --ease:cubic-bezier(0.16,1,0.3,1);
+    --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px; --s-6:32px; --s-7:48px; --s-8:64px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  html,body{margin:0;padding:0;}
+  body{font-family:var(--font);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;letter-spacing:-0.01em;}
+  ::selection{background:var(--ink);color:#fff;}
+  a{color:inherit;text-decoration:none;}
+
+  /* ---------- layout shell ---------- */
+  .shell{display:grid;grid-template-columns:248px 1fr;align-items:start;}
+  .side{position:sticky;top:0;height:100vh;border-right:1px solid var(--line);padding:34px 26px;display:flex;flex-direction:column;gap:28px;overflow-y:auto;}
+  .main{min-width:0;}
+  .wrap{max-width:1080px;margin:0 auto;padding:64px 56px 160px;}
+
+  /* mono helpers */
+  .mono{font-family:var(--mono);}
+  .eyebrow{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3);}
+
+  /* ---------- sidebar nav ---------- */
+  .side .brandrow{display:flex;align-items:center;gap:11px;}
+  .side .wordmark{font-weight:900;font-size:18px;letter-spacing:-0.07em;line-height:1;}
+  .side .cap{font-family:var(--mono);font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-3);font-weight:500;margin-top:5px;display:block;}
+  .nav{display:flex;flex-direction:column;gap:2px;}
+  .nav .nlbl{font-family:var(--mono);font-size:9.5px;letter-spacing:0.13em;text-transform:uppercase;color:var(--ink-4);margin:14px 0 6px;}
+  .nav a{font-size:14px;font-weight:500;color:var(--ink-2);padding:7px 11px;border-radius:var(--r-2);display:flex;align-items:center;gap:9px;transition:all .16s var(--ease);}
+  .nav a:hover{background:var(--paper);color:var(--ink);}
+  .nav a .num{font-family:var(--mono);font-size:10px;color:var(--ink-4);width:16px;}
+  .side .foot{margin-top:auto;font-family:var(--mono);font-size:9.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-4);line-height:1.7;}
+
+  /* ---------- masthead ---------- */
+  .masthead{padding-bottom:42px;border-bottom:1px solid var(--line);margin-bottom:8px;}
+  .masthead .stamp{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber-dd);background:var(--amber-bg);border:1px solid var(--gold-line);border-radius:var(--r-2);padding:8px 12px;margin-bottom:30px;}
+  h1.title{font-weight:800;font-size:clamp(48px,7vw,82px);line-height:0.94;letter-spacing:-0.05em;margin:0;}
+  h1.title .lt{color:var(--ink-3);font-weight:400;}
+  .masthead .sub{font-size:18px;line-height:1.55;color:var(--ink-2);max-width:54ch;margin:26px 0 0;}
+  .meta{display:flex;gap:34px;flex-wrap:wrap;margin-top:34px;}
+  .meta .m{display:flex;flex-direction:column;gap:5px;}
+  .meta .mk{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-3);}
+  .meta .mv{font-size:15px;font-weight:600;color:var(--ink);}
+
+  /* ---------- section scaffold ---------- */
+  section{padding-top:96px;scroll-margin-top:24px;}
+  .sechd{display:flex;align-items:baseline;gap:16px;margin-bottom:8px;}
+  .sechd .sn{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--amber-dd);letter-spacing:0.02em;}
+  .sechd h2{font-size:38px;font-weight:800;letter-spacing:-0.04em;margin:0;line-height:1;}
+  .secsub{font-size:16px;line-height:1.55;color:var(--ink-2);max-width:62ch;margin:0 0 40px;padding-left:42px;}
+
+  .subhd{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-3);margin:48px 0 18px;display:flex;align-items:center;gap:12px;}
+  .subhd::after{content:"";flex:1;height:1px;background:var(--line);}
+
+  /* ---------- generic card / panel ---------- */
+  .panel{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--r-5);box-shadow:var(--sh-card);}
+  .grid{display:grid;gap:18px;}
+  .g2{grid-template-columns:1fr 1fr;}
+  .g3{grid-template-columns:repeat(3,1fr);}
+  .g4{grid-template-columns:repeat(4,1fr);}
+
+  /* note rows */
+  .note{font-size:14.5px;color:var(--ink-2);line-height:1.55;}
+  .note b{color:var(--ink);font-weight:700;}
+
+  /* ===========================================================
+     LOGO SECTION
+     =========================================================== */
+  /* text logo (wordmark only) — SPYGLASS over PARTNERS, equal width */
+  .logo{display:inline-flex;flex-direction:column;width:max-content;}
+  .logo .l1{font-weight:900;letter-spacing:-0.055em;line-height:0.95;}
+  .logo .l2{display:flex;justify-content:space-between;font-weight:600;text-transform:uppercase;color:var(--ink-3);margin-top:0.36em;}
+  .logo .l2 i{font-style:normal;}
+  .markboard{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+  .markcell{border:1px solid var(--line);border-radius:var(--r-4);overflow:hidden;background:var(--bg-card);}
+  .markcell .stage{height:118px;display:grid;place-items:center;}
+  .markcell .meta2{border-top:1px solid var(--line);padding:11px 13px;}
+  .markcell .mn{font-size:13.5px;font-weight:700;letter-spacing:-0.02em;}
+  .markcell .md{font-family:var(--mono);font-size:9.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-3);margin-top:3px;}
+  .stage.dark{background:var(--ink);} .stage.navy{background:var(--navy);} .stage.gold{background:var(--amber);} .stage.paper{background:var(--paper);}
+
+  .lockups{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .lockcell{border:1px solid var(--line);border-radius:var(--r-5);padding:34px 32px;display:flex;align-items:center;gap:18px;}
+  .lockcell.dark{background:var(--ink);border-color:var(--ink);}
+  .lockcell.navy{background:var(--navy);border-color:var(--navy);}
+  .lk-words{display:flex;flex-direction:column;gap:5px;}
+  .lk-wm{font-weight:900;letter-spacing:-0.07em;line-height:1;font-size:26px;}
+  .lk-cap{font-family:var(--mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-3);}
+
+  .clearspace{display:flex;gap:26px;flex-wrap:wrap;align-items:center;}
+  .csbox{position:relative;border:1px dashed var(--ink-4);border-radius:var(--r-4);padding:38px;display:inline-grid;place-items:center;}
+  .csbox::before,.csbox::after{content:"";position:absolute;background:repeating-linear-gradient(45deg,var(--amber-pale),var(--amber-pale) 4px,transparent 4px,transparent 8px);}
+
+  /* misuse */
+  .dos{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .docard{border:1px solid var(--line);border-radius:var(--r-4);overflow:hidden;}
+  .docard .stage{height:120px;display:grid;place-items:center;background:var(--paper);position:relative;}
+  .docard .tag{position:absolute;top:11px;left:11px;font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:4px 9px;border-radius:var(--r-1);}
+  .docard.ok .tag{background:rgba(194,162,76,0.16);color:var(--amber-dd);border:1px solid var(--gold-line);}
+  .docard.no .tag{background:#fbeaea;color:#a13b3b;border:1px solid #e9c4c4;}
+  .docard .cap{padding:12px 14px;font-size:13.5px;color:var(--ink-2);border-top:1px solid var(--line);line-height:1.4;}
+
+  /* ===========================================================
+     COLOR SECTION
+     =========================================================== */
+  .actorgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+  .actor{border:1px solid var(--line);border-radius:var(--r-4);overflow:hidden;background:var(--bg-card);}
+  .actor .chip{height:78px;display:flex;align-items:flex-end;padding:11px;}
+  .actor .body{padding:13px 14px;}
+  .actor .an{font-size:15px;font-weight:700;letter-spacing:-0.02em;}
+  .actor .ad{font-size:12.5px;color:var(--ink-2);line-height:1.4;margin-top:5px;}
+  .actor .ah{font-family:var(--mono);font-size:10px;color:var(--ink-3);margin-top:9px;letter-spacing:0.04em;}
+  .swdot{width:16px;height:16px;border-radius:5px;}
+
+  .palette{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;}
+  .swatch{border:1px solid var(--line);border-radius:var(--r-3);overflow:hidden;}
+  .swatch .fill{height:64px;}
+  .swatch .lab{padding:9px 10px;}
+  .swatch .nm{font-size:12.5px;font-weight:600;letter-spacing:-0.01em;}
+  .swatch .hx{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);margin-top:2px;text-transform:uppercase;}
+  .swatch.brd .fill{box-shadow:inset 0 0 0 1px var(--line);}
+
+  .rulecols{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+
+  /* ===========================================================
+     TYPE SECTION
+     =========================================================== */
+  .typerow{display:grid;grid-template-columns:128px 1fr;gap:22px;align-items:baseline;padding:22px 0;border-bottom:1px solid var(--line-soft);}
+  .typerow:last-child{border-bottom:none;}
+  .typerow .spec{font-family:var(--mono);font-size:11px;letter-spacing:0.04em;color:var(--ink-3);line-height:1.7;padding-top:6px;}
+  .typerow .spec b{display:block;color:var(--ink);font-weight:600;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px;}
+  .t-display{font-weight:800;font-size:64px;line-height:0.92;letter-spacing:-0.05em;}
+  .t-h1{font-weight:800;font-size:44px;line-height:0.98;letter-spacing:-0.045em;}
+  .t-h2{font-weight:800;font-size:32px;line-height:1;letter-spacing:-0.04em;}
+  .t-card{font-weight:700;font-size:22px;line-height:1.05;letter-spacing:-0.03em;}
+  .t-node{font-weight:700;font-size:19px;letter-spacing:-0.025em;}
+  .t-body{font-weight:400;font-size:16px;line-height:1.55;color:var(--ink-2);max-width:54ch;}
+  .t-monolbl{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3);}
+  .fontspec{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .fontspec .fc{border:1px solid var(--line);border-radius:var(--r-5);padding:26px 28px;}
+  .fontspec .glyphs{font-size:40px;font-weight:700;letter-spacing:-0.03em;line-height:1.1;}
+  .fontspec .fname{font-family:var(--mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px;}
+  .fontspec .weights{display:flex;gap:14px;flex-wrap:wrap;margin-top:18px;font-size:18px;}
+  .fontspec .weights span{color:var(--ink-2);}
+
+  /* ===========================================================
+     SPACING / RADII / SHADOW / MOTION
+     =========================================================== */
+  .scalerow{display:flex;align-items:center;gap:16px;padding:9px 0;}
+  .scalerow .tok{font-family:var(--mono);font-size:12px;color:var(--ink-2);width:62px;}
+  .scalerow .px{font-family:var(--mono);font-size:11px;color:var(--ink-3);width:54px;}
+  .scalerow .bar{height:16px;background:var(--amber);border-radius:3px;}
+  .radiusgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+  .radcell{border:1px solid var(--line);border-radius:var(--r-4);padding:16px;text-align:center;}
+  .radcell .demo{height:64px;background:var(--navy);margin-bottom:12px;}
+  .radcell .rn{font-family:var(--mono);font-size:11px;color:var(--ink);font-weight:600;}
+  .radcell .rd{font-family:var(--mono);font-size:10px;color:var(--ink-3);margin-top:3px;}
+  .shadowgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+  .shcell{text-align:center;}
+  .shcell .demo{height:80px;background:#fff;border-radius:var(--r-4);margin-bottom:14px;}
+  .shcell .sn{font-family:var(--mono);font-size:11px;color:var(--ink);font-weight:600;}
+  .shcell .sd{font-size:12px;color:var(--ink-3);margin-top:3px;}
+
+  /* ===========================================================
+     COMPONENTS
+     =========================================================== */
+  .compbox{border:1px solid var(--line);border-radius:var(--r-5);padding:26px 28px;background:var(--bg-card);}
+  .compbox + .compbox{margin-top:18px;}
+  .compbox .ch{font-family:var(--mono);font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:18px;}
+  .specimen{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+
+  /* tags */
+  .tg{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;padding:4px 8px;border-radius:var(--r-1);white-space:nowrap;}
+  .tg.pipeline{background:var(--paper);color:var(--ink-2);border:1px solid var(--line);}
+  .tg.ink{background:var(--ink);color:#fff;border:1px solid var(--ink);}
+  .tg.amber{background:var(--amber-bg);color:var(--amber-dd);border:1px solid var(--gold-line);}
+  .tg.navy{background:rgba(10,31,61,0.06);color:var(--navy);border:1px solid rgba(10,31,61,0.16);}
+  .tg.cand{background:#fff;color:var(--navy-mid);border:1px dashed var(--navy-mid);}
+
+  /* buttons */
+  .bt{font-family:var(--font);font-weight:600;font-size:15px;letter-spacing:-0.01em;padding:11px 18px;border-radius:var(--r-3);border:1px solid transparent;display:inline-flex;align-items:center;gap:9px;cursor:pointer;transition:all .22s var(--ease);}
+  .bt.primary{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .bt.secondary{background:transparent;color:var(--ink);border-color:var(--line);}
+  .bt.amber{background:var(--amber);color:#2a2008;border-color:var(--amber);}
+  .bt.ghost{background:transparent;color:var(--ink-2);}
+  .bt.primary:hover,.bt.amber:hover{transform:translateY(-2px);box-shadow:var(--sh-hover);}
+  .bt.secondary:hover{border-color:var(--ink);transform:translateY(-2px);}
+  .bt.ghost:hover{background:var(--paper);color:var(--ink);}
+  .monobt{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;padding:8px 13px;border-radius:var(--r-2);border:1px solid var(--line);background:transparent;color:var(--ink-2);cursor:pointer;transition:all .18s var(--ease);}
+  .monobt:hover{background:var(--paper);color:var(--ink);}
+  .monobt.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+  /* dots */
+  .livedot{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-2);}
+  .dt{width:7px;height:7px;border-radius:99px;}
+
+  /* kanban demo */
+  .kdemo{display:flex;gap:7px;}
+  .kdemo .kcol{flex:1;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-3);padding:9px 7px;display:flex;flex-direction:column;gap:6px;}
+  .kdemo .kt{font-family:var(--mono);font-size:8.5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--ink-3);text-align:center;line-height:1.2;min-height:21px;display:flex;align-items:center;justify-content:center;}
+  .kdemo .kcard{height:16px;border-radius:5px;background:#fff;border:1px solid var(--line);}
+  .kdemo .kcol.ready{background:var(--amber-bg);border-color:var(--gold-line);}
+  .kdemo .kcol.ready .kt{color:var(--amber-dd);}
+  .kdemo .kcol.ready .kcard{border-color:var(--gold-line);}
+
+  /* pills */
+  .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--gold-line);background:#fff;border-radius:var(--r-pill);padding:8px 15px;font-size:14px;font-weight:600;color:var(--amber-dd);}
+  .lchip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:var(--r-pill);padding:6px 13px 6px 10px;font-size:13px;font-weight:500;color:var(--ink-2);background:#fff;}
+
+  /* callout demo */
+  .codemo{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .co{border-radius:var(--r-5);padding:24px 26px;}
+  .co.a{background:var(--paper);border:1px solid var(--line);}
+  .co.b{background:var(--navy);}
+  .co .ce{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:12px;display:block;}
+  .co.a .ce{color:var(--amber-dd);} .co.b .ce{color:var(--navy-soft);}
+  .co p{margin:0;font-size:15.5px;line-height:1.55;}
+  .co.a p{color:var(--ink-2);} .co.a p b{color:var(--ink);font-weight:700;}
+  .co.b p{color:rgba(255,255,255,0.75);} .co.b p b{color:#fff;font-weight:700;}
+
+  /* code chips */
+  .code{font-family:var(--mono);font-size:12px;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-1);padding:2px 7px;color:var(--ink);}
+
+  @media(max-width:1080px){
+    .shell{grid-template-columns:1fr;}
+    .side{display:none;}
+    .wrap{padding:48px 32px 120px;}
+    .markboard,.actorgrid{grid-template-columns:repeat(3,1fr);}
+    .palette{grid-template-columns:repeat(3,1fr);}
+  }
+  @media(max-width:680px){
+    .g2,.g3,.g4,.lockups,.dos,.rulecols,.fontspec,.codemo,.markboard,.actorgrid,.palette{grid-template-columns:1fr;}
+    .typerow{grid-template-columns:1fr;gap:10px;}
+    .radiusgrid,.shadowgrid{grid-template-columns:repeat(2,1fr);}
+    h1.title{font-size:44px;}
+    .t-display{font-size:44px;}
+  }
+</style>
+</head>
+<body>
+<template id="__bundler_thumbnail" data-bg-color="#0a0a0a">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#0a0a0a"/>
+    <text x="600" y="395" text-anchor="middle" font-family="Geist, sans-serif" font-weight="900" font-size="96" letter-spacing="-5" fill="#ffffff">SPYGLASS</text>
+    <text x="600" y="448" text-anchor="middle" font-family="Geist, sans-serif" font-weight="600" font-size="31" letter-spacing="30" fill="#C2A24C">PARTNERS</text>
+    <text x="600" y="545" text-anchor="middle" font-family="monospace" font-size="17" letter-spacing="4" fill="#8FA3B8">STYLE GUIDE</text>
+  </svg>
+</template>
+
+<div class="shell">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="side">
+    <div>
+      <div class="brandrow" style="align-items:flex-start;">
+        <div>
+          <div class="logo"><span class="l1" style="font-size:19px;color:var(--ink);">SPYGLASS</span><span class="l2" style="font-size:8px;"><i>P</i><i>A</i><i>R</i><i>T</i><i>N</i><i>E</i><i>R</i><i>S</i></span></div>
+          <span class="cap">Style Guide</span>
+        </div>
+      </div>
+    </div>
+    <nav class="nav">
+      <div class="nlbl">Foundations</div>
+      <a href="#logo"><span class="num">01</span>Logo</a>
+      <a href="#color"><span class="num">02</span>Color</a>
+      <a href="#type"><span class="num">03</span>Typography</a>
+      <a href="#space"><span class="num">04</span>Space &amp; form</a>
+      <div class="nlbl">Application</div>
+      <a href="#components"><span class="num">05</span>Components</a>
+      <a href="#voice"><span class="num">06</span>Voice &amp; patterns</a>
+    </nav>
+    <div class="foot">Spyglass · Project Matrix<br/>v1.0 · Jun 2026</div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+  <div class="wrap">
+
+    <!-- ===== MASTHEAD ===== -->
+    <header class="masthead">
+      <span class="stamp">
+        <svg width="11" height="11" viewBox="0 0 14 14"><path d="M2 7.5l3.2 3.2L12 4" stroke="#876B1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        Design system · v1.0
+      </span>
+      <h1 class="title">The Spyglass<br/>style guide<span class="lt">.</span></h1>
+      <p class="sub">The visual language behind Project Matrix — a white-glove recruiting workspace. Restrained, editorial, and built so that <b style="color:var(--ink);font-weight:700;">one record can wear different faces</b> for the recruiter, the manager, the candidate, and the client.</p>
+      <div class="meta">
+        <div class="m"><span class="mk">Typeface</span><span class="mv">Geist · Geist Mono</span></div>
+        <div class="m"><span class="mk">Brand metal</span><span class="mv">Gold #C2A24C</span></div>
+        <div class="m"><span class="mk">Primary</span><span class="mv">Navy #0A1F3D</span></div>
+        <div class="m"><span class="mk">Grid base</span><span class="mv">4px</span></div>
+      </div>
+    </header>
+
+    <!-- ===================== 01 · LOGO ===================== -->
+    <section id="logo">
+      <div class="sechd"><span class="sn">01</span><h2>Logo</h2></div>
+      <p class="secsub">For now the brand runs as a <b>pure wordmark — no icon</b>. Two stacked lines: <b>SPYGLASS</b> in Geist Black, tightly tracked, with <b>PARTNERS</b> spread out beneath it to span the exact same width. It should sit like the nameplate of a search firm — quiet, set, deliberate.</p>
+
+      <div class="subhd">The wordmark · on every surface</div>
+      <div class="markboard" style="grid-template-columns:repeat(2,1fr);">
+        <div class="markcell">
+          <div class="stage paper">
+            <div class="logo"><span class="l1" style="font-size:30px;color:var(--ink);">SPYGLASS</span><span class="l2" style="font-size:12.5px;"><i>P</i><i>A</i><i>R</i><i>T</i><i>N</i><i>E</i><i>R</i><i>S</i></span></div>
+          </div>
+          <div class="meta2"><div class="mn">Primary</div><div class="md">Ink on paper / white</div></div>
+        </div>
+        <div class="markcell">
+          <div class="stage navy">
+            <div class="logo"><span class="l1" style="font-size:30px;color:#fff;">SPYGLASS</span><span class="l2" style="font-size:12.5px;color:var(--navy-soft);"><i>P</i><i>A</i><i>R</i><i>T</i><i>N</i><i>E</i><i>R</i><i>S</i></span></div>
+          </div>
+          <div class="meta2"><div class="mn">On navy</div><div class="md">Reversed · client surfaces</div></div>
+        </div>
+        <div class="markcell">
+          <div class="stage dark">
+            <div class="logo"><span class="l1" style="font-size:30px;color:#fff;">SPYGLASS</span><span class="l2" style="font-size:12.5px;color:rgba(255,255,255,0.5);"><i>P</i><i>A</i><i>R</i><i>T</i><i>N</i><i>E</i><i>R</i><i>S</i></span></div>
+          </div>
+          <div class="meta2"><div class="mn">On ink</div><div class="md">Reversed · dark UI</div></div>
+        </div>
+        <div class="markcell">
+          <div class="stage gold">
+            <div class="logo"><span class="l1" style="font-size:30px;color:var(--navy);">SPYGLASS</span><span class="l2" style="font-size:12.5px;color:rgba(10,31,61,0.6);"><i>P</i><i>A</i><i>R</i><i>T</i><i>N</i><i>E</i><i>R</i><i>S</i></span></div>
+          </div>
+          <div class="meta2"><div class="mn">On gold</div><div class="md">Brand moment</div></div>
+        </div>
+      </div>
+
+      <div class="subhd">Construction</div>
+      <div class="grid g2">
+        <div class="compbox">
+          <div class="ch">The lockup</div>
+          <div style="padding:22px 0 10px;">
+            <div class="logo"><span class="l1" style="font-size:56px;color:var(--ink);">SPYGLASS</span><span class="l2" style="font-size:23px;margin-top:0.3em;"><i>P</i><i>A</i><i>R</i><i>T</i><i>N</i><i>E</i><i>R</i><i>S</i></span></div>
+          </div>
+        </div>
+        <div class="compbox">
+          <div class="ch">Specs</div>
+          <ul style="margin:0;padding-left:18px;color:var(--ink-2);font-size:14.5px;line-height:1.9;">
+            <li><b style="color:var(--ink);">SPYGLASS</b> — Geist <b style="color:var(--ink);">900</b> at <span class="code">-0.055em</span></li>
+            <li><b style="color:var(--ink);">PARTNERS</b> — Geist <b style="color:var(--ink);">600</b>, uppercase, letter-spread</li>
+            <li><b style="color:var(--ink);">Equal width</b> — both words are 8 letters; PARTNERS is tracked so its edges meet SPYGLASS exactly</li>
+            <li>PARTNERS sits <span class="code">0.36em</span> below SPYGLASS</li>
+            <li>Two lines, always — never set side by side or condensed</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="subhd">Clearspace &amp; minimum size</div>
+      <div class="grid g2">
+        <div class="compbox">
+          <div class="ch">Clearspace = the cap-height of SPYGLASS on every side</div>
+          <div style="display:grid;place-items:center;padding:14px 0;">
+            <div style="padding:30px;border:1px dashed var(--ink-4);border-radius:var(--r-4);">
+              <div class="logo"><span class="l1" style="font-size:30px;color:var(--ink);">SPYGLASS</span><span class="l2" style="font-size:12.5px;"><i>P</i><i>A</i><i>R</i><i>T</i><i>N</i><i>E</i><i>R</i><i>S</i></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="compbox">
+          <div class="ch">Minimum sizes</div>
+          <div class="specimen" style="gap:38px;padding:18px 0;align-items:flex-end;">
+            <div><div class="logo"><span class="l1" style="font-size:15px;color:var(--ink);">SPYGLASS</span><span class="l2" style="font-size:6.5px;margin-top:0.4em;"><i>P</i><i>A</i><i>R</i><i>T</i><i>N</i><i>E</i><i>R</i><i>S</i></span></div><div class="lk-cap" style="margin-top:13px;">15px · minimum</div></div>
+            <div><div class="logo"><span class="l1" style="font-size:21px;color:var(--ink);">SPYGLASS</span><span class="l2" style="font-size:9px;"><i>P</i><i>A</i><i>R</i><i>T</i><i>N</i><i>E</i><i>R</i><i>S</i></span></div><div class="lk-cap" style="margin-top:13px;">21px · in-app</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subhd">Do &amp; don't</div>
+      <div class="dos">
+        <div class="docard ok">
+          <div class="stage" style="height:120px;"><span class="tag">Do</span><div class="logo"><span class="l1" style="font-size:26px;color:var(--ink);">SPYGLASS</span><span class="l2" style="font-size:11px;"><i>P</i><i>A</i><i>R</i><i>T</i><i>N</i><i>E</i><i>R</i><i>S</i></span></div></div>
+          <div class="cap">Keep the stack — PARTNERS tracked to SPYGLASS's full width.</div>
+        </div>
+        <div class="docard no">
+          <div class="stage" style="height:120px;"><span class="tag">Don't</span><div style="display:flex;align-items:baseline;gap:9px;"><span style="font-weight:900;letter-spacing:-0.02em;font-size:26px;color:#7c3aed;">Spyglass</span><span style="font-size:12px;color:#ec4899;font-weight:600;letter-spacing:0.04em;">partners</span></div></div>
+          <div class="cap">Don't run it inline, lowercase it, or recolor outside the palette.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 02 · COLOR ===================== -->
+    <section id="color">
+      <div class="sechd"><span class="sn">02</span><h2>Color</h2></div>
+      <p class="secsub">Color in Spyglass is <b>actor-semantic</b>. Every surface, tag, and accent answers one question: <em>whose hand is this?</em> The palette is deliberately small — ink, gold, navy, and the paper neutrals — so that meaning, not decoration, drives every choice.</p>
+
+      <div class="subhd">The actor system · color carries meaning</div>
+      <div class="actorgrid">
+        <div class="actor">
+          <div class="chip" style="background:var(--ink);"></div>
+          <div class="body"><div class="an">Recruiter</div><div class="ad">The internal operator who runs the search end to end.</div><div class="ah">INK · #0A0A0A</div></div>
+        </div>
+        <div class="actor">
+          <div class="chip" style="background:var(--amber);"></div>
+          <div class="body"><div class="an">Manager</div><div class="ad">Leads intake, holds the approval gate before the client.</div><div class="ah">GOLD · #C2A24C</div></div>
+        </div>
+        <div class="actor">
+          <div class="chip" style="background:var(--navy);"></div>
+          <div class="body"><div class="an">Client</div><div class="ad">The decision-maker. Also the product's primary action color.</div><div class="ah">NAVY · #0A1F3D</div></div>
+        </div>
+        <div class="actor">
+          <div class="chip" style="background:conic-gradient(var(--amber) 0 90deg,#efe3c0 0 180deg,var(--amber) 0 270deg,#efe3c0 0);"></div>
+          <div class="body"><div class="an">AI generated</div><div class="ad">Matrix &amp; dossiers written by the model.</div><div class="ah">GOLD CONIC ✦</div></div>
+        </div>
+        <div class="actor">
+          <div class="chip" style="background:#fff;box-shadow:inset 0 0 0 1.5px var(--navy-mid);background-image:repeating-linear-gradient(135deg,transparent,transparent 6px,rgba(75,97,119,0.12) 6px,rgba(75,97,119,0.12) 7px);"></div>
+          <div class="body"><div class="an">Candidate-facing</div><div class="ad">The redacted, outward slice. Always a dashed navy outline.</div><div class="ah">DASHED NAVY</div></div>
+        </div>
+      </div>
+      <p class="note" style="margin-top:18px;"><b>The rule:</b> gold means <b>internal authority &amp; intelligence</b> (the manager, the AI). Navy means <b>the client &amp; primary intent</b>. Ink means <b>the recruiter's own desk</b>. Anything candidate-facing is never filled — it's outlined in dashed navy to signal "this leaves the building."</p>
+
+      <div class="subhd">Gold · the brand metal</div>
+      <div class="palette">
+        <div class="swatch"><div class="fill" style="background:var(--amber-bg);"></div><div class="lab"><div class="nm">amber-bg</div><div class="hx">#FAF6EA</div></div></div>
+        <div class="swatch"><div class="fill" style="background:var(--amber-pale);"></div><div class="lab"><div class="nm">amber-pale</div><div class="hx">#F1E7C9</div></div></div>
+        <div class="swatch"><div class="fill" style="background:var(--gold-line);"></div><div class="lab"><div class="nm">gold-line</div><div class="hx">#E5D29B</div></div></div>
+        <div class="swatch"><div class="fill" style="background:var(--amber);"></div><div class="lab"><div class="nm">amber</div><div class="hx">#C2A24C</div></div></div>
+        <div class="swatch"><div class="fill" style="background:var(--amber-dd);"></div><div class="lab"><div class="nm">amber-dd</div><div class="hx">#876B1E</div></div></div>
+        <div class="swatch"><div class="fill" style="background:var(--amber-ddd);"></div><div class="lab"><div class="nm">amber-ddd</div><div class="hx">#6B541A</div></div></div>
+      </div>
+      <p class="note" style="margin-top:14px;"><span class="code">amber</span> is for fills, pills, and the live dot. For <b>gold text on light</b>, always step down to <span class="code">amber-dd #876B1E</span> — it clears AA. Never set body text in raw <span class="code">#C2A24C</span>.</p>
+
+      <div class="subhd">Navy · housing &amp; primary</div>
+      <div class="palette">
+        <div class="swatch"><div class="fill" style="background:rgba(10,31,61,0.06);"></div><div class="lab"><div class="nm">navy/6</div><div class="hx">tag bg</div></div></div>
+        <div class="swatch"><div class="fill" style="background:var(--navy-fade);"></div><div class="lab"><div class="nm">navy-fade</div><div class="hx">#B8C5D1</div></div></div>
+        <div class="swatch"><div class="fill" style="background:var(--navy-soft);"></div><div class="lab"><div class="nm">navy-soft</div><div class="hx">#8FA3B8</div></div></div>
+        <div class="swatch"><div class="fill" style="background:var(--navy-mid);"></div><div class="lab"><div class="nm">navy-mid</div><div class="hx">#4B6177</div></div></div>
+        <div class="swatch"><div class="fill" style="background:var(--navy-2);"></div><div class="lab"><div class="nm">navy-2</div><div class="hx">#1A3052</div></div></div>
+        <div class="swatch"><div class="fill" style="background:var(--navy);"></div><div class="lab"><div class="nm">navy</div><div class="hx">#0A1F3D</div></div></div>
+      </div>
+
+      <div class="subhd">Ink &amp; neutrals</div>
+      <div class="palette">
+        <div class="swatch"><div class="fill" style="background:var(--ink);"></div><div class="lab"><div class="nm">ink</div><div class="hx">#0A0A0A</div></div></div>
+        <div class="swatch"><div class="fill" style="background:var(--ink-2);"></div><div class="lab"><div class="nm">ink-2</div><div class="hx">#525252</div></div></div>
+        <div class="swatch"><div class="fill" style="background:var(--ink-3);"></div><div class="lab"><div class="nm">ink-3</div><div class="hx">#A3A3A3</div></div></div>
+        <div class="swatch"><div class="fill" style="background:var(--ink-4);"></div><div class="lab"><div class="nm">ink-4</div><div class="hx">#D4D4D4</div></div></div>
+        <div class="swatch brd"><div class="fill" style="background:var(--paper);"></div><div class="lab"><div class="nm">paper</div><div class="hx">#F5F5F4</div></div></div>
+        <div class="swatch brd"><div class="fill" style="background:var(--bg);"></div><div class="lab"><div class="nm">bg</div><div class="hx">#FFFFFF</div></div></div>
+      </div>
+
+      <div class="subhd">Usage rules</div>
+      <div class="rulecols">
+        <div class="compbox">
+          <div class="ch" style="color:var(--amber-dd);">Reach for gold when</div>
+          <ul style="margin:0;padding-left:18px;color:var(--ink-2);font-size:14.5px;line-height:1.9;">
+            <li>A surface or action belongs to the <b style="color:var(--ink);">Manager</b></li>
+            <li>Content was <b style="color:var(--ink);">AI-generated</b> (use the ✦ conic chip)</li>
+            <li>You're marking a <b style="color:var(--ink);">"client-ready"</b> / success state</li>
+            <li>A brand moment needs warmth (the gold-housing mark)</li>
+          </ul>
+        </div>
+        <div class="compbox">
+          <div class="ch" style="color:#a13b3b;">Hold back when</div>
+          <ul style="margin:0;padding-left:18px;color:var(--ink-2);font-size:14.5px;line-height:1.9;">
+            <li>It's a generic neutral surface — use <b style="color:var(--ink);">paper</b></li>
+            <li>The action is a default primary — use <b style="color:var(--ink);">navy</b></li>
+            <li>You'd be setting small text in raw gold (fails AA)</li>
+            <li>More than ~10% of a screen would turn gold</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 03 · TYPE ===================== -->
+    <section id="type">
+      <div class="sechd"><span class="sn">03</span><h2>Typography</h2></div>
+      <p class="secsub">Two voices: <b>Geist</b> for everything human — display, headings, body, buttons — set tight and confident. <b>Geist Mono</b> for the machine layer — eyebrows, tags, captions, system labels — set wide and uppercase. The contrast between them is the whole typographic personality.</p>
+
+      <div class="fontspec">
+        <div class="fc">
+          <div class="fname">Geist · the voice</div>
+          <div class="glyphs">Aa Gg Rr 0123</div>
+          <div class="weights"><span style="font-weight:400;">Regular</span><span style="font-weight:600;">Semibold</span><span style="font-weight:800;">Extrabold</span><span style="font-weight:900;">Black</span></div>
+        </div>
+        <div class="fc">
+          <div class="fname">Geist Mono · the machine</div>
+          <div class="glyphs mono" style="font-size:34px;">Aa Gg Rr 0123</div>
+          <div class="weights mono" style="text-transform:uppercase;letter-spacing:0.08em;font-size:14px;"><span>Regular</span><span style="font-weight:500;">Medium</span><span style="font-weight:600;">Semibold</span></div>
+        </div>
+      </div>
+
+      <div class="subhd">Type scale</div>
+      <div class="panel" style="padding:8px 28px;">
+        <div class="typerow"><div class="spec"><b>Display</b>800 · 64px<br/>-0.05em · 0.92</div><div class="t-display">One record,<br/>many faces</div></div>
+        <div class="typerow"><div class="spec"><b>H1 / title</b>800 · 44px<br/>-0.045em</div><div class="t-h1">How it works.</div></div>
+        <div class="typerow"><div class="spec"><b>H2 / section</b>800 · 32px<br/>-0.04em</div><div class="t-h2">Work the pipeline</div></div>
+        <div class="typerow"><div class="spec"><b>Card title</b>700 · 22px<br/>-0.03em</div><div class="t-card">Master Matrix</div></div>
+        <div class="typerow"><div class="spec"><b>Node title</b>700 · 19px<br/>-0.025em</div><div class="t-node">AI Candidate Dossier</div></div>
+        <div class="typerow"><div class="spec"><b>Body</b>400 · 16px<br/>1.55 line</div><div class="t-body">The Master Matrix is generated once, then projected into a recruiter copy and a candidate-facing copy — same source, different audiences.</div></div>
+        <div class="typerow"><div class="spec"><b>Mono label</b>500 · 11px<br/>0.14em · upper</div><div class="t-monolbl">✦ Single source of truth</div></div>
+      </div>
+
+      <div class="subhd">The two-tone heading · signature move</div>
+      <div class="compbox">
+        <div class="ch">A trailing period or word drops to ink-3 — the sentence resolves quietly</div>
+        <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:baseline;padding:8px 0;">
+          <div class="t-h1">How it works<span style="color:var(--ink-3);font-weight:400;">.</span></div>
+          <div class="t-h1">The Spyglass <span style="color:var(--ink-3);font-weight:400;">style guide</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 04 · SPACE & FORM ===================== -->
+    <section id="space">
+      <div class="sechd"><span class="sn">04</span><h2>Space &amp; form</h2></div>
+      <p class="secsub">A <b>4px base grid</b> governs spacing. Radii climb a deliberate ladder from chips to modals. Shadows are barely-there — depth comes from a soft ambient cast, never a hard drop.</p>
+
+      <div class="subhd">Spacing scale · 4px base</div>
+      <div class="panel" style="padding:18px 28px;">
+        <div class="scalerow"><span class="tok">--s-1</span><span class="px">4px</span><span class="bar" style="width:4px;"></span></div>
+        <div class="scalerow"><span class="tok">--s-2</span><span class="px">8px</span><span class="bar" style="width:8px;"></span></div>
+        <div class="scalerow"><span class="tok">--s-3</span><span class="px">12px</span><span class="bar" style="width:12px;"></span></div>
+        <div class="scalerow"><span class="tok">--s-4</span><span class="px">16px</span><span class="bar" style="width:16px;"></span></div>
+        <div class="scalerow"><span class="tok">--s-5</span><span class="px">24px</span><span class="bar" style="width:24px;"></span></div>
+        <div class="scalerow"><span class="tok">--s-6</span><span class="px">32px</span><span class="bar" style="width:32px;"></span></div>
+        <div class="scalerow"><span class="tok">--s-7</span><span class="px">48px</span><span class="bar" style="width:48px;"></span></div>
+        <div class="scalerow"><span class="tok">--s-8</span><span class="px">64px</span><span class="bar" style="width:64px;"></span></div>
+      </div>
+
+      <div class="subhd">Radii</div>
+      <div class="radiusgrid">
+        <div class="radcell"><div class="demo" style="border-radius:4px;"></div><div class="rn">--r-1</div><div class="rd">4px · chips</div></div>
+        <div class="radcell"><div class="demo" style="border-radius:8px;"></div><div class="rn">--r-2</div><div class="rd">8px · mark, tags</div></div>
+        <div class="radcell"><div class="demo" style="border-radius:12px;"></div><div class="rn">--r-3</div><div class="rd">12px · buttons</div></div>
+        <div class="radcell"><div class="demo" style="border-radius:16px;"></div><div class="rn">--r-5</div><div class="rd">16px · panels</div></div>
+        <div class="radcell"><div class="demo" style="border-radius:20px;"></div><div class="rn">--r-6</div><div class="rd">20px · cards</div></div>
+        <div class="radcell"><div class="demo" style="border-radius:28px;"></div><div class="rn">--r-7</div><div class="rd">28px · dark blocks</div></div>
+        <div class="radcell"><div class="demo" style="border-radius:32px;"></div><div class="rn">--r-8</div><div class="rd">32px · modals</div></div>
+        <div class="radcell"><div class="demo" style="border-radius:100px;"></div><div class="rn">--r-pill</div><div class="rd">100px · pills</div></div>
+      </div>
+
+      <div class="subhd">Elevation</div>
+      <div class="shadowgrid">
+        <div class="shcell"><div class="demo" style="box-shadow:0 1px 2px rgba(0,0,0,0.05);border:1px solid var(--line);"></div><div class="sn">hairline</div><div class="sd">rest, nested cards</div></div>
+        <div class="shcell"><div class="demo" style="box-shadow:var(--sh-card);"></div><div class="sn">sh-card</div><div class="sd">default surface</div></div>
+        <div class="shcell"><div class="demo" style="box-shadow:var(--sh-hover);"></div><div class="sn">sh-hover</div><div class="sd">lift on hover</div></div>
+        <div class="shcell"><div class="demo" style="box-shadow:0 20px 48px rgba(0,0,0,0.22);background:var(--ink);"></div><div class="sn">sh-modal</div><div class="sd">hub, overlays</div></div>
+      </div>
+
+      <div class="subhd">Motion</div>
+      <div class="grid g2">
+        <div class="compbox"><div class="ch">Easing</div><p class="note"><span class="code">--ease: cubic-bezier(0.16,1,0.3,1)</span><br/><br/>A decisive ease-out — fast to start, gentle to settle. Used on every hover lift, tab switch, and card transition. The signature <b>2px upward nudge</b> on hover (<span class="code">translateY(-2px)</span>) plus a shadow bloom.</p></div>
+        <div class="compbox"><div class="ch">Duration</div><p class="note"><span class="code">--dur-fast 0.18s</span> — taps, mono buttons<br/><span class="code">--dur 0.25s</span> — cards, hovers<br/><span class="code">--dur-slow 0.6s</span> — entrances<br/><br/>Always honor <span class="code">prefers-reduced-motion</span>; animations collapse to near-zero.</p></div>
+      </div>
+    </section>
+
+    <!-- ===================== 05 · COMPONENTS ===================== -->
+    <section id="components">
+      <div class="sechd"><span class="sn">05</span><h2>Components</h2></div>
+      <p class="secsub">The working parts of Project Matrix. Each one is built from the same vocabulary — hairline borders, mono labels, the 2px hover lift — so the recruiter desk, the manager's gate, and the client portal all feel like one product.</p>
+
+      <div class="subhd">Tags &amp; badges</div>
+      <div class="compbox">
+        <div class="ch">Mono, uppercase, 4px radius — they label who owns a thing</div>
+        <div class="specimen">
+          <span class="tg pipeline">Pipeline</span>
+          <span class="tg ink">Internal</span>
+          <span class="tg amber">✦ AI</span>
+          <span class="tg navy">Client</span>
+          <span class="tg cand">Candidate-facing</span>
+        </div>
+      </div>
+
+      <div class="subhd">Buttons</div>
+      <div class="compbox">
+        <div class="ch">Primary is navy — the client's color is the product's default intent</div>
+        <div class="specimen">
+          <button class="bt primary">Advance candidate <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button class="bt secondary">Continue review</button>
+          <button class="bt amber">Approve</button>
+          <button class="bt ghost">Pass</button>
+        </div>
+        <div class="specimen" style="margin-top:16px;">
+          <button class="monobt on">[ The flow ]</button>
+          <button class="monobt">[ By persona ]</button>
+          <button class="monobt">[ Export ]</button>
+        </div>
+      </div>
+
+      <div class="subhd">Status &amp; signals</div>
+      <div class="compbox">
+        <div class="ch">The live dot + signal chips that follow every candidate</div>
+        <div class="specimen" style="gap:24px;">
+          <span class="livedot"><span class="dt" style="background:var(--amber);box-shadow:0 0 0 3px rgba(194,162,76,0.2);"></span>Client-ready</span>
+          <span class="livedot"><span class="dt" style="background:var(--navy);box-shadow:0 0 0 3px rgba(10,31,61,0.16);"></span>In review</span>
+          <span class="livedot"><span class="dt" style="background:var(--ink-4);"></span>Prospect</span>
+        </div>
+        <div class="specimen" style="margin-top:16px;">
+          <span class="tg amber">Owned complexity</span>
+          <span class="tg amber">Real mentoring</span>
+          <span class="tg amber">Stability</span>
+          <span class="tg amber">Composure</span>
+        </div>
+      </div>
+
+      <div class="subhd">Pills</div>
+      <div class="compbox">
+        <div class="ch">Gold pills mark placement &amp; success; neutral pills are legend chips</div>
+        <div class="specimen">
+          <span class="pill"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7.5l3.2 3.2L12 4" stroke="#876B1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Offer</span>
+          <span class="pill"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7.5l3.2 3.2L12 4" stroke="#876B1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Accepted</span>
+          <span class="lchip"><span class="swdot" style="background:var(--ink);"></span>Recruiter</span>
+          <span class="lchip"><span class="swdot" style="background:var(--amber);"></span>Manager</span>
+          <span class="lchip"><span class="swdot" style="background:var(--navy);"></span>Client</span>
+        </div>
+      </div>
+
+      <div class="subhd">Cards &amp; surfaces</div>
+      <div class="grid g3">
+        <div class="panel" style="padding:20px 22px;">
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:14px;"><span style="width:18px;height:18px;border-radius:6px;background:var(--ink);"></span><span class="t-node" style="font-size:17px;">Recruiter Matrix</span></div>
+          <p class="note" style="font-size:13.5px;">Default card — hairline border, <span class="code">--r-6</span>, soft ambient shadow.</p>
+        </div>
+        <div class="panel" style="padding:20px 22px;border:2px solid var(--amber);">
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:14px;"><span style="width:18px;height:18px;border-radius:6px;background:conic-gradient(var(--amber) 0 90deg,#efe3c0 0 180deg,var(--amber) 0 270deg,#efe3c0 0);"></span><span class="t-node" style="font-size:17px;">AI Dossier</span></div>
+          <p class="note" style="font-size:13.5px;">Toned card — a 2px gold border flags AI authorship.</p>
+        </div>
+        <div class="panel" style="padding:20px 22px;background:var(--ink);border-color:var(--ink);box-shadow:0 20px 48px rgba(0,0,0,0.22);">
+          <div class="t-monolbl" style="color:var(--amber);">✦ Single source of truth</div>
+          <div class="t-card" style="color:#fff;font-size:20px;margin-top:8px;">MASTER MATRIX</div>
+          <p class="note" style="font-size:13px;color:rgba(255,255,255,0.55);margin-top:4px;">The dark hub — everything inherits from here.</p>
+        </div>
+      </div>
+
+      <div class="subhd">Pipeline · kanban</div>
+      <div class="panel" style="padding:20px 22px;">
+        <div class="kdemo">
+          <div class="kcol"><span class="kt">Prospect</span><span class="kcard"></span><span class="kcard"></span></div>
+          <div class="kcol"><span class="kt">Contacted</span><span class="kcard"></span></div>
+          <div class="kcol"><span class="kt">Screening</span><span class="kcard"></span><span class="kcard"></span></div>
+          <div class="kcol"><span class="kt">Qualified</span><span class="kcard"></span></div>
+          <div class="kcol"><span class="kt">Internal Review</span><span class="kcard"></span></div>
+          <div class="kcol ready"><span class="kt">Client Ready</span><span class="kcard"></span></div>
+        </div>
+        <p class="note" style="font-size:13.5px;margin-top:14px;">Six fixed stages. The final <b>Client Ready</b> column tints gold — the only colored column, signaling the manager's gate is cleared.</p>
+      </div>
+
+      <div class="subhd">Callout blocks</div>
+      <div class="codemo">
+        <div class="co a"><span class="ce">The fork is the whole product</span><p><b>One record, two faces.</b> Generated once, projected into a recruiter copy and a candidate copy — same source, different audiences.</p></div>
+        <div class="co b"><span class="ce">What carries through</span><p><b>The Matrix signals follow every candidate</b> — from pipeline, into the dossier, through the gate, onto the client's grid.</p></div>
+      </div>
+      <p class="note" style="margin-top:14px;">Callouts come in two tones: <b>paper</b> (a quiet aside, gold eyebrow) and <b>navy</b> (an emphatic statement, soft-blue eyebrow). Never more than one navy callout in view at a time.</p>
+    </section>
+
+    <!-- ===================== 06 · VOICE ===================== -->
+    <section id="voice">
+      <div class="sechd"><span class="sn">06</span><h2>Voice &amp; patterns</h2></div>
+      <p class="secsub">Spyglass speaks like a discreet partner at a search firm: <b>precise, calm, never hyped</b>. It names things plainly, trusts white space, and lets the work be the proof. The writing earns trust the way the design does — by leaving things out.</p>
+
+      <div class="grid g2">
+        <div class="compbox">
+          <div class="ch" style="color:var(--amber-dd);">We sound like</div>
+          <ul style="margin:0;padding-left:18px;color:var(--ink-2);font-size:14.5px;line-height:1.9;">
+            <li>"Full strategy — never leaves the building."</li>
+            <li>"The redacted, outward-facing slice."</li>
+            <li>"The gate before the client."</li>
+            <li>Plain nouns: <em>Matrix, dossier, pipeline, gate</em></li>
+          </ul>
+        </div>
+        <div class="compbox">
+          <div class="ch" style="color:#a13b3b;">We never sound like</div>
+          <ul style="margin:0;padding-left:18px;color:var(--ink-2);font-size:14.5px;line-height:1.9;">
+            <li>"Revolutionary AI-powered hiring!"</li>
+            <li>"Supercharge your recruiting workflow 🚀"</li>
+            <li>Exclamation marks, hype, emoji</li>
+            <li>Jargon where a plain word works</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="subhd">Eyebrows · the mono layer talks</div>
+      <div class="compbox">
+        <div class="ch">Short, uppercase, wide-tracked — they frame, they don't shout</div>
+        <div style="display:flex;flex-direction:column;gap:14px;padding:6px 0;">
+          <span class="eyebrow">✦ Single source of truth</span>
+          <span class="eyebrow">The fork is the whole product</span>
+          <span class="eyebrow" style="color:var(--amber-dd);">What carries through</span>
+        </div>
+      </div>
+
+      <div class="subhd">Editing principle</div>
+      <div class="co a" style="padding:28px 30px;">
+        <span class="ce">One thousand no's for every yes</span>
+        <p style="font-size:16.5px;"><b>If a number, icon, or section isn't earning its place, cut it.</b> The product's credibility comes from restraint — a sanitized shortlist, a clean grid, a single gold accent. When in doubt, leave it out.</p>
+      </div>
+    </section>
+
+  </div>
+  </main>
+</div>
+</body>
+</html>

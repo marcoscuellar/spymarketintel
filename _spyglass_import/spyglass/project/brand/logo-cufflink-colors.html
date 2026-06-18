@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GLVE Cufflink — Color Exploration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0a0a0a; --ink-2: #525252; --ink-3: #a3a3a3;
+  --line: #e7e5e4; --paper: #f5f5f4;
+  --amber: #f59e0b; --amber-d: #d97706; --amber-pale: #fef3c7;
+  --navy: #0A1F3D; --navy-mid: #4B6177;
+  --green: #10b981;
+  --burgundy: #6B1F2A;
+  --sand: #D4B896;
+  --cream: #F5EFE0;
+  --olive: #4A5D3A;
+  --font: 'Geist', sans-serif; --mono: 'Geist Mono', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #fff; color: var(--ink); font-family: var(--font); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+body::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(0,0,0,0.012) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(0,0,0,0.012) 0%, transparent 50%);
+}
+.wrap { max-width: 1480px; margin: 0 auto; padding: 32px 48px 96px; position: relative; z-index: 1; }
+
+.topbar { display: flex; justify-content: space-between; align-items: center; padding-bottom: 24px; margin-bottom: 40px; }
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; letter-spacing: -0.02em; }
+.logo-mark { width: 28px; height: 28px; background: var(--ink); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.logo-mark svg { fill: none; }
+.nav-meta { display: flex; gap: 28px; font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em; }
+.nav-meta .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px rgba(16,185,129,0.15); display: inline-block; margin-right: 6px; }
+
+/* hero */
+.hero { padding: 24px 0 40px; margin-bottom: 32px; border-bottom: 1px solid var(--line); }
+.hero .eyebrow { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--ink-2); margin-bottom: 24px; display: inline-flex; align-items: center; gap: 14px; letter-spacing: 0.06em; text-transform: uppercase; }
+.hero .eyebrow::before, .hero .eyebrow::after { content: ''; width: 48px; height: 1px; background: var(--ink); }
+.hero h1 { font-weight: 800; font-size: clamp(40px, 5.5vw, 64px); line-height: 0.96; letter-spacing: -0.05em; margin-bottom: 20px; max-width: 22ch; }
+.hero h1 .light { font-weight: 400; color: var(--ink-3); }
+.hero .sub { font-size: 17px; color: var(--ink-2); line-height: 1.55; max-width: 64ch; letter-spacing: -0.01em; }
+
+/* section */
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; margin: 56px 0 24px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.section-head h2 { font-weight: 700; font-size: clamp(22px, 2.8vw, 32px); letter-spacing: -0.03em; }
+.section-head h2 .light { font-weight: 400; color: var(--ink-3); }
+.section-head .meta { font-family: var(--mono); font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* grid of swatches */
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+.swatch {
+  border: 1px solid var(--line); border-radius: 18px;
+  background: #fff; overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: all 0.2s ease;
+}
+.swatch.starred { border-color: var(--ink); box-shadow: 0 12px 32px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04); }
+.swatch:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+
+.swatch .stage {
+  height: 180px; display: flex; align-items: center; justify-content: center;
+  background:
+    linear-gradient(to right, rgba(10,10,10,0.025) 1px, transparent 1px) 0 0 / 16px 100%,
+    linear-gradient(to bottom, rgba(10,10,10,0.025) 1px, transparent 1px) 0 0 / 100% 16px,
+    #fff;
+}
+
+.housing {
+  width: 110px; height: 110px;
+  border-radius: 31px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.swatch .meta {
+  padding: 14px 16px 16px;
+  border-top: 1px solid var(--line);
+}
+.swatch .name {
+  font-weight: 600; font-size: 14px; letter-spacing: -0.02em; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 8px;
+}
+.swatch .name .star {
+  font-family: var(--mono); font-size: 9px; padding: 2px 6px; border-radius: 3px;
+  background: var(--ink); color: #fff; letter-spacing: 0.08em; font-weight: 700;
+}
+.swatch .desc { font-size: 11px; color: var(--ink-2); line-height: 1.4; }
+.swatch .lockup-mini {
+  margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line);
+  display: flex; align-items: center; gap: 6px;
+  font-weight: 700; font-size: 11px; letter-spacing: -0.015em;
+}
+.swatch .lockup-mini .mk { width: 18px; height: 18px; border-radius: 5px; display: flex; align-items: center; justify-content: center; }
+
+/* token chips */
+.tokens { display: flex; gap: 4px; margin-top: 8px; flex-wrap: wrap; }
+.tokens .tk {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.04em;
+  padding: 2px 5px; border-radius: 3px; color: var(--ink-2);
+  background: var(--paper); border: 1px solid var(--line);
+  text-transform: uppercase;
+}
+
+/* lockup row at top of section */
+.lockup-row {
+  background: var(--paper); border-radius: 16px;
+  padding: 28px 32px; margin-bottom: 28px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+}
+.lockup-row.dark { background: var(--ink); }
+.lockup-cell { display: flex; flex-direction: column; gap: 12px; }
+.lockup-cell .lbl { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+.lockup-cell .lbl-light { color: var(--ink-3); }
+.lockup-cell .lbl-dark  { color: rgba(255,255,255,0.5); }
+.lockup-big { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 22px; letter-spacing: -0.02em; }
+.lockup-big .mk { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+.lockup-big.ondark { color: #fff; }
+
+/* advice */
+.advice { margin-top: 56px; padding: 28px 32px; background: var(--paper); border-radius: 20px; border-left: 4px solid var(--ink); }
+.advice .lbl { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 10px; }
+.advice h3 { font-weight: 700; font-size: 22px; letter-spacing: -0.025em; margin-bottom: 10px; }
+.advice p { font-size: 14px; color: var(--ink-2); line-height: 1.6; max-width: 80ch; }
+.advice p + p { margin-top: 10px; }
+.advice strong { color: var(--ink); font-weight: 600; }
+
+footer { padding: 40px 0 0; margin-top: 24px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 11px; color: var(--ink-3); letter-spacing: 0.04em; text-transform: uppercase; display: flex; justify-content: space-between; }
+
+@media (max-width: 1100px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 800px)  { .grid { grid-template-columns: repeat(2, 1fr); } .lockup-row { grid-template-columns: 1fr; } }
+@media (max-width: 480px)  { .grid { grid-template-columns: 1fr; } .wrap { padding: 24px 20px 64px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="topbar">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 100 100" width="16" height="16">
+          <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"/>
+          <circle cx="72" cy="50" r="11" fill="#0a0a0a"/>
+          <circle cx="72" cy="50" r="6" fill="#fff"/>
+        </svg>
+      </div>
+      GLVE: Cufflink in Color
+    </div>
+    <div class="nav-meta">
+      <span>v0.4</span>
+      <span>Cufflink × Palette</span>
+      <span><span class="dot"></span>16 worlds</span>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="eyebrow">The cufflink, recolored</div>
+    <h1>The mark is locked. <span class="light">Let's pick its world.</span></h1>
+    <p class="sub">Same cufflink. Sixteen color worlds. Grouped by intent: <strong>System</strong> (uses your design system tokens), <strong>Inverted</strong> (light themes for white surfaces), <strong>Accent-led</strong> (the cufflink becomes the focal pop), and <strong>Brand world</strong> (where GLVE could go if you wanted to stretch the palette).</p>
+  </header>
+
+  <!-- ====================================================== -->
+  <!-- SECTION 1 · SYSTEM ALIGNED                             -->
+  <!-- ====================================================== -->
+  <div class="section-head">
+    <h2>System aligned. <span class="light">Stays inside the design system.</span></h2>
+    <div class="meta">01 · 4 VARIANTS</div>
+  </div>
+
+  <div class="grid">
+
+    <!-- a · Default Ink -->
+    <div class="swatch starred">
+      <div class="stage">
+        <div class="housing" style="background: #0a0a0a;">
+          <svg viewBox="0 0 100 100" width="76" height="76">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"/>
+            <line x1="20" y1="50" x2="62" y2="50" stroke="#0a0a0a" stroke-width="1.4" stroke-dasharray="3 3"/>
+            <circle cx="72" cy="50" r="9" fill="#0a0a0a"/>
+            <circle cx="72" cy="50" r="5" fill="#fff"/>
+            <circle cx="72" cy="50" r="2" fill="#0a0a0a"/>
+          </svg>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="name">Ink · default <span class="star">SAFE</span></div>
+        <div class="desc">The locked-in version. Ink housing, white band, ink cufflink.</div>
+        <div class="tokens"><span class="tk">--ink</span><span class="tk">--paper</span></div>
+      </div>
+    </div>
+
+    <!-- b · Amber cufflink -->
+    <div class="swatch starred">
+      <div class="stage">
+        <div class="housing" style="background: #0a0a0a;">
+          <svg viewBox="0 0 100 100" width="76" height="76">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"/>
+            <line x1="20" y1="50" x2="62" y2="50" stroke="#0a0a0a" stroke-width="1.4" stroke-dasharray="3 3"/>
+            <circle cx="72" cy="50" r="9" fill="#f59e0b"/>
+            <circle cx="72" cy="50" r="5" fill="#fff"/>
+            <circle cx="72" cy="50" r="2" fill="#f59e0b"/>
+          </svg>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="name">Amber cufflink <span class="star">★</span></div>
+        <div class="desc">Cufflink in E02 amber. The "white glove serves the engine" read.</div>
+        <div class="tokens"><span class="tk">--ink</span><span class="tk">--amber</span></div>
+      </div>
+    </div>
+
+    <!-- c · Navy cufflink -->
+    <div class="swatch">
+      <div class="stage">
+        <div class="housing" style="background: #0a0a0a;">
+          <svg viewBox="0 0 100 100" width="76" height="76">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"/>
+            <line x1="20" y1="50" x2="62" y2="50" stroke="#0a0a0a" stroke-width="1.4" stroke-dasharray="3 3"/>
+            <circle cx="72" cy="50" r="9" fill="#0A1F3D"/>
+            <circle cx="72" cy="50" r="5" fill="#fff"/>
+            <circle cx="72" cy="50" r="2" fill="#0A1F3D"/>
+          </svg>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="name">Navy cufflink</div>
+        <div class="desc">Standalone color in the medallion. Calmer, more institutional.</div>
+        <div class="tokens"><span class="tk">--ink</span><span class="tk">--navy</span></div>
+      </div>
+    </div>
+
+    <!-- d · Light theme -->
+    <div class="swatch">
+      <div class="stage">
+        <div class="housing" style="background: #f5f5f4; border: 1px solid var(--line);">
+          <svg viewBox="0 0 100 100" width="76" height="76">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#0a0a0a"/>
+            <line x1="20" y1="50" x2="62" y2="50" stroke="#fff" stroke-width="1.4" stroke-dasharray="3 3"/>
+            <circle cx="72" cy="50" r="9" fill="#fff"/>
+            <circle cx="72" cy="50" r="5" fill="#0a0a0a"/>
+            <circle cx="72" cy="50" r="2" fill="#fff"/>
+          </svg>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="name">Light theme</div>
+        <div class="desc">Inverted for light backgrounds. Paper housing, ink band.</div>
+        <div class="tokens"><span class="tk">--paper</span><span class="tk">--ink</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ====================================================== -->
+  <!-- SECTION 2 · ACCENT LED                                 -->
+  <!-- ====================================================== -->
+  <div class="section-head">
+    <h2>Accent-led. <span class="light">The band carries the color.</span></h2>
+    <div class="meta">02 · 4 VARIANTS</div>
+  </div>
+
+  <div class="grid">
+
+    <!-- e · Amber band -->
+    <div class="swatch starred">
+      <div class="stage">
+        <div class="housing" style="background: #0a0a0a;">
+          <svg viewBox="0 0 100 100" width="76" height="76">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#f59e0b"/>
+            <line x1="20" y1="50" x2="62" y2="50" stroke="#0a0a0a" stroke-width="1.4" stroke-dasharray="3 3"/>
+            <circle cx="72" cy="50" r="9" fill="#0a0a0a"/>
+            <circle cx="72" cy="50" r="5" fill="#f59e0b"/>
+            <circle cx="72" cy="50" r="2" fill="#0a0a0a"/>
+          </svg>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="name">Amber band <span class="star">★</span></div>
+        <div class="desc">Band goes full amber. Most distinctive, ties to E02 color hard.</div>
+        <div class="tokens"><span class="tk">--ink</span><span class="tk">--amber</span></div>
+      </div>
+    </div>
+
+    <!-- f · Navy band, amber cufflink -->
+    <div class="swatch">
+      <div class="stage">
+        <div class="housing" style="background: #0a0a0a;">
+          <svg viewBox="0 0 100 100" width="76" height="76">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#0A1F3D"/>
+            <line x1="20" y1="50" x2="62" y2="50" stroke="#fff" stroke-width="1.4" stroke-dasharray="3 3" opacity="0.5"/>
+            <circle cx="72" cy="50" r="9" fill="#f59e0b"/>
+            <circle cx="72" cy="50" r="5" fill="#0A1F3D"/>
+            <circle cx="72" cy="50" r="2" fill="#f59e0b"/>
+          </svg>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="name">Navy band, amber link</div>
+        <div class="desc">Standalone color on the band, E02 in the medallion. Both accents.</div>
+        <div class="tokens"><span class="tk">--ink</span><span class="tk">--navy</span><span class="tk">--amber</span></div>
+      </div>
+    </div>
+
+    <!-- g · Cream band, ink cufflink -->
+    <div class="swatch">
+      <div class="stage">
+        <div class="housing" style="background: #0a0a0a;">
+          <svg viewBox="0 0 100 100" width="76" height="76">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#F5EFE0"/>
+            <line x1="20" y1="50" x2="62" y2="50" stroke="#0a0a0a" stroke-width="1.4" stroke-dasharray="3 3" opacity="0.6"/>
+            <circle cx="72" cy="50" r="9" fill="#0a0a0a"/>
+            <circle cx="72" cy="50" r="5" fill="#F5EFE0"/>
+            <circle cx="72" cy="50" r="2" fill="#0a0a0a"/>
+          </svg>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="name">Cream band</div>
+        <div class="desc">Warmer than pure white. More fabric, less digital.</div>
+        <div class="tokens"><span class="tk">--ink</span><span class="tk">cream</span></div>
+      </div>
+    </div>
+
+    <!-- h · Two-tone tuxedo -->
+    <div class="swatch">
+      <div class="stage">
+        <div class="housing" style="background: #0a0a0a;">
+          <svg viewBox="0 0 100 100" width="76" height="76">
+            <!-- left half white, right half black (split) -->
+            <rect x="14" y="38" width="36" height="24" rx="3" fill="#fff"/>
+            <rect x="36" y="38" width="36" height="24" rx="0" fill="#fff"/>
+            <rect x="36" y="38" width="36" height="24" rx="0" fill="#525252"/>
+            <rect x="50" y="38" width="22" height="24" rx="3" fill="#525252"/>
+            <circle cx="72" cy="50" r="9" fill="#fff"/>
+            <circle cx="72" cy="50" r="5" fill="#0a0a0a"/>
+            <circle cx="72" cy="50" r="2" fill="#fff"/>
+          </svg>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="name">Tuxedo two-tone</div>
+        <div class="desc">Split band — light/dark. The dressiest formal cuff.</div>
+        <div class="tokens"><span class="tk">--paper</span><span class="tk">--ink-2</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ====================================================== -->
+  <!-- SECTION 3 · COLOR HOUSING                              -->
+  <!-- ====================================================== -->
+  <div class="section-head">
+    <h2>Color housing. <span class="light">When ink isn't the surface.</span></h2>
+    <div class="meta">03 · 4 VARIANTS</div>
+  </div>
+
+  <div class="grid">
+
+    <!-- i · Amber housing -->
+    <div class="swatch">
+      <div class="stage">
+        <div class="housing" style="background: #f59e0b;">
+          <svg viewBox="0 0 100 100" width="76" height="76">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#0a0a0a"/>
+            <line x1="20" y1="50" x2="62" y2="50" stroke="#fff" stroke-width="1.4" stroke-dasharray="3 3" opacity="0.6"/>
+            <circle cx="72" cy="50" r="9" fill="#fff"/>
+            <circle cx="72" cy="50" r="5" fill="#0a0a0a"/>
+            <circle cx="72" cy="50" r="2" fill="#fff"/>
+          </svg>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="name">Amber housing</div>
+        <div class="desc">Full Engine 02 takeover. Hot. For E02-only surfaces.</div>
+        <div class="tokens"><span class="tk">--amber</span><span class="tk">--ink</span></div>
+      </div>
+    </div>
+
+    <!-- j · Navy housing -->
+    <div class="swatch starred">
+      <div class="stage">
+        <div class="housing" style="background: #0A1F3D;">
+          <svg viewBox="0 0 100 100" width="76" height="76">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"/>
+            <line x1="20" y1="50" x2="62" y2="50" stroke="#0A1F3D" stroke-width="1.4" stroke-dasharray="3 3"/>
+            <circle cx="72" cy="50" r="9" fill="#f59e0b"/>
+            <circle cx="72" cy="50" r="5" fill="#0A1F3D"/>
+            <circle cx="72" cy="50" r="2" fill="#f59e0b"/>
+          </svg>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="name">Navy housing <span class="star">★</span></div>
+        <div class="desc">Corporate-luxe. Navy + amber medallion = the most "premium service" combo.</div>
+        <div class="tokens"><span class="tk">--navy</span><span class="tk">--amber</span></div>
+      </div>
+    </div>
+
+    <!-- k · Cream housing -->
+    <div class="swatch">
+      <div class="stage">
+        <div class="housing" style="background: #F5EFE0;">
+          <svg viewBox="0 0 100 100" width="76" height="76">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#0a0a0a"/>
+            <line x1="20" y1="50" x2="62" y2="50" stroke="#fff" stroke-width="1.4" stroke-dasharray="3 3" opacity="0.55"/>
+            <circle cx="72" cy="50" r="9" fill="#fff"/>
+            <circle cx="72" cy="50" r="5" fill="#0a0a0a"/>
+            <circle cx="72" cy="50" r="2" fill="#fff"/>
+          </svg>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="name">Cream housing</div>
+        <div class="desc">Warmer, editorial. For print, decks, calmer surfaces.</div>
+        <div class="tokens"><span class="tk">cream</span><span class="tk">--ink</span></div>
+      </div>
+    </div>
+
+    <!-- l · Burgundy housing -->
+    <div class="swatch">
+      <div class="stage">
+        <div class="housing" style="background: #6B1F2A;">
+          <svg viewBox="0 0 100 100" width="76" height="76">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"/>
+            <line x1="20" y1="50" x2="62" y2="50" stroke="#6B1F2A" stroke-width="1.4" stroke-dasharray="3 3"/>
+            <circle cx="72" cy="50" r="9" fill="#6B1F2A"/>
+            <circle cx="72" cy="50" r="5" fill="#fff"/>
+            <circle cx="72" cy="50" r="2" fill="#6B1F2A"/>
+          </svg>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="name">Burgundy</div>
+        <div class="desc">Sommelier / private-club energy. Off-palette, but compelling.</div>
+        <div class="tokens"><span class="tk">burgundy</span><span class="tk">--paper</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ====================================================== -->
+  <!-- SECTION 4 · BRAND WORLD                                -->
+  <!-- ====================================================== -->
+  <div class="section-head">
+    <h2>Brand world. <span class="light">If GLVE wanted to expand the palette.</span></h2>
+    <div class="meta">04 · 4 VARIANTS</div>
+  </div>
+
+  <div class="grid">
+
+    <!-- m · Forest green -->
+    <div class="swatch">
+      <div class="stage">
+        <div class="housing" style="background: #4A5D3A;">
+          <svg viewBox="0 0 100 100" width="76" height="76">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#F5EFE0"/>
+            <line x1="20" y1="50" x2="62" y2="50" stroke="#4A5D3A" stroke-width="1.4" stroke-dasharray="3 3" opacity="0.55"/>
+            <circle cx="72" cy="50" r="9" fill="#4A5D3A"/>
+            <circle cx="72" cy="50" r="5" fill="#F5EFE0"/>
+            <circle cx="72" cy="50" r="2" fill="#4A5D3A"/>
+          </svg>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="name">Forest + cream</div>
+        <div class="desc">Country-club, heritage feel. Quiet money.</div>
+        <div class="tokens"><span class="tk">olive</span><span class="tk">cream</span></div>
+      </div>
+    </div>
+
+    <!-- n · Sand + ink -->
+    <div class="swatch">
+      <div class="stage">
+        <div class="housing" style="background: #D4B896;">
+          <svg viewBox="0 0 100 100" width="76" height="76">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#0a0a0a"/>
+            <line x1="20" y1="50" x2="62" y2="50" stroke="#D4B896" stroke-width="1.4" stroke-dasharray="3 3"/>
+            <circle cx="72" cy="50" r="9" fill="#D4B896"/>
+            <circle cx="72" cy="50" r="5" fill="#0a0a0a"/>
+            <circle cx="72" cy="50" r="2" fill="#D4B896"/>
+          </svg>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="name">Sand + ink</div>
+        <div class="desc">Natural luxe. Leather goods / Italian tailoring energy.</div>
+        <div class="tokens"><span class="tk">sand</span><span class="tk">--ink</span></div>
+      </div>
+    </div>
+
+    <!-- o · Soft amber housing (less hot) -->
+    <div class="swatch">
+      <div class="stage">
+        <div class="housing" style="background: #fef3c7;">
+          <svg viewBox="0 0 100 100" width="76" height="76">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#0a0a0a"/>
+            <line x1="20" y1="50" x2="62" y2="50" stroke="#f59e0b" stroke-width="1.4" stroke-dasharray="3 3"/>
+            <circle cx="72" cy="50" r="9" fill="#f59e0b"/>
+            <circle cx="72" cy="50" r="5" fill="#0a0a0a"/>
+            <circle cx="72" cy="50" r="2" fill="#f59e0b"/>
+          </svg>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="name">Amber pale + ink</div>
+        <div class="desc">Softer than full amber. For E02 surfaces that need to whisper.</div>
+        <div class="tokens"><span class="tk">--amber-pale</span><span class="tk">--ink</span></div>
+      </div>
+    </div>
+
+    <!-- p · Pure white outline -->
+    <div class="swatch">
+      <div class="stage">
+        <div class="housing" style="background: #fff; border: 2px solid #0a0a0a;">
+          <svg viewBox="0 0 100 100" width="76" height="76">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="none" stroke="#0a0a0a" stroke-width="2"/>
+            <line x1="20" y1="50" x2="62" y2="50" stroke="#0a0a0a" stroke-width="1.4" stroke-dasharray="3 3"/>
+            <circle cx="72" cy="50" r="9" fill="#0a0a0a"/>
+            <circle cx="72" cy="50" r="5" fill="#fff"/>
+            <circle cx="72" cy="50" r="2" fill="#0a0a0a"/>
+          </svg>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="name">Pure white outline</div>
+        <div class="desc">Most minimal. For watermark, faded use, big white space.</div>
+        <div class="tokens"><span class="tk">--bg</span><span class="tk">--ink</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ====================================================== -->
+  <!-- LOCKUPS — show the top picks at nav scale              -->
+  <!-- ====================================================== -->
+  <div class="section-head">
+    <h2>Top picks at nav scale. <span class="light">How they'd read in context.</span></h2>
+    <div class="meta">LOCKUPS</div>
+  </div>
+
+  <div class="lockup-row">
+    <div class="lockup-cell">
+      <div class="lbl lbl-light">[ A · INK + AMBER LINK ]</div>
+      <div class="lockup-big">
+        <div class="mk" style="background: #0a0a0a;">
+          <svg viewBox="0 0 100 100" width="24" height="24">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"/>
+            <circle cx="72" cy="50" r="11" fill="#f59e0b"/>
+            <circle cx="72" cy="50" r="6" fill="#fff"/>
+            <circle cx="72" cy="50" r="2" fill="#f59e0b"/>
+          </svg>
+        </div>
+        GLVE: Revenue Workflow
+      </div>
+    </div>
+    <div class="lockup-cell">
+      <div class="lbl lbl-light">[ B · AMBER BAND ]</div>
+      <div class="lockup-big">
+        <div class="mk" style="background: #0a0a0a;">
+          <svg viewBox="0 0 100 100" width="24" height="24">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#f59e0b"/>
+            <circle cx="72" cy="50" r="11" fill="#0a0a0a"/>
+            <circle cx="72" cy="50" r="6" fill="#f59e0b"/>
+          </svg>
+        </div>
+        GLVE: Revenue Workflow
+      </div>
+    </div>
+  </div>
+
+  <div class="lockup-row dark">
+    <div class="lockup-cell">
+      <div class="lbl lbl-dark">[ C · NAVY HOUSING ]</div>
+      <div class="lockup-big ondark">
+        <div class="mk" style="background: #0A1F3D;">
+          <svg viewBox="0 0 100 100" width="24" height="24">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"/>
+            <circle cx="72" cy="50" r="11" fill="#f59e0b"/>
+            <circle cx="72" cy="50" r="6" fill="#0A1F3D"/>
+          </svg>
+        </div>
+        GLVE: Revenue Workflow
+      </div>
+    </div>
+    <div class="lockup-cell">
+      <div class="lbl lbl-dark">[ D · DEFAULT ON DARK ]</div>
+      <div class="lockup-big ondark">
+        <div class="mk" style="background: #fff;">
+          <svg viewBox="0 0 100 100" width="24" height="24">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#0a0a0a"/>
+            <circle cx="72" cy="50" r="11" fill="#fff"/>
+            <circle cx="72" cy="50" r="6" fill="#0a0a0a"/>
+          </svg>
+        </div>
+        GLVE: Revenue Workflow
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================== -->
+  <!-- MONOGRAM PAIRING                                       -->
+  <!-- ====================================================== -->
+  <div class="section-head">
+    <h2>Paired with the GLVE monogram. <span class="light">Cufflink + Geist 900.</span></h2>
+    <div class="meta">LOCKUP · MONOGRAM</div>
+  </div>
+
+  <p style="font-size: 15px; color: var(--ink-2); max-width: 70ch; margin-bottom: 28px;">Same cufflink mark, paired with the typographic <strong>GLVE</strong> from Direction 01 — Geist 900, −8% tracking, sharp custom V chevron. The mark is the seal; the monogram is the name. They were built to ride together.</p>
+
+  <!-- BIG HORIZONTAL LOCKUP — primary -->
+  <div style="background: var(--paper); border-radius: 20px; padding: 56px 48px; margin-bottom: 24px;">
+    <div style="font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 32px;">[ A · PRIMARY HORIZONTAL · WORDMARK SET FROM 56–96PX ]</div>
+    <div style="display: flex; align-items: center; gap: 24px;">
+      <!-- Cufflink at 64px housing -->
+      <div style="width: 64px; height: 64px; background: var(--ink); border-radius: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg viewBox="0 0 100 100" width="42" height="42">
+          <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"/>
+          <line x1="20" y1="50" x2="62" y2="50" stroke="#0a0a0a" stroke-width="1.4" stroke-dasharray="3 3"/>
+          <circle cx="72" cy="50" r="9" fill="#0a0a0a"/>
+          <circle cx="72" cy="50" r="5" fill="#fff"/>
+          <circle cx="72" cy="50" r="2" fill="#0a0a0a"/>
+        </svg>
+      </div>
+      <!-- GLVE monogram -->
+      <div style="font-family: var(--font); font-weight: 900; font-size: 72px; letter-spacing: -0.08em; line-height: 1; display: flex; align-items: center; color: var(--ink);">
+        <span>GL</span><span style="display: inline-block; transform: translateY(0.04em);">
+          <svg width="0.62em" height="0.85em" viewBox="0 0 62 85" style="display: block;">
+            <path d="M 4 4 L 31 78 L 58 4" fill="none" stroke="#0a0a0a" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/>
+          </svg>
+        </span><span>E</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STACKED LOCKUP + TAGLINE LOCKUP -->
+  <div class="lockup-row">
+    <div class="lockup-cell">
+      <div class="lbl lbl-light">[ B · STACKED · BIG MARK + BIG WORDMARK ]</div>
+      <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 14px; margin-top: 6px;">
+        <div style="width: 56px; height: 56px; background: var(--ink); border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <svg viewBox="0 0 100 100" width="36" height="36">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"/>
+            <line x1="20" y1="50" x2="62" y2="50" stroke="#0a0a0a" stroke-width="1.4" stroke-dasharray="3 3"/>
+            <circle cx="72" cy="50" r="9" fill="#0a0a0a"/>
+            <circle cx="72" cy="50" r="5" fill="#fff"/>
+            <circle cx="72" cy="50" r="2" fill="#0a0a0a"/>
+          </svg>
+        </div>
+        <div style="font-family: var(--font); font-weight: 900; font-size: 56px; letter-spacing: -0.08em; line-height: 0.9; display: flex; align-items: center; color: var(--ink);">
+          <span>GL</span><span style="display: inline-block; transform: translateY(0.04em);">
+            <svg width="0.62em" height="0.85em" viewBox="0 0 62 85" style="display: block;">
+              <path d="M 4 4 L 31 78 L 58 4" fill="none" stroke="#0a0a0a" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/>
+            </svg>
+          </span><span>E</span>
+        </div>
+        <div style="font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3);">[ REVENUE WORKFLOW · V1.0 ]</div>
+      </div>
+    </div>
+
+    <div class="lockup-cell">
+      <div class="lbl lbl-light">[ C · WITH TAGLINE · DESCRIPTOR BELOW ]</div>
+      <div style="display: flex; align-items: center; gap: 18px; margin-top: 6px;">
+        <div style="width: 64px; height: 64px; background: var(--ink); border-radius: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <svg viewBox="0 0 100 100" width="42" height="42">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"/>
+            <line x1="20" y1="50" x2="62" y2="50" stroke="#0a0a0a" stroke-width="1.4" stroke-dasharray="3 3"/>
+            <circle cx="72" cy="50" r="9" fill="#f59e0b"/>
+            <circle cx="72" cy="50" r="5" fill="#fff"/>
+            <circle cx="72" cy="50" r="2" fill="#f59e0b"/>
+          </svg>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <div style="font-family: var(--font); font-weight: 900; font-size: 44px; letter-spacing: -0.08em; line-height: 0.9; display: flex; align-items: center; color: var(--ink);">
+            <span>GL</span><span style="display: inline-block; transform: translateY(0.04em);">
+              <svg width="0.62em" height="0.85em" viewBox="0 0 62 85" style="display: block;">
+                <path d="M 4 4 L 31 78 L 58 4" fill="none" stroke="#0a0a0a" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/>
+              </svg>
+            </span><span>E</span>
+          </div>
+          <div style="font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2);">Revenue Workflow</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ON DARK -->
+  <div class="lockup-row dark">
+    <div class="lockup-cell">
+      <div class="lbl lbl-dark">[ D · REVERSE · ON INK ]</div>
+      <div style="display: flex; align-items: center; gap: 24px; margin-top: 6px;">
+        <div style="width: 64px; height: 64px; background: #fff; border-radius: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <svg viewBox="0 0 100 100" width="42" height="42">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#0a0a0a"/>
+            <line x1="20" y1="50" x2="62" y2="50" stroke="#fff" stroke-width="1.4" stroke-dasharray="3 3" opacity="0.5"/>
+            <circle cx="72" cy="50" r="9" fill="#fff"/>
+            <circle cx="72" cy="50" r="5" fill="#0a0a0a"/>
+            <circle cx="72" cy="50" r="2" fill="#fff"/>
+          </svg>
+        </div>
+        <div style="font-family: var(--font); font-weight: 900; font-size: 64px; letter-spacing: -0.08em; line-height: 0.9; display: flex; align-items: center; color: #fff;">
+          <span>GL</span><span style="display: inline-block; transform: translateY(0.04em);">
+            <svg width="0.62em" height="0.85em" viewBox="0 0 62 85" style="display: block;">
+              <path d="M 4 4 L 31 78 L 58 4" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/>
+            </svg>
+          </span><span>E</span>
+        </div>
+      </div>
+    </div>
+    <div class="lockup-cell">
+      <div class="lbl lbl-dark">[ E · PREMIUM · NAVY + AMBER ]</div>
+      <div style="display: flex; align-items: center; gap: 24px; margin-top: 6px;">
+        <div style="width: 64px; height: 64px; background: #0A1F3D; border-radius: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <svg viewBox="0 0 100 100" width="42" height="42">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"/>
+            <circle cx="72" cy="50" r="11" fill="#f59e0b"/>
+            <circle cx="72" cy="50" r="6" fill="#0A1F3D"/>
+            <circle cx="72" cy="50" r="2.5" fill="#f59e0b"/>
+          </svg>
+        </div>
+        <div style="font-family: var(--font); font-weight: 900; font-size: 64px; letter-spacing: -0.08em; line-height: 0.9; display: flex; align-items: center; color: #fff;">
+          <span>GL</span><span style="display: inline-block; transform: translateY(0.04em);">
+            <svg width="0.62em" height="0.85em" viewBox="0 0 62 85" style="display: block;">
+              <path d="M 4 4 L 31 78 L 58 4" fill="none" stroke="#f59e0b" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/>
+            </svg>
+          </span><span>E</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV SCALE -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; margin-bottom: 32px;">
+    <div style="border: 1px solid var(--line); border-radius: 16px; padding: 20px 24px;">
+      <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 14px;">[ F · NAV SCALE · ACTUAL SIZE ]</div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 28px; height: 28px; background: var(--ink); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+          <svg viewBox="0 0 100 100" width="18" height="18">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"/>
+            <circle cx="72" cy="50" r="11" fill="#0a0a0a"/>
+            <circle cx="72" cy="50" r="6" fill="#fff"/>
+          </svg>
+        </div>
+        <span style="font-family: var(--font); font-weight: 900; font-size: 22px; letter-spacing: -0.08em; line-height: 1; display: flex; align-items: center; color: var(--ink);">
+          <span>GL</span><span style="display: inline-block; transform: translateY(0.04em);">
+            <svg width="0.62em" height="0.85em" viewBox="0 0 62 85" style="display: block;">
+              <path d="M 4 4 L 31 78 L 58 4" fill="none" stroke="#0a0a0a" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/>
+            </svg>
+          </span><span>E</span>
+        </span>
+      </div>
+    </div>
+    <div style="border: 1px solid var(--line); border-radius: 16px; padding: 20px 24px;">
+      <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 14px;">[ G · WITH REVENUE WORKFLOW · NAV CONTEXT ]</div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 28px; height: 28px; background: var(--ink); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+          <svg viewBox="0 0 100 100" width="18" height="18">
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"/>
+            <circle cx="72" cy="50" r="11" fill="#0a0a0a"/>
+            <circle cx="72" cy="50" r="6" fill="#fff"/>
+          </svg>
+        </div>
+        <span style="font-family: var(--font); font-weight: 900; font-size: 18px; letter-spacing: -0.08em; line-height: 1; display: flex; align-items: center; color: var(--ink);">
+          <span>GL</span><span style="display: inline-block; transform: translateY(0.04em);">
+            <svg width="0.62em" height="0.85em" viewBox="0 0 62 85" style="display: block;">
+              <path d="M 4 4 L 31 78 L 58 4" fill="none" stroke="#0a0a0a" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/>
+            </svg>
+          </span><span>E</span>
+        </span>
+        <span style="font-family: var(--font); font-weight: 400; font-size: 15px; letter-spacing: -0.01em; color: var(--ink-3); margin-left: 4px;">/ Revenue Workflow</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADVICE -->
+  <div class="advice">
+    <div class="lbl">[ MY READ ]</div>
+    <h3>The cufflink + the monogram = a complete identity.</h3>
+    <p>The cufflink is the <strong>seal</strong>. The GLVE monogram is the <strong>name</strong>. They were always meant to pair — the cufflink alone reads as "premium service mark," the monogram alone reads as "name in editorial type," but together they read as <em>this specific brand, no other</em>.</p>
+    <p>The lockup I'd ship as primary: <strong>cufflink (ink default) + GLVE monogram (Geist 900)</strong> with "/ Revenue Workflow" as an optional sub-lockup when context allows. For the deck cover / "premium" surface, swap to the <strong>navy housing + amber cufflink + GLVE in white with amber V chevron</strong> shown in lockup E.</p>
+    <p>Pick a <strong>primary</strong> (a, b, or j) plus 1–2 <strong>variants</strong> and I'll wire the named tokens (logo.primary, logo.e02, logo.premium, logo.light) into the design system so anyone building a future surface picks the right one without thinking.</p>
+  </div>
+
+  <footer>
+    <span>[ GLVE CUFFLINK · COLOR · V0.4 ]</span>
+    <span>16 worlds · pick 1 to 4</span>
+  </footer>
+
+</div>
+</body>
+</html>
