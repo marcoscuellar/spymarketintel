@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { useIsMobile } from "./useIsMobile.js";
 import { BRAND, THEMES, monoS, sectionH, cardS, FitRing, Mark, SearchBrief } from "./room.jsx";
+import { COMPANY_INTEL } from "./data.js";
 
 const STAGES = ["Intake", "Sourcing", "Screening", "Presented", "Offer", "Placed"];
 
@@ -137,7 +138,7 @@ function PortfolioView() {
           <span style={{ ...mono(P, { fontSize: 10 }) }}>Across your open roles</span>
         </div>
         <div style={{ marginBottom: 50 }}>
-          <SearchBrief P={P} hideIntro />
+          <SearchBrief P={P} hideIntro impact={COMPANY_INTEL} />
         </div>
 
         {/* BREAKDOWN OF THE ROLES */}

@@ -246,8 +246,9 @@ function CompChart({ P }) {
   );
 }
 
-function SearchBrief({ P, hideIntro }) {
+function SearchBrief({ P, hideIntro, impact = ROLE.impact }) {
   const mobile = useIsMobile();
+  const hasAccent = impact.some((s) => s.accent);
   return (
     <div>
       {/* Why this search matters */}
@@ -260,9 +261,9 @@ function SearchBrief({ P, hideIntro }) {
 
       {/* impact tiles */}
       <div style={{ display: "grid", gridTemplateColumns: mobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: 1, background: P.line, border: `1px solid ${P.cardBd}`, borderRadius: 14, overflow: "hidden", marginBottom: 28 }}>
-        {ROLE.impact.map((s, i) => (
+        {impact.map((s, i) => (
           <div key={i} style={{ background: P.statTile, padding: "18px 16px" }}>
-            <div style={{ fontFamily: P.font, fontWeight: 800, fontSize: 30, letterSpacing: "-0.04em", lineHeight: 1, color: i === ROLE.impact.length - 1 ? P.goldTxt : P.text }}>{s.n}</div>
+            <div style={{ fontFamily: P.font, fontWeight: 800, fontSize: 30, letterSpacing: "-0.04em", lineHeight: 1, color: (hasAccent ? s.accent : i === impact.length - 1) ? P.goldTxt : P.text }}>{s.n}</div>
             <div style={{ ...monoS(P, { fontSize: 9.5, marginTop: 9, lineHeight: 1.4 }) }}>{s.l}</div>
           </div>
         ))}
