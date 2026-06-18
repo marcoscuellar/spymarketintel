@@ -115,7 +115,7 @@ function PortfolioView() {
         <div style={{ height: 1, background: P.pgLine }} />
 
         {/* hero — matches the search room / dossier */}
-        <div style={{ padding: "56px 0 44px", paddingLeft: "clamp(0px, 5vw, 90px)" }}>
+        <div style={{ padding: "56px 0 44px", paddingLeft: "clamp(0px, 5vw, 90px)", animation: "spgRise .6s both", animationDelay: "0.02s" }}>
           <div style={{ fontFamily: P.mono, fontSize: 14, fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase", color: P.pgGold, marginBottom: 26 }}>
             Active engagement
           </div>
@@ -133,21 +133,21 @@ function PortfolioView() {
         </div>
 
         {/* MARKET INTEL — full brief */}
-        <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 18 }}>
-          <span style={{ ...sectionH(P, { fontSize: 19 }) }}>Market intel</span>
-          <span style={{ ...mono(P, { fontSize: 10 }) }}>Across your open roles</span>
-        </div>
-        <div style={{ marginBottom: 50 }}>
+        <div style={{ marginBottom: 50, animation: "spgRise .6s both", animationDelay: "0.12s" }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 18 }}>
+            <span style={{ ...sectionH(P, { fontSize: 19 }) }}>Market intel</span>
+            <span style={{ ...mono(P, { fontSize: 10 }) }}>Across your open roles</span>
+          </div>
           <SearchBrief P={P} hideIntro impact={COMPANY_INTEL} />
         </div>
 
         {/* BREAKDOWN OF THE ROLES */}
         <div style={{ ...sectionH(P, { fontSize: 19, marginBottom: 16 }) }}>Breakdown of the roles</div>
-        {groups.map((g) => {
+        {groups.map((g, gi) => {
           const items = SEARCHES.filter((s) => s.group === g.key);
           if (!items.length) return null;
           return (
-            <div key={g.key} style={{ marginBottom: 30 }}>
+            <div key={g.key} style={{ marginBottom: 30, animation: "spgRise .6s both", animationDelay: `${0.22 + gi * 0.08}s` }}>
               <div style={{ ...mono(P, { fontSize: 10, color: P.text3 }), marginBottom: 12, display: "flex", alignItems: "center", gap: 10 }}>
                 {g.title} <span style={{ color: P.text4 }}>·</span> {items.length}
               </div>
