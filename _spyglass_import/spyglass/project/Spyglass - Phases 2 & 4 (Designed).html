@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spyglass · Phases 2 &amp; 4 — Designed</title>
+  <link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="brand/tokens.css" />
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      color: var(--ink);
+      background: var(--paper);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      letter-spacing: -0.01em;
+    }
+    ::selection { background: var(--ink); color: #fff; }
+    button { font-family: inherit; }
+    @keyframes spgSpin { to { transform: rotate(360deg); } }
+    @keyframes spgReveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+    @keyframes spgFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes spgSlideIn { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) {
+      [style*="spgSlideIn"], [style*="spgFade"] { animation: none !important; }
+    }
+    /* === Type scale — bumped for readability (carried from the app) === */
+    .t-body      { font-size: 16.5px; line-height: 1.55; }
+    .t-mono-btn  { font-size: 13px; }
+    .t-mono-tag  { font-size: 12.5px; }
+    .t-mono-xs   { font-size: 11.5px; letter-spacing: 0.06em; }
+    .t-section-label { font-weight: 700; color: var(--ink-2); }
+    .t-card-lg   { font-size: 27px; }
+    .t-display-lg{ font-size: 42px; }
+    /* === Re-skin: navy + black + white; gold as a jewel only === */
+    :root {
+      --amber-bg:   #f5f5f4;
+      --amber-pale: #ececea;
+      --gold-line:  #e7e5e4;
+      --amber-dd:   #0A1F3D;
+      --amber-ddd:  #0A1F3D;
+      --green-d:    #0A1F3D;
+      --green:      #0A1F3D;
+    }
+    ::-webkit-scrollbar { width: 11px; height: 11px; }
+    ::-webkit-scrollbar-thumb { background: var(--ink-4); border-radius: 99px; border: 3px solid var(--bg); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--ink-3); }
+
+    /* ===================== Document chrome ===================== */
+    .doc { max-width: 1160px; margin: 0 auto; padding: 52px 40px 130px; }
+
+    .masthead { display: flex; justify-content: space-between; align-items: flex-start; gap: 34px; flex-wrap: wrap; padding-bottom: 30px; border-bottom: 1px solid var(--line); }
+    .brandrow { display: flex; align-items: center; gap: 13px; margin-bottom: 26px; }
+    .brandrow .cap { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; border-left: 1px solid var(--line); padding-left: 13px; }
+    h1.title { font-weight: 800; font-size: 52px; line-height: 0.98; letter-spacing: -0.045em; margin: 0; }
+    h1.title .lt { color: var(--ink-3); font-weight: 400; }
+    .sub { font-size: 17.5px; line-height: 1.5; color: var(--ink-2); max-width: 46ch; margin: 20px 0 0; }
+    .stamp { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--navy); background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-2); padding: 8px 12px; white-space: nowrap; }
+
+    /* phase header */
+    .phase { display: flex; align-items: center; gap: 15px; margin: 64px 0 14px; }
+    .phase .pn { font-family: var(--mono); font-size: 13px; font-weight: 600; color: #fff; background: var(--ink); border-radius: var(--r-2); width: 32px; height: 32px; display: grid; place-items: center; flex-shrink: 0; }
+    .phase.navy .pn { background: var(--navy); }
+    .phase .pt { font-size: 27px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+    .phase .pd { font-size: 14.5px; color: var(--ink-3); margin-top: 4px; }
+    .phase .rule { flex: 1; height: 1px; background: var(--line); margin-left: 6px; }
+
+    .phase-note { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin: 0 0 22px 47px; }
+    .pchip { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-2); background: var(--bg); border: 1px solid var(--line); border-radius: 100px; padding: 6px 13px; }
+    .pchip .sw { width: 9px; height: 9px; border-radius: 3px; flex-shrink: 0; }
+    .pchip .sw.r { background: var(--ink); }
+    .pchip .sw.c { background: var(--navy); }
+    .pchip .sw.g { background: var(--amber); }
+
+    /* browser frame */
+    .frame { border: 1px solid var(--line); border-radius: var(--r-6); overflow: hidden; box-shadow: var(--sh-card); background: var(--bg); }
+    .frame-bar { height: 40px; display: flex; align-items: center; gap: 14px; padding: 0 16px; background: #faf9f7; border-bottom: 1px solid var(--line); }
+    .frame-dots { display: flex; gap: 7px; }
+    .frame-dots i { width: 11px; height: 11px; border-radius: 99px; background: #dcd9d3; display: block; }
+    .frame-url { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.03em; color: var(--ink-3); background: #fff; border: 1px solid var(--line); border-radius: 7px; padding: 5px 14px; flex: 1 1 auto; max-width: 420px; }
+    .frame-tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap; }
+    .frame-scroll { height: 840px; overflow-y: auto; overflow-x: hidden; }
+    .frame-scroll.client { background: var(--paper); }
+    .frame-pad { padding: 32px 40px 44px; }
+
+    .footnote { margin-top: 56px; padding-top: 26px; border-top: 1px solid var(--line); font-size: 15.5px; color: var(--ink-2); line-height: 1.6; max-width: 70ch; }
+    .footnote b { color: var(--ink); font-weight: 700; }
+
+    /* ===================== Flow stepper ===================== */
+    .stepper { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 30px 0 26px; padding: 16px 0; background: var(--paper); border-bottom: 1px solid var(--line); }
+    .step { display: inline-flex; align-items: center; gap: 11px; padding: 9px 16px 9px 10px; border: 1px solid var(--line); border-radius: 100px; background: var(--bg); cursor: pointer; transition: all .2s var(--ease); font-family: var(--font); }
+    .step:hover:not(:disabled) { border-color: var(--ink-3); }
+    .step .sn { font-family: var(--mono); font-size: 12px; font-weight: 600; width: 27px; height: 27px; border-radius: 99px; display: grid; place-items: center; background: var(--ink-4); color: #fff; flex-shrink: 0; transition: all .2s; }
+    .step .sl { font-weight: 600; font-size: 15px; letter-spacing: -0.01em; color: var(--ink-3); transition: color .2s; white-space: nowrap; }
+    .step.done .sn { background: var(--navy); }
+    .step.done .sl { color: var(--ink); }
+    .step.on { border-color: var(--ink); background: var(--ink); }
+    .step.on .sn { background: #fff; color: var(--ink); }
+    .step.on .sl { color: #fff; }
+    .step.action.on { border-color: var(--navy); background: var(--navy); }
+    .step.action.on .sn { color: var(--navy); }
+    .step-line { width: 26px; height: 1px; background: var(--line); flex-shrink: 0; }
+    .step-hint { margin-left: auto; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap; }
+
+    /* ===================== Frame body + submit ===================== */
+    .frame-body { background: var(--bg); }
+    .frame-body.client { background: var(--paper); }
+    .submitbar { margin-top: 34px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; padding: 22px 26px; border-radius: var(--r-6); border: 1px solid rgba(10,31,61,0.18); background: rgba(10,31,61,0.035); }
+    .submitbar .sb-ic { width: 42px; height: 42px; border-radius: 12px; background: #fff; border: 1px solid rgba(10,31,61,0.16); display: grid; place-items: center; flex-shrink: 0; }
+    .submitbar .sb-t { font-weight: 700; font-size: 18px; letter-spacing: -0.02em; }
+    .submitbar .sb-d { font-size: 14.5px; color: var(--ink-2); margin-top: 3px; }
+    .submitstage { min-height: 560px; display: grid; place-items: center; padding: 40px; }
+
+    /* ===================== Matrix Builder ===================== */
+    .builder { max-width: 860px; margin: 0 auto; padding: 0 32px; }
+    .bld-screen { background: var(--paper); padding: 30px 0 38px; }
+    .app-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 28px; }
+    .app-bar-l { display: flex; align-items: center; gap: 11px; }
+    .app-wm { font-weight: 900; font-size: 16px; letter-spacing: -0.06em; line-height: 1; }
+    .app-bc { font-size: 14px; color: var(--ink-3); font-weight: 500; border-left: 1px solid var(--line); padding-left: 12px; }
+    .app-meta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+    .bld-hero { margin-bottom: 26px; }
+    .bld-card { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-7); box-shadow: 0 24px 60px -18px rgba(10,31,61,0.20), 0 4px 14px rgba(0,0,0,0.05); padding: 30px 32px; }
+    .bld-cardhead { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
+    .bld-sec { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2); font-weight: 600; display: inline-flex; align-items: center; gap: 9px; }
+    .bld-sec::before { content: ''; width: 14px; height: 2px; background: var(--amber); border-radius: 2px; display: inline-block; }
+    .bld-sec-rule { height: 1px; background: var(--line); margin: 28px 0 18px; }
+    .builder .bld-title { font-family: var(--font); font-weight: var(--tw-title-weight, 700); font-size: clamp(34px, 4.6vw, 50px); line-height: 1.04; letter-spacing: -0.03em; margin: 0 0 16px; color: var(--ink); }
+    .builder .bld-title .ed { font-family: var(--tw-ed-font, 'Newsreader', Georgia, serif); font-weight: 400; font-style: var(--tw-ed-style, italic); color: var(--tw-accent, var(--amber)); letter-spacing: -0.005em; }
+    .builder .bld-sub { font-size: 16px; color: var(--ink-2); line-height: 1.55; margin: 0 0 32px; max-width: 52ch; }
+    .bld-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+    .bld-mini-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); display: block; margin-bottom: 7px; }
+    .bld-input { width: 100%; box-sizing: border-box; border: 1px solid var(--line); border-radius: var(--r-3); padding: 11px 14px; font-family: var(--font); font-size: 15.5px; font-weight: 500; color: var(--ink); background: var(--paper); }
+    .bld-input:focus { outline: none; border-color: var(--navy); }
+    .bld-select { width: 100%; box-sizing: border-box; border: 1px solid var(--line); border-radius: var(--r-3); padding: 11px 36px 11px 14px; font-family: var(--font); font-size: 15.5px; font-weight: 500; color: var(--ink); background-color: var(--paper); cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%230A1F3D' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 13px center; }
+    .bld-select:focus { outline: none; border-color: var(--navy); }
+    .bld-select.placeholder { color: var(--ink-3); }
+    .bld-field { margin-bottom: 22px; }
+    .bld-flabel { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    .bld-flabel .l { font-weight: 700; font-size: 17px; letter-spacing: -0.02em; }
+    .bld-ta { width: 100%; box-sizing: border-box; border: 1px solid var(--line); border-radius: var(--r-4); padding: 15px 18px; font-family: var(--font); font-size: 15px; line-height: 1.6; color: var(--ink-2); background: var(--paper); resize: vertical; display: block; }
+    .bld-ta:focus { outline: none; border-color: var(--navy); color: var(--ink); }
+    .bld-ghost { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.04em; padding: 7px 12px; border-radius: var(--r-2); border: 1px solid var(--line); background: var(--bg); color: var(--ink-2); cursor: pointer; transition: all .18s var(--ease); }
+    .bld-ghost:hover { border-color: var(--ink-3); }
+    .bld-ghost.on { border-color: var(--navy); color: var(--navy); background: rgba(10,31,61,0.04); }
+    .filechip { display: inline-flex; align-items: center; gap: 9px; padding: 9px 13px; border-radius: var(--r-3); border: 1px solid rgba(10,31,61,0.16); background: rgba(10,31,61,0.04); font-size: 14px; font-weight: 500; color: var(--navy); margin-bottom: 11px; }
+    .bld-buildbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line); }
+    .bld-buildbar .note { font-size: 14px; color: var(--ink-3); display: inline-flex; align-items: center; gap: 9px; max-width: 42ch; line-height: 1.4; }
+    .bld-toprow { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .bld-rule { height: 1px; background: var(--line); margin: 15px 0 24px; }
+    .bld-sample { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-3); background: none; border: none; border-bottom: 1px solid var(--line); cursor: pointer; padding: 2px 0; transition: color .18s, border-color .18s; white-space: nowrap; }
+    .bld-sample:hover { color: var(--navy); border-color: var(--navy); }
+    .bld-jd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: stretch; }
+    .bld-jd-grid .bld-ta { height: 100%; }
+    .bld-drop { min-height: 152px; text-align: center; border: 1.5px dashed rgba(10,31,61,0.32); border-radius: var(--r-4); background: rgba(10,31,61,0.025); padding: 28px 20px; cursor: pointer; transition: all .2s var(--ease); }
+    .bld-drop-c { text-align: center; }
+    .bld-drop:hover { border-color: var(--navy); background: rgba(10,31,61,0.055); }
+    .bld-drop:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+    .bld-drop.attached { cursor: default; border-style: solid; border-color: rgba(10,31,61,0.18); background: rgba(10,31,61,0.04); }
+    .bld-drop-ic { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: #fff; border: 1px solid rgba(10,31,61,0.16); margin: 0 auto 12px; }
+    .bld-drop-t { font-family: var(--font); font-weight: 700; font-size: 15.5px; letter-spacing: -0.01em; }
+    .bld-drop-d { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); margin-top: 6px; }
+    .bld-drop .fn { font-weight: 700; font-size: 14.5px; letter-spacing: -0.01em; margin-bottom: 4px; word-break: break-word; max-width: 100%; }
+    .bld-drop .fm { font-size: 12px; color: var(--ink-3); line-height: 1.4; margin-bottom: 12px; }
+    .bld-drop .bld-ghost { display: inline-flex; }
+
+    /* Frame: borderless, no browser bar (always on) */
+    .frame { border: none; box-shadow: none; border-radius: 0; background: #fff; }
+    .frame-bar { display: none; }
+
+    /* Card theme: Navy — toggled via Tweaks (adds .theme-navy on <html>) */
+    .theme-navy .bld-screen { background: #fff; }
+    .theme-navy .bld-card { background: var(--navy); border-color: rgba(245,239,224,0.14); box-shadow: 0 32px 72px -20px rgba(10,31,61,0.50), 0 6px 18px rgba(10,31,61,0.22); }
+    .theme-navy .bld-card .bld-sec { color: rgba(245,239,224,0.85); }
+    .theme-navy .bld-card .bld-mini-label { color: rgba(245,239,224,0.62); }
+    .theme-navy .bld-card .bld-flabel .l { color: var(--cream); }
+    .theme-navy .bld-card .bld-sec-rule { background: rgba(245,239,224,0.14); }
+    .theme-navy .bld-card .bld-buildbar { border-top-color: rgba(245,239,224,0.14); }
+    .theme-navy .bld-card .bld-buildbar .note { color: rgba(245,239,224,0.62); }
+    .theme-navy .bld-card .bld-sample { color: rgba(245,239,224,0.72); border-bottom-color: rgba(245,239,224,0.3); }
+    .theme-navy .bld-card .bld-sample:hover { color: var(--cream); border-bottom-color: var(--cream); }
+    .theme-navy .bld-card .bld-input, .theme-navy .bld-card .bld-select, .theme-navy .bld-card .bld-ta { background: #fff; border-color: rgba(245,239,224,0.22); color: var(--ink); }
+    .theme-navy .bld-card .bld-ta { color: var(--ink-2); }
+    .theme-navy .bld-card .bld-input:focus, .theme-navy .bld-card .bld-select:focus, .theme-navy .bld-card .bld-ta:focus { border-color: var(--amber); color: var(--ink); }
+    .theme-navy .bld-card .bld-drop { background: rgba(245,239,224,0.05); border-color: rgba(245,239,224,0.32); }
+    .theme-navy .bld-card .bld-drop:hover { border-color: var(--cream); background: rgba(245,239,224,0.09); }
+    .theme-navy .bld-card .bld-drop-t, .theme-navy .bld-card .bld-drop .fn { color: var(--cream); }
+    .theme-navy .bld-card .bld-drop-d, .theme-navy .bld-card .bld-drop .fm { color: rgba(245,239,224,0.5); }
+    .theme-navy .bld-card .bld-ghost { color: rgba(245,239,224,0.72); border-color: rgba(245,239,224,0.25); background: transparent; }
+    .theme-navy .bld-card .bld-ghost:hover { border-color: rgba(245,239,224,0.5); color: var(--cream); }
+    @media (max-width: 560px) { .bld-jd-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 600px) { .bld-row { grid-template-columns: 1fr; } }
+
+    /* ===================== Editorial hero ===================== */
+    .hero { position: relative; overflow: hidden; background: var(--navy); color: var(--cream); border-radius: var(--r-8); padding: 50px 54px 42px; }
+    .hero-mark { position: absolute; right: -110px; bottom: -120px; width: 420px; height: 420px; opacity: 0.07; z-index: 1; pointer-events: none; }
+    .hero-top { position: relative; z-index: 2; display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+    .hero .brandrow { display: flex; align-items: center; gap: 13px; margin: 0; }
+    .hero .wm { font-weight: 900; font-size: 21px; letter-spacing: -0.07em; line-height: 1; color: var(--cream); }
+    .hero .cap { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--navy-fade); border-left: 1px solid rgba(245,239,224,0.22); padding-left: 13px; }
+    .hero-stamp { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber); border: 1px solid rgba(194,162,76,0.45); border-radius: var(--r-2); padding: 8px 12px; white-space: nowrap; }
+    .hero-rule { position: relative; z-index: 2; height: 1px; background: linear-gradient(90deg, rgba(194,162,76,0.65), rgba(245,239,224,0.06)); margin: 28px 0 26px; }
+    .hero-title { position: relative; z-index: 2; font-family: var(--font); font-weight: 300; font-size: clamp(42px, 6.4vw, 82px); line-height: 0.98; letter-spacing: -0.04em; margin: 0; color: var(--cream); max-width: 17ch; }
+    .hero-title .serif { font-family: 'Newsreader', Georgia, serif; font-weight: 400; font-style: italic; color: var(--amber); letter-spacing: -0.005em; }
+    .hero-sub { position: relative; z-index: 2; font-size: 17.5px; line-height: 1.55; color: rgba(245,239,224,0.74); max-width: 56ch; margin: 22px 0 0; }
+    .hero-sub b { color: var(--cream); font-weight: 600; }
+    .hero-index { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 0 28px; margin-top: 32px; padding-top: 18px; border-top: 1px solid rgba(245,239,224,0.13); }
+    .hero-step { display: flex; align-items: baseline; gap: 9px; }
+    .hero-step .n { font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; color: var(--navy-fade); }
+    .hero-step .l { font-size: 13.5px; font-weight: 500; letter-spacing: -0.01em; color: rgba(245,239,224,0.55); }
+    .hero-step.live .n { color: var(--amber); }
+    .hero-step.live .l { color: var(--cream); }
+
+    @media (max-width: 760px) {
+      h1.title { font-size: 40px; }
+      .doc { padding: 36px 22px 90px; }
+      .frame-pad { padding: 20px; }
+      .hero { padding: 30px 24px 28px; }
+      .hero-top { flex-direction: column; gap: 14px; }
+      .hero-title { font-size: clamp(34px, 9vw, 46px); }
+      .builder { padding: 0 18px; }
+      .bld-card { padding: 22px 18px; }
+      .bld-screen { padding: 22px 0 30px; }
+    }
+
+    /* ===================== Print: the Matrix only ===================== */
+    @media print {
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      .masthead, .stepper, .footnote, .frame-bar, .submitbar, .matrix-toolbar { display: none !important; }
+      .doc { padding: 0 !important; max-width: none !important; margin: 0 !important; }
+      .frame { border: none !important; box-shadow: none !important; border-radius: 0 !important; }
+      .frame-body { background: #fff !important; }
+      .frame-pad { padding: 0 !important; }
+      section { break-inside: avoid; }
+      @page { margin: 14mm; }
+    }
+  </style>
+</head>
+<body>
+  <template id="__bundler_thumbnail" data-bg-color="#0a0a0a">
+    <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+      <rect width="1200" height="800" fill="#0a0a0a"/>
+      <g transform="translate(550,290)">
+        <rect width="100" height="100" rx="28" fill="#0A1F3D"/>
+        <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"/>
+        <line x1="20" y1="50" x2="62" y2="50" stroke="#0A1F3D" stroke-width="1.4" stroke-dasharray="3 3"/>
+        <circle cx="72" cy="50" r="9" fill="#C2A24C"/>
+        <circle cx="72" cy="50" r="5" fill="#0A1F3D"/>
+        <circle cx="72" cy="50" r="2" fill="#C2A24C"/>
+      </g>
+      <text x="600" y="470" text-anchor="middle" font-family="Geist, sans-serif" font-weight="800" font-size="44" letter-spacing="-2" fill="#ffffff">SPYGLASS</text>
+      <text x="600" y="512" text-anchor="middle" font-family="monospace" font-size="18" letter-spacing="4" fill="#C2A24C">PHASES 2 &amp; 4</text>
+    </svg>
+  </template>
+
+  <div class="doc">
+    <div id="flow"></div>
+  </div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <!-- App component scripts (everything except app.jsx, which auto-mounts the whole product) -->
+  <script type="text/babel" src="app/data.jsx"></script>
+  <script type="text/babel" src="app/flow-data.jsx"></script>
+  <script type="text/babel" src="app/ui.jsx"></script>
+  <script type="text/babel" src="app/sourcing.jsx"></script>
+  <script type="text/babel" src="app/engagement.jsx"></script>
+  <script type="text/babel" src="app/dossier.jsx"></script>
+  <script type="text/babel" src="app/matrix.jsx"></script>
+  <script type="text/babel" src="app/client.jsx"></script>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+
+  <!-- Connected flow: Matrix (02) → Submit → Client portal (04) -->
+  <script type="text/babel">
+    const { useState, useContext, useEffect } = React;
+
+    // FlowContext (the client screens read from window.FlowContext)
+    const FlowContext = React.createContext(null);
+    window.FlowContext = FlowContext;
+
+    const SendIcon = ({ c = 'currentColor', s = 14 }) => (
+      <svg width={s} height={s} viewBox="0 0 16 16" fill="none"><path d="M14.5 1.5L7.3 8.7M14.5 1.5l-4.6 13-2.6-5.8L1.5 6.1l13-4.6z" stroke={c} strokeWidth="1.3" strokeLinejoin="round" strokeLinecap="round"/></svg>
+    );
+
+    function FlowSpin() {
+      return <div style={{ animation: 'spgSpin 1.1s linear infinite', width: 40, height: 40 }}><Mark variant="amber" size={40} /></div>;
+    }
+
+    const UploadIcon = ({ c = 'currentColor', s = 13 }) => (
+      <svg width={s} height={s} viewBox="0 0 16 16" fill="none"><path d="M8 11V3M5 6l3-3 3 3M3 13h10" stroke={c} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+    );
+    const MicIcon = ({ c = 'currentColor', s = 13 }) => (
+      <svg width={s} height={s} viewBox="0 0 16 16" fill="none"><rect x="6" y="2" width="4" height="7" rx="2" stroke={c} strokeWidth="1.3"/><path d="M4 8a4 4 0 008 0M8 12v2.5" stroke={c} strokeWidth="1.3" strokeLinecap="round"/></svg>
+    );
+    const FileGlyph = ({ c = 'var(--navy)', s = 14 }) => (
+      <svg width={s} height={s} viewBox="0 0 16 16" fill="none"><path d="M4 1.6h5L13 5.5V13.9a.5.5 0 01-.5.5h-9A.5.5 0 013 13.9V2.1a.5.5 0 01.5-.5z" stroke={c} strokeWidth="1.3" strokeLinejoin="round"/><path d="M9 1.6V5.6h4" stroke={c} strokeWidth="1.3" strokeLinejoin="round"/></svg>
+    );
+
+    const MX = window.SPYGLASS_DATA.MATRIX;
+    const SAMPLE_JD = [
+      MX.jd.summary, '', MX.jd.summary2, '',
+      'MUST HAVE', ...MX.jd.mustHave.map(x => '\u2022 ' + x), '',
+      'NICE TO HAVE', ...MX.jd.niceToHave.map(x => '\u2022 ' + x),
+    ].join('\n');
+    const SAMPLE_NOTES = [
+      'Client meeting \u2014 ' + MX.intake.meetingDate + '.',
+      MX.intake.attendees.join(', ') + '.', '',
+      'What they said they need:',
+      MX.intake.statedNeed, '',
+      'Reading between the lines (the real want):',
+      ...MX.intake.softSkills.map(s => '\u2013 ' + s.label + ': ' + s.note), '',
+      'Keep internal \u2014 never goes in front of a candidate:',
+      ...MX.intake.internalNotes.map(n => '\u2013 ' + n.tag + ': ' + n.note),
+    ].join('\n');
+
+    // ---- Build the prompt + parse the AI's Matrix JSON ----
+    const EMP_TYPES = ['Full time \u2014 Direct hire', 'Full time \u2014 Contract', 'Temp', 'Payrolling'];
+    const LOCATIONS = ['Remote', 'Onsite', 'Hybrid'];
+    function fmtDate(d) {
+      if (!d) return '';
+      try { const dt = new Date(d + 'T00:00:00'); return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); } catch (e) { return d; }
+    }
+    function buildPrompt({ role, client, date, empType, salary, location, jd, notes }) {
+      const roleLabel = (role && role.trim()) || 'the role described';
+      const clientLabel = (client && client.trim()) || 'the client';
+      return [
+        'You are Spyglass, an AI that turns a recruiter\'s job description and private client-meeting notes into a structured hiring "Matrix" for ' + roleLabel + ' at ' + clientLabel + '.',
+        'ENGAGEMENT: ' + (empType || 'unspecified') + (location ? ' \u00b7 ' + location : '') + (salary ? ' \u00b7 ' + salary : '') + (date ? ' \u00b7 opened ' + date : '') + '. (Type, location, and comp should shape the target titles, boolean, and watch-outs.)',
+        '',
+        'JOB DESCRIPTION:',
+        (jd && jd.trim()) || '(none provided)',
+        '',
+        'PRIVATE MEETING NOTES (the real, above-the-JD context \u2014 confidential, never shown to candidates):',
+        (notes && notes.trim()) || '(none provided)',
+        '',
+        'Return STRICT minified JSON, exactly these keys, no markdown fences, no commentary:',
+        '{"jd":{"title":"the role title","summary":"one sentence from the JD","summary2":"one sentence on seniority/context","mustHave":["3-4 short bullets"],"niceToHave":["2-3 short bullets"]},"lookFor":[{"signal":"2-4 word name","detail":"one sentence drawn from the NOTES"}],"questions":[{"q":"a candidate-safe interview question","surfaces":"what it reveals, 3-6 words","internal":"confidential why-we-ask guidance from the notes"}],"targetTitles":["3 job titles to source from"],"boolean":"a LinkedIn boolean search string","watchOuts":[{"flag":"2-4 word risk","note":"one sentence from the notes"}]}',
+        '',
+        'Rules: lookFor has 3 items; questions has 4 items; watchOuts has 2 items. Keep every string short. lookFor, each question\'s "internal" field, and watchOuts MUST be derived from the private notes (not the JD). Return ONLY the JSON.',
+      ].join('\n');
+    }
+
+    function parseMatrix(raw, payload) {
+      try {
+        let t = String(raw).trim().replace(/^```[a-z]*/i, '').replace(/```$/, '').trim();
+        const a = t.indexOf('{'), b = t.lastIndexOf('}');
+        if (a < 0 || b < 0) return null;
+        const o = JSON.parse(t.slice(a, b + 1));
+        if (!Array.isArray(o.lookFor) || !Array.isArray(o.questions)) return null;
+        const j = o.jd || {};
+        return {
+          client: (payload.client && payload.client.trim()) || '',
+          date: fmtDate(payload.date),
+          empType: (payload.empType || '').trim(),
+          salary: (payload.salary || '').trim(),
+          location: (payload.location || '').trim(),
+          jd: {
+            title: (payload.role && payload.role.trim()) || j.title || 'Open role',
+            fullText: (payload.jd || '').trim(),
+            summary: j.summary || '',
+            summary2: j.summary2 || '',
+            mustHave: Array.isArray(j.mustHave) ? j.mustHave : [],
+            niceToHave: Array.isArray(j.niceToHave) ? j.niceToHave : [],
+          },
+          lookFor: o.lookFor.map(x => ({ signal: x.signal || '', detail: x.detail || '' })),
+          questions: o.questions.map(x => ({ q: x.q || '', surfaces: x.surfaces || '', internal: x.internal || '' })),
+          targetTitles: Array.isArray(o.targetTitles) ? o.targetTitles : [],
+          boolean: o.boolean || '',
+          watchOuts: Array.isArray(o.watchOuts) ? o.watchOuts.map(x => ({ flag: x.flag || '', note: x.note || '' })) : [],
+        };
+      } catch (e) { return null; }
+    }
+
+    // ---- Stage 01: the Spyglass Matrix Builder intake ----
+    function BuilderStage({ onBuild }) {
+      const [role, setRole] = useState('');
+      const [clientName, setClientName] = useState('');
+      const [date, setDate] = useState('');
+      const [empType, setEmpType] = useState('');
+      const [salary, setSalary] = useState('');
+      const [location, setLocation] = useState('');
+      const [extracting, setExtracting] = useState(false);
+      const [jd, setJd] = useState('');
+      const [notes, setNotes] = useState('');
+      const [file, setFile] = useState(null);
+      const [fileHint, setFileHint] = useState(false);
+      const [listening, setListening] = useState(false);
+      const fileRef = React.useRef(null);
+      const ready = jd.trim() && notes.trim();
+      const dictate = () => { if (listening) return; setListening(true); setTimeout(() => setListening(false), 1800); };
+      const pick = () => fileRef.current && fileRef.current.click();
+      const onPick = (e) => {
+        const f = e.target.files && e.target.files[0];
+        e.target.value = '';
+        if (!f) return;
+        setFile(f.name);
+        if (/\.(txt|md|markdown|csv|rtf|json)$/i.test(f.name)) {
+          const r = new FileReader();
+          r.onload = () => { const t = String(r.result || '').trim(); if (t) { setJd(t); setFileHint(false); extractFields(t); } };
+          r.readAsText(f);
+        } else {
+          setFileHint(true);
+        }
+      };
+      const loadSample = () => { setRole('Senior Tax Manager'); setClientName('Meridian Wealth Advisors'); setDate('2026-06-06'); setEmpType('Full time \u2014 Direct hire'); setSalary('$160\u2013185k'); setLocation('Hybrid'); setJd(SAMPLE_JD); setNotes(SAMPLE_NOTES); setFile('Senior_Tax_Manager_JD.pdf'); setFileHint(false); };
+      const extractFields = async (text) => {
+        if (!text || !text.trim() || !(window.claude && typeof window.claude.complete === 'function')) return;
+        setExtracting(true);
+        try {
+          const prompt = 'From this recruiting job description and meeting notes, extract these fields as STRICT minified JSON (use an empty string for anything not stated). Keys: "role","client","date" (YYYY-MM-DD or ""),"empType" (one of: ' + EMP_TYPES.join(' | ') + '),"salary","location" (one of: Remote | Onsite | Hybrid).\n\nTEXT:\n' + text + '\n\nReturn ONLY the JSON.';
+          const raw = await window.claude.complete(prompt);
+          let s = String(raw).trim().replace(/^```[a-z]*/i, '').replace(/```$/, '').trim();
+          const a = s.indexOf('{'), b = s.lastIndexOf('}');
+          const o = JSON.parse(s.slice(a, b + 1));
+          if (o.role) setRole(v => v || o.role);
+          if (o.client) setClientName(v => v || o.client);
+          if (o.date) setDate(v => v || o.date);
+          if (o.salary) setSalary(v => v || o.salary);
+          const me = EMP_TYPES.find(x => x.toLowerCase().replace(/[^a-z]/g, '') === String(o.empType || '').toLowerCase().replace(/[^a-z]/g, ''));
+          if (me) setEmpType(v => v || me);
+          const ml = LOCATIONS.find(x => x.toLowerCase() === String(o.location || '').toLowerCase());
+          if (ml) setLocation(v => v || ml);
+        } catch (e) {}
+        setExtracting(false);
+      };
+      return (
+        <div className="bld-screen">
+          <div className="builder">
+            <div className="app-bar">
+              <div className="app-bar-l">
+                <svg viewBox="0 0 100 100" width="26" height="26" aria-label="Spyglass">
+                  <rect width="100" height="100" rx="28" fill="#0A1F3D"></rect>
+                  <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"></rect>
+                  <line x1="20" y1="50" x2="62" y2="50" stroke="#0A1F3D" strokeWidth="1.4" strokeDasharray="3 3"></line>
+                  <circle cx="72" cy="50" r="9" fill="#C2A24C"></circle>
+                  <circle cx="72" cy="50" r="5" fill="#0A1F3D"></circle>
+                  <circle cx="72" cy="50" r="2" fill="#C2A24C"></circle>
+                </svg>
+                <span className="app-wm">SPYGLASS&nbsp;MATRIX</span>
+                <span className="app-bc">Builder</span>
+              </div>
+              <span className="app-meta">{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+            </div>
+
+            <div className="bld-hero">
+              <h2 className="bld-title">Ready. Set.<br />Create a <span className="ed">Spyglass Matrix</span>.</h2>
+              <p className="bld-sub">Add the role and drop in the brief. Spyglass drafts the strategy and screening, then splits it into a recruiter copy and a candidate-safe copy.</p>
+            </div>
+
+            <div className="bld-card">
+              <div className="bld-cardhead">
+                <span className="bld-sec">The brief</span>
+                <button className="bld-sample" onClick={loadSample}>Load a sample brief</button>
+              </div>
+
+              <label className="bld-mini-label" style={{ marginBottom: 9 }}>Job description</label>
+              <input ref={fileRef} type="file" accept=".txt,.md,.markdown,.csv,.rtf,.json,.pdf,.doc,.docx" onChange={onPick} style={{ display: 'none' }} />
+              <div className="bld-jd-grid">
+                <div className={'bld-drop' + (file ? ' attached' : '')} role="button" tabIndex={0} onClick={file ? undefined : pick} onKeyDown={(e) => { if (!file && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); pick(); } }}>
+                  {file ? (
+                    <div className="bld-drop-c">
+                      <span className="bld-drop-ic"><FileGlyph c="var(--navy)" s={18} /></span>
+                      <div className="fn">{file}</div>
+                      <div className="fm">{fileHint ? 'Can’t read this here — paste it instead' : 'Loaded · read on submit'}</div>
+                      <button className="bld-ghost" onClick={(e) => { e.stopPropagation(); pick(); }}>Replace</button>
+                    </div>
+                  ) : (
+                    <div className="bld-drop-c">
+                      <span className="bld-drop-ic"><UploadIcon c="var(--navy)" s={20} /></span>
+                      <div className="bld-drop-t">Upload here</div>
+                      <div className="bld-drop-d">PDF · DOCX · TXT</div>
+                    </div>
+                  )}
+                </div>
+                <textarea className="bld-ta" style={{ minHeight: 150 }} value={jd} onChange={e => setJd(e.target.value)} placeholder="…or paste the job description text." />
+              </div>
+
+              <div className="bld-field" style={{ marginTop: 22, marginBottom: 0 }}>
+                <div className="bld-flabel">
+                  <span className="l">Your meeting notes</span>
+                  <button className={'bld-ghost' + (listening ? ' on' : '')} onClick={dictate}>
+                    {listening ? <><span style={{ width: 7, height: 7, borderRadius: 99, background: 'var(--navy)', display: 'inline-block', animation: 'spgFade .8s var(--ease) infinite alternate' }}></span> Listening…</> : <><MicIcon /> Dictate</>}
+                  </button>
+                </div>
+                <textarea className="bld-ta" style={{ minHeight: 132 }} value={notes} onChange={e => setNotes(e.target.value)} placeholder="What did they actually say? The stuff between the lines — culture, dealbreakers, who burned them last time…" />
+              </div>
+
+              <div className="bld-sec-rule"></div>
+              <div className="bld-cardhead">
+                <span className="bld-sec">The engagement</span>
+                <button className="bld-sample" onClick={() => extractFields((jd + '\n\n' + notes).trim())} disabled={extracting || !(jd.trim() || notes.trim())} style={(extracting || !(jd.trim() || notes.trim())) ? { opacity: 0.4, cursor: 'not-allowed' } : undefined}>{extracting ? 'Reading the brief…' : '✨ Auto-fill from brief'}</button>
+              </div>
+              <div className="bld-row">
+                <div><label className="bld-mini-label">Role</label><input className="bld-input" value={role} onChange={e => setRole(e.target.value)} placeholder="e.g. Senior Tax Manager" /></div>
+                <div><label className="bld-mini-label">Client</label><input className="bld-input" value={clientName} onChange={e => setClientName(e.target.value)} placeholder="e.g. Meridian Wealth Advisors" /></div>
+              </div>
+              <div className="bld-row" style={{ marginTop: 14 }}>
+                <div><label className="bld-mini-label">Date opened</label><input type="date" className="bld-input" value={date} onChange={e => setDate(e.target.value)} /></div>
+                <div><label className="bld-mini-label">Engagement type</label>
+                  <select className={'bld-select' + (empType ? '' : ' placeholder')} value={empType} onChange={e => setEmpType(e.target.value)}>
+                    <option value="">Select…</option>
+                    {EMP_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="bld-row" style={{ marginTop: 14 }}>
+                <div><label className="bld-mini-label">Salary / hourly rate</label><input className="bld-input" value={salary} onChange={e => setSalary(e.target.value)} placeholder="e.g. $160–185k or $75/hr" /></div>
+                <div><label className="bld-mini-label">Location</label>
+                  <select className={'bld-select' + (location ? '' : ' placeholder')} value={location} onChange={e => setLocation(e.target.value)}>
+                    <option value="">Select…</option>
+                    {LOCATIONS.map(l => <option key={l} value={l}>{l}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div className="bld-buildbar">
+                <span className="note"><LockIcon c="currentColor" /> Your notes shape the strategy — the candidate copy never shows them.</span>
+                <Button kind="amber" icon={<Arrow />} onClick={() => ready && onBuild({ role, client: clientName, date, empType, salary, location, jd, notes })} disabled={!ready}>Build the Spyglass Matrix</Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ---- The bridge: AI building the Matrix ----
+    function BuildOverlay() {
+      const steps = ['Reading the job description…', 'Parsing your meeting notes…', 'Extracting the soft-skill signals…', 'Writing role-specific screening questions…', 'Forking recruiter + candidate copies…'];
+      const [s, setS] = useState(0);
+      useEffect(() => { const t = setInterval(() => setS(v => Math.min(v + 1, steps.length - 1)), 450); return () => clearInterval(t); }, []);
+      return (
+        <div className="submitstage">
+          <div style={{ textAlign: 'center', maxWidth: 480 }}>
+            <div style={{ display: 'inline-flex', marginBottom: 24 }}><FlowSpin /></div>
+            <div style={{ fontFamily: "'Geist', sans-serif", fontWeight: 700, fontSize: 24, letterSpacing: '-0.03em', marginBottom: 20 }}>Building the Matrix</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 11, textAlign: 'left' }}>
+              {steps.map((t, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, opacity: i <= s ? 1 : 0.32, transition: 'opacity .3s' }}>
+                  <span style={{ width: 18, height: 18, borderRadius: 99, display: 'grid', placeItems: 'center', background: i < s ? 'var(--navy)' : 'transparent', border: i < s ? 'none' : '1.5px solid var(--ink-4)', flexShrink: 0 }}>{i < s && <CheckIcon c="#fff" />}</span>
+                  <span style={{ fontFamily: "'Geist Mono', monospace", fontSize: 13.5, color: 'var(--ink-2)', letterSpacing: '0.01em' }}>{t}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ---- The stepper that orients + drives the flow ----
+    function FlowStepper({ stage, built, submitted, go, onSubmit }) {
+      const Node = ({ k, badge, label, action }) => {
+        const on =
+          (k === 'builder' && stage === 'builder') ||
+          (k === 'matrix' && (stage === 'building' || stage === 'matrix')) ||
+          (k === 'submit' && stage === 'submitting') ||
+          (k === 'client' && stage === 'client');
+        const done =
+          (k === 'builder' && stage !== 'builder') ||
+          (k === 'matrix' && (stage === 'submitting' || stage === 'client')) ||
+          (k === 'submit' && stage === 'client');
+        const cls = 'step' + (action ? ' action' : '') + (on ? ' on' : (done ? ' done' : ''));
+        const click = () => {
+          if (k === 'builder') go('builder');
+          else if (k === 'matrix') go('matrix');
+          else if (k === 'submit') { if (stage === 'matrix') onSubmit(); else go('client'); }
+          else if (k === 'client') go('client');
+        };
+        return (
+          <button className={cls} onClick={click} title="Jump to this step">
+            <span className="sn">{badge}</span><span className="sl">{label}</span>
+          </button>
+        );
+      };
+      return (
+        <div className="stepper">
+          <Node k="builder" badge="01" label="Matrix Builder" />
+          <span className="step-line"></span>
+          <Node k="matrix" badge="02" label="Generate & split" />
+          <span className="step-line"></span>
+          <Node k="submit" badge={<SendIcon c="currentColor" />} label="Submit to client" action />
+          <span className="step-line"></span>
+          <Node k="client" badge="04" label="Client decides & close" />
+          <span className="step-hint">Click any step to jump</span>
+        </div>
+      );
+    }
+
+    // ---- Stage 02: the Matrix doc + the submit-to-client bar ----
+    function MatrixStage({ onSubmit, onBack, matrix }) {
+      return (
+        <div className="frame-pad">
+          <button onClick={onBack} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-3)', fontFamily: "'Geist Mono', monospace", fontSize: 12, letterSpacing: '0.05em', textTransform: 'uppercase', padding: 0, marginBottom: 20 }}>← New engagement</button>
+          <MatrixTab run={true} onRun={() => {}} matrix={matrix} />
+          <div className="submitbar">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <span className="sb-ic"><LockIcon c="var(--navy)" /></span>
+              <div>
+                <div className="sb-t">Candidate-safe shortlist ready to send</div>
+                <div className="sb-d">Internal strategy sealed · candidate-safe dossiers packaged for Meridian Wealth Advisors</div>
+              </div>
+            </div>
+            <Button kind="primary" icon={<Arrow />} onClick={onSubmit}>Submit to client</Button>
+          </div>
+        </div>
+      );
+    }
+
+    // ---- The bridge: submitting to the client ----
+    function SubmitOverlay() {
+      const steps = ['Sealing internal strategy notes…', 'Packaging candidate-safe dossiers…', 'Encrypting the shortlist…', 'Sending to Meridian Wealth Advisors…'];
+      const [s, setS] = useState(0);
+      useEffect(() => { const t = setInterval(() => setS(v => Math.min(v + 1, steps.length - 1)), 430); return () => clearInterval(t); }, []);
+      return (
+        <div className="submitstage">
+          <div style={{ textAlign: 'center', maxWidth: 460 }}>
+            <div style={{ display: 'inline-flex', marginBottom: 24 }}><FlowSpin /></div>
+            <div style={{ fontFamily: "'Geist', sans-serif", fontWeight: 700, fontSize: 24, letterSpacing: '-0.03em', marginBottom: 20 }}>Submitting to the client</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 11, textAlign: 'left' }}>
+              {steps.map((t, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, opacity: i <= s ? 1 : 0.32, transition: 'opacity .3s' }}>
+                  <span style={{ width: 18, height: 18, borderRadius: 99, display: 'grid', placeItems: 'center', background: i < s ? 'var(--navy)' : 'transparent', border: i < s ? 'none' : '1.5px solid var(--ink-4)', flexShrink: 0 }}>{i < s && <CheckIcon c="#fff" />}</span>
+                  <span style={{ fontFamily: "'Geist Mono', monospace", fontSize: 13.5, color: 'var(--ink-2)', letterSpacing: '0.01em' }}>{t}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ---- The whole flow ----
+    function FlowApp() {
+      const { CANDS } = window.SPYGLASS_DATA;
+      const [stage, setStage] = useState('builder'); // builder | building | matrix | submitting | client
+      const [built, setBuilt] = useState(false);
+      const [genMatrix, setGenMatrix] = useState(null);
+      const [submitted, setSubmitted] = useState(false);
+      const [approvals, setApprovals] = useState(
+        () => Object.fromEntries(CANDS.filter(c => c.approval).map(c => [c.id, c.approval]))
+      );
+      const [feedback, setFeedback] = useState({});
+      const [placed, setPlaced] = useState(null);
+      const [clientView, setClientView] = useState({ name: 'portal', candId: null });
+
+      const build = async (payload) => {
+        setStage('building');
+        const minWait = new Promise(r => setTimeout(r, 2000));
+        let result = null;
+        try {
+          if (window.claude && typeof window.claude.complete === 'function') {
+            const raw = await window.claude.complete(buildPrompt(payload));
+            result = parseMatrix(raw, payload);
+          }
+        } catch (e) { result = null; }
+        await minWait;
+        setGenMatrix(result || window.SPYGLASS_DATA.MATRIX);
+        setBuilt(true);
+        setStage('matrix');
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      };
+      const submit = () => { setStage('submitting'); setSubmitted(true); setTimeout(() => { setStage('client'); window.scrollTo({ top: 0, behavior: 'auto' }); }, 1980); };
+      const go = (s) => { setStage(s); window.scrollTo({ top: 0, behavior: 'auto' }); };
+
+      const ctx = {
+        role: 'client', approvals,
+        approve: (id) => setApprovals(a => ({ ...a, [id]: 'approved' })),
+        feedback,
+        giveFeedback: (id, decision, note) => setFeedback(f => ({ ...f, [id]: { decision, note } })),
+        placed, place: (id) => setPlaced(id),
+        clientView, setClientView,
+      };
+
+      const isBuilder = stage === 'builder' || stage === 'building';
+      const url = stage === 'client' ? 'meridian.spyglass.app/shortlist' : isBuilder ? 'spyglass.app/matrix-builder' : 'spyglass.app/meridian/matrix';
+      const tag = stage === 'client' ? 'Client portal' : isBuilder ? 'Matrix Builder' : 'The Matrix';
+
+      return (
+        <>
+          <div className="frame">
+            <div className="frame-bar">
+              <div className="frame-dots"><i></i><i></i><i></i></div>
+              <div className="frame-url">{url}</div>
+              <span className="frame-tag">{tag}</span>
+            </div>
+            <div className={'frame-body' + (stage === 'client' ? ' client' : '')}>
+              {stage === 'builder' && <BuilderStage onBuild={build} />}
+              {stage === 'building' && <BuildOverlay />}
+              {stage === 'matrix' && <MatrixStage onSubmit={submit} onBack={() => go('builder')} matrix={genMatrix} />}
+              {stage === 'submitting' && <SubmitOverlay />}
+              {stage === 'client' && (
+                <FlowContext.Provider value={ctx}>
+                  <div style={{ paddingTop: 8 }}><ClientApp /></div>
+                </FlowContext.Provider>
+              )}
+            </div>
+          </div>
+        </>
+      );
+    }
+
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "headingWeight": "Bold",
+      "accent": "#C2A24C",
+      "accentFont": "Serif",
+      "cardTheme": "Light"
+    }/*EDITMODE-END*/;
+
+    function Root() {
+      const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+      useEffect(() => {
+        const r = document.documentElement.style;
+        r.setProperty('--tw-title-weight', t.headingWeight === 'Bold' ? '700' : '300');
+        r.setProperty('--tw-accent', t.accent);
+        r.setProperty('--tw-ed-font', t.accentFont === 'Serif' ? "'Newsreader', Georgia, serif" : 'var(--font)');
+        r.setProperty('--tw-ed-style', t.accentFont === 'Serif' ? 'italic' : 'normal');
+        document.documentElement.classList.toggle('theme-navy', t.cardTheme === 'Navy');
+      }, [t]);
+      return (
+        <>
+          <FlowApp />
+          <TweaksPanel title="Tweaks">
+            <TweakSection label="Builder heading" />
+            <TweakRadio label="Weight" value={t.headingWeight} options={['Light', 'Bold']} onChange={(v) => setTweak('headingWeight', v)} />
+            <TweakColor label={'\u201CEngagement\u201D color'} value={t.accent} options={['#C2A24C', '#0A1F3D', '#0a0a0a']} onChange={(v) => setTweak('accent', v)} />
+            <TweakRadio label={'\u201CEngagement\u201D font'} value={t.accentFont} options={['Serif', 'Sans']} onChange={(v) => setTweak('accentFont', v)} />
+            <TweakSection label="Card" />
+            <TweakRadio label="Theme" value={t.cardTheme} options={['Light', 'Navy']} onChange={(v) => setTweak('cardTheme', v)} />
+          </TweaksPanel>
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('flow')).render(<Root />);
+  </script>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spyglass · Phases 2 &amp; 4 — Designed</title>
+  <link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="brand/tokens.css" />
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      color: var(--ink);
+      background: var(--paper);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      letter-spacing: -0.01em;
+    }
+    ::selection { background: var(--ink); color: #fff; }
+    button { font-family: inherit; }
+    @keyframes spgSpin { to { transform: rotate(360deg); } }
+    @keyframes spgReveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+    @keyframes spgFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes spgSlideIn { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) {
+      [style*="spgSlideIn"], [style*="spgFade"] { animation: none !important; }
+    }
+    /* === Type scale — bumped for readability (carried from the app) === */
+    .t-body      { font-size: 16.5px; line-height: 1.55; }
+    .t-mono-btn  { font-size: 13px; }
+    .t-mono-tag  { font-size: 12.5px; }
+    .t-mono-xs   { font-size: 11.5px; letter-spacing: 0.06em; }
+    .t-section-label { font-weight: 700; color: var(--ink-2); }
+    .t-card-lg   { font-size: 27px; }
+    .t-display-lg{ font-size: 42px; }
+    /* === Re-skin: navy + black + white; gold as a jewel only === */
+    :root {
+      --amber-bg:   #f5f5f4;
+      --amber-pale: #ececea;
+      --gold-line:  #e7e5e4;
+      --amber-dd:   #0A1F3D;
+      --amber-ddd:  #0A1F3D;
+      --green-d:    #0A1F3D;
+      --green:      #0A1F3D;
+    }
+    ::-webkit-scrollbar { width: 11px; height: 11px; }
+    ::-webkit-scrollbar-thumb { background: var(--ink-4); border-radius: 99px; border: 3px solid var(--bg); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--ink-3); }
+
+    /* ===================== Document chrome ===================== */
+    .doc { max-width: 1160px; margin: 0 auto; padding: 52px 40px 130px; }
+
+    .masthead { display: flex; justify-content: space-between; align-items: flex-start; gap: 34px; flex-wrap: wrap; padding-bottom: 30px; border-bottom: 1px solid var(--line); }
+    .brandrow { display: flex; align-items: center; gap: 13px; margin-bottom: 26px; }
+    .brandrow .cap { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; border-left: 1px solid var(--line); padding-left: 13px; }
+    h1.title { font-weight: 800; font-size: 52px; line-height: 0.98; letter-spacing: -0.045em; margin: 0; }
+    h1.title .lt { color: var(--ink-3); font-weight: 400; }
+    .sub { font-size: 17.5px; line-height: 1.5; color: var(--ink-2); max-width: 46ch; margin: 20px 0 0; }
+    .stamp { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--navy); background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-2); padding: 8px 12px; white-space: nowrap; }
+
+    /* phase header */
+    .phase { display: flex; align-items: center; gap: 15px; margin: 64px 0 14px; }
+    .phase .pn { font-family: var(--mono); font-size: 13px; font-weight: 600; color: #fff; background: var(--ink); border-radius: var(--r-2); width: 32px; height: 32px; display: grid; place-items: center; flex-shrink: 0; }
+    .phase.navy .pn { background: var(--navy); }
+    .phase .pt { font-size: 27px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+    .phase .pd { font-size: 14.5px; color: var(--ink-3); margin-top: 4px; }
+    .phase .rule { flex: 1; height: 1px; background: var(--line); margin-left: 6px; }
+
+    .phase-note { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin: 0 0 22px 47px; }
+    .pchip { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-2); background: var(--bg); border: 1px solid var(--line); border-radius: 100px; padding: 6px 13px; }
+    .pchip .sw { width: 9px; height: 9px; border-radius: 3px; flex-shrink: 0; }
+    .pchip .sw.r { background: var(--ink); }
+    .pchip .sw.c { background: var(--navy); }
+    .pchip .sw.g { background: var(--amber); }
+
+    /* browser frame */
+    .frame { border: 1px solid var(--line); border-radius: var(--r-6); overflow: hidden; box-shadow: var(--sh-card); background: var(--bg); }
+    .frame-bar { height: 40px; display: flex; align-items: center; gap: 14px; padding: 0 16px; background: #faf9f7; border-bottom: 1px solid var(--line); }
+    .frame-dots { display: flex; gap: 7px; }
+    .frame-dots i { width: 11px; height: 11px; border-radius: 99px; background: #dcd9d3; display: block; }
+    .frame-url { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.03em; color: var(--ink-3); background: #fff; border: 1px solid var(--line); border-radius: 7px; padding: 5px 14px; flex: 1 1 auto; max-width: 420px; }
+    .frame-tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap; }
+    .frame-scroll { height: 840px; overflow-y: auto; overflow-x: hidden; }
+    .frame-scroll.client { background: var(--paper); }
+    .frame-pad { padding: 32px 40px 44px; }
+
+    .footnote { margin-top: 56px; padding-top: 26px; border-top: 1px solid var(--line); font-size: 15.5px; color: var(--ink-2); line-height: 1.6; max-width: 70ch; }
+    .footnote b { color: var(--ink); font-weight: 700; }
+
+    @media (max-width: 760px) {
+      h1.title { font-size: 40px; }
+      .doc { padding: 36px 22px 90px; }
+      .frame-pad { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <template id="__bundler_thumbnail" data-bg-color="#0a0a0a">
+    <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+      <rect width="1200" height="800" fill="#0a0a0a"/>
+      <g transform="translate(550,290)">
+        <rect width="100" height="100" rx="28" fill="#0A1F3D"/>
+        <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"/>
+        <line x1="20" y1="50" x2="62" y2="50" stroke="#0A1F3D" stroke-width="1.4" stroke-dasharray="3 3"/>
+        <circle cx="72" cy="50" r="9" fill="#C2A24C"/>
+        <circle cx="72" cy="50" r="5" fill="#0A1F3D"/>
+        <circle cx="72" cy="50" r="2" fill="#C2A24C"/>
+      </g>
+      <text x="600" y="470" text-anchor="middle" font-family="Geist, sans-serif" font-weight="800" font-size="44" letter-spacing="-2" fill="#ffffff">SPYGLASS</text>
+      <text x="600" y="512" text-anchor="middle" font-family="monospace" font-size="18" letter-spacing="4" fill="#C2A24C">PHASES 2 &amp; 4</text>
+    </svg>
+  </template>
+
+  <div class="doc">
+    <header class="masthead">
+      <div>
+        <div class="brandrow">
+          <svg viewBox="0 0 100 100" width="34" height="34" aria-label="Spyglass">
+            <rect width="100" height="100" rx="28" fill="#0A1F3D"></rect>
+            <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"></rect>
+            <line x1="20" y1="50" x2="62" y2="50" stroke="#0A1F3D" stroke-width="1.4" stroke-dasharray="3 3"></line>
+            <circle cx="72" cy="50" r="9" fill="#C2A24C"></circle>
+            <circle cx="72" cy="50" r="5" fill="#0A1F3D"></circle>
+            <circle cx="72" cy="50" r="2" fill="#C2A24C"></circle>
+          </svg>
+          <span style="font-weight:900;font-size:21px;letter-spacing:-0.07em;line-height:1;">SPYGLASS</span>
+          <span class="cap">PROJECT MATRIX · DESIGNED SCREENS</span>
+        </div>
+        <h1 class="title">Phases 2 &amp; 4<span class="lt">, designed.</span></h1>
+        <p class="sub">The two phases that carry the product. <b>Generate &amp; split</b> — one Master Matrix forked into a recruiter copy and a candidate-safe copy. <b>Client decides &amp; close</b> — the sanitized shortlist, the dossier, the decision, the placement. Both are live below — toggle, open, and click through them.</p>
+      </div>
+      <div class="stamp">Hi-fi · interactive</div>
+    </header>
+
+    <!-- ===================== PHASE 02 ===================== -->
+    <div class="phase">
+      <span class="pn">02</span>
+      <div><div class="pt">Generate &amp; split</div><div class="pd">One Master Matrix, two controlled copies</div></div>
+      <span class="rule"></span>
+    </div>
+    <div class="phase-note">
+      <span class="pchip"><span class="sw r"></span>Recruiter view · full strategy</span>
+      <span class="pchip"><span class="sw c"></span>Candidate view · sanitized</span>
+      <span class="pchip">Toggle the header to see the fork</span>
+    </div>
+    <div class="frame">
+      <div class="frame-bar">
+        <div class="frame-dots"><i></i><i></i><i></i></div>
+        <div class="frame-url">spyglass.app/meridian/matrix</div>
+        <span class="frame-tag">The Matrix</span>
+      </div>
+      <div class="frame-scroll">
+        <div class="frame-pad"><div id="phase2"></div></div>
+      </div>
+    </div>
+
+    <!-- ===================== PHASE 04 ===================== -->
+    <div class="phase navy">
+      <span class="pn">04</span>
+      <div><div class="pt">Client decides &amp; close</div><div class="pd">Sanitized shortlist · dossier · feedback · placement</div></div>
+      <span class="rule"></span>
+    </div>
+    <div class="phase-note">
+      <span class="pchip"><span class="sw c"></span>The one surface Meridian ever sees</span>
+      <span class="pchip">Open a dossier, then send a decision</span>
+      <span class="pchip"><span class="sw g"></span>Advance &rarr; extend an offer to close</span>
+    </div>
+    <div class="frame">
+      <div class="frame-bar">
+        <div class="frame-dots"><i></i><i></i><i></i></div>
+        <div class="frame-url">meridian.spyglass.app/shortlist</div>
+        <span class="frame-tag">Client portal</span>
+      </div>
+      <div class="frame-scroll client">
+        <div id="phase4"></div>
+      </div>
+    </div>
+
+    <p class="footnote">Phases <b>01 (Capture)</b> and <b>03 (Work the pipeline)</b> are intentionally out of scope here — these are the two surfaces being designed. The full flow map lives in <b>How It Works</b>.</p>
+  </div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <!-- App component scripts (everything except app.jsx, which auto-mounts the whole product) -->
+  <script type="text/babel" src="app/data.jsx"></script>
+  <script type="text/babel" src="app/flow-data.jsx"></script>
+  <script type="text/babel" src="app/ui.jsx"></script>
+  <script type="text/babel" src="app/sourcing.jsx"></script>
+  <script type="text/babel" src="app/engagement.jsx"></script>
+  <script type="text/babel" src="app/dossier.jsx"></script>
+  <script type="text/babel" src="app/matrix.jsx"></script>
+  <script type="text/babel" src="app/client.jsx"></script>
+
+  <!-- Focused render: just Phase 02 and Phase 04 -->
+  <script type="text/babel">
+    const { useState } = React;
+
+    // FlowContext (the client screens read from window.FlowContext)
+    const FlowContext = React.createContext(null);
+    window.FlowContext = FlowContext;
+
+    // ---- Phase 02 : the Matrix doc, with the recruiter <-> candidate fork ----
+    function Phase2() {
+      const [run] = useState(true);
+      return <MatrixTab run={run} onRun={() => {}} />;
+    }
+
+    // ---- Phase 04 : the full client flow, self-contained ----
+    function Phase4() {
+      const { CANDS } = window.SPYGLASS_DATA;
+      const [approvals, setApprovals] = useState(
+        () => Object.fromEntries(CANDS.filter(c => c.approval).map(c => [c.id, c.approval]))
+      );
+      const [feedback, setFeedback] = useState({});
+      const [placed, setPlaced] = useState(null);
+      const [clientView, setClientView] = useState({ name: 'portal', candId: null });
+
+      // keep navigation scoped inside the frame, not the whole page
+      const scrollFrame = () => {
+        const el = document.querySelector('#phase4');
+        const sc = el && el.closest('.frame-scroll');
+        if (sc) sc.scrollTo({ top: 0, behavior: 'auto' });
+      };
+      const setView = (v) => { setClientView(v); requestAnimationFrame(scrollFrame); };
+
+      const ctx = {
+        role: 'client',
+        approvals,
+        approve: (id) => setApprovals(a => ({ ...a, [id]: 'approved' })),
+        feedback,
+        giveFeedback: (id, decision, note) => setFeedback(f => ({ ...f, [id]: { decision, note } })),
+        placed,
+        place: (id) => setPlaced(id),
+        clientView,
+        setClientView: setView,
+      };
+      return (
+        <FlowContext.Provider value={ctx}>
+          <div style={{ paddingTop: 8 }}>
+            <ClientApp />
+          </div>
+        </FlowContext.Provider>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('phase2')).render(<Phase2 />);
+    ReactDOM.createRoot(document.getElementById('phase4')).render(<Phase4 />);
+  </script>
+</body>
+</html>

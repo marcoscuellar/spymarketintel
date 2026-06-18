@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GLVE Logo — Usage Examples (Vanilla HTML)</title>
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--ink);
+    padding: 48px;
+    line-height: 1.5;
+  }
+  h1 {
+    font-weight: 800;
+    font-size: 40px;
+    letter-spacing: -0.04em;
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 48px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .intro {
+    font-size: 16px;
+    color: var(--ink-2);
+    max-width: 60ch;
+    margin-bottom: 32px;
+  }
+  .example {
+    padding: 32px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-5);
+    background: #fff;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .example.dark {
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+  }
+  .example .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-left: auto;
+  }
+  .example.dark .label { color: rgba(255,255,255,0.5); }
+
+  /* === Wordmark === */
+  .glve-wordmark {
+    font-family: var(--font);
+    font-weight: 900;
+    letter-spacing: -0.08em;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    color: var(--ink);
+  }
+  .glve-wordmark .chev {
+    display: inline-block;
+    transform: translateY(0.04em);
+  }
+  .glve-wordmark .chev svg { display: block; }
+
+  /* Nav bar mock */
+  .nav-mock {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: -0.02em;
+  }
+
+  /* Lockup with tagline */
+  .lockup-tag {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .lockup-tag .stack { display: flex; flex-direction: column; gap: 4px; }
+  .lockup-tag .tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+</style>
+</head>
+<body>
+
+  <h1>GLVE Logo · Vanilla HTML Examples</h1>
+  <p class="intro">
+    Copy-paste reference for the four sanctioned logo variants and lockups.
+    All examples reference the SVGs in <code>../assets/</code> and the CSS
+    custom properties in <code>../tokens.css</code>. For React, see
+    <code>components/Logo.jsx</code>.
+  </p>
+
+  <!-- ====================================================== -->
+  <!-- 1 · MARK ONLY                                          -->
+  <!-- ====================================================== -->
+  <h2>[ 01 · MARK ONLY ]</h2>
+
+  <div class="example">
+    <img src="../assets/logo-primary.svg" width="28" height="28" alt="GLVE">
+    <img src="../assets/logo-primary.svg" width="40" height="40" alt="GLVE">
+    <img src="../assets/logo-primary.svg" width="64" height="64" alt="GLVE">
+    <img src="../assets/logo-primary.svg" width="88" height="88" alt="GLVE">
+    <span class="label">PRIMARY · 28 / 40 / 64 / 88</span>
+  </div>
+
+  <div class="example">
+    <img src="../assets/logo-amber-cufflink.svg" width="40" height="40" alt="GLVE E02">
+    <img src="../assets/logo-amber-cufflink.svg" width="64" height="64" alt="GLVE E02">
+    <span class="label">AMBER-CUFFLINK · E02 SURFACES</span>
+  </div>
+
+  <div class="example">
+    <img src="../assets/logo-navy-housing.svg" width="40" height="40" alt="GLVE Navy housing">
+    <img src="../assets/logo-navy-housing.svg" width="64" height="64" alt="GLVE Navy housing">
+    <span class="label">NAVY-HOUSING · STANDALONE MODALS</span>
+  </div>
+
+  <div class="example" style="background: var(--cream);">
+    <img src="../assets/logo-forest.svg" width="40" height="40" alt="GLVE Forest">
+    <img src="../assets/logo-forest.svg" width="64" height="64" alt="GLVE Forest">
+    <img src="../assets/logo-forest.svg" width="88" height="88" alt="GLVE Forest">
+    <span class="label" style="color: var(--forest);">FOREST · DECK COVERS / PREMIUM</span>
+  </div>
+
+  <div class="example">
+    <img src="../assets/logo-light.svg" width="40" height="40" alt="GLVE Light">
+    <img src="../assets/logo-light.svg" width="64" height="64" alt="GLVE Light">
+    <span class="label">LIGHT · ON WHITE / CREAM SURFACES</span>
+  </div>
+
+  <!-- ====================================================== -->
+  <!-- 2 · WORDMARK ONLY                                      -->
+  <!-- ====================================================== -->
+  <h2>[ 02 · WORDMARK ONLY ]</h2>
+
+  <div class="example">
+    <span class="glve-wordmark" style="font-size: 22px;">
+      <span>GL</span>
+      <span class="chev">
+        <svg width="0.62em" height="0.85em" viewBox="0 0 62 85">
+          <path d="M 4 4 L 31 78 L 58 4" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/>
+        </svg>
+      </span>
+      <span>E</span>
+    </span>
+    <span class="glve-wordmark" style="font-size: 36px;">
+      <span>GL</span>
+      <span class="chev">
+        <svg width="0.62em" height="0.85em" viewBox="0 0 62 85">
+          <path d="M 4 4 L 31 78 L 58 4" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/>
+        </svg>
+      </span>
+      <span>E</span>
+    </span>
+    <span class="glve-wordmark" style="font-size: 64px;">
+      <span>GL</span>
+      <span class="chev">
+        <svg width="0.62em" height="0.85em" viewBox="0 0 62 85">
+          <path d="M 4 4 L 31 78 L 58 4" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/>
+        </svg>
+      </span>
+      <span>E</span>
+    </span>
+    <span class="label">22 / 36 / 64 PX · GEIST 900</span>
+  </div>
+
+  <!-- ====================================================== -->
+  <!-- 3 · LOCKUPS                                            -->
+  <!-- ====================================================== -->
+  <h2>[ 03 · LOCKUPS — MARK + WORDMARK ]</h2>
+
+  <!-- Nav bar lockup -->
+  <div class="example">
+    <div class="nav-mock">
+      <img src="../assets/logo-primary.svg" width="28" height="28" alt="GLVE">
+      GLVE: Revenue Workflow
+    </div>
+    <span class="label">NAV BAR · 28PX</span>
+  </div>
+
+  <!-- Big horizontal lockup -->
+  <div class="example">
+    <div class="lockup-tag">
+      <img src="../assets/logo-primary.svg" width="64" height="64" alt="GLVE">
+      <span class="glve-wordmark" style="font-size: 56px;">
+        <span>GL</span>
+        <span class="chev">
+          <svg width="0.62em" height="0.85em" viewBox="0 0 62 85">
+            <path d="M 4 4 L 31 78 L 58 4" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/>
+          </svg>
+        </span>
+        <span>E</span>
+      </span>
+    </div>
+    <span class="label">HERO · BIG HORIZONTAL</span>
+  </div>
+
+  <!-- With tagline -->
+  <div class="example">
+    <div class="lockup-tag">
+      <img src="../assets/logo-primary.svg" width="56" height="56" alt="GLVE">
+      <div class="stack">
+        <span class="glve-wordmark" style="font-size: 40px;">
+          <span>GL</span>
+          <span class="chev">
+            <svg width="0.62em" height="0.85em" viewBox="0 0 62 85">
+              <path d="M 4 4 L 31 78 L 58 4" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/>
+            </svg>
+          </span>
+          <span>E</span>
+        </span>
+        <span class="tag">Revenue Workflow</span>
+      </div>
+    </div>
+    <span class="label">WITH TAGLINE · STACKED</span>
+  </div>
+
+  <!-- Reverse on ink -->
+  <div class="example dark">
+    <div class="lockup-tag">
+      <img src="../assets/logo-light.svg" width="56" height="56" alt="GLVE">
+      <span class="glve-wordmark" style="font-size: 40px; color: #fff;">
+        <span>GL</span>
+        <span class="chev">
+          <svg width="0.62em" height="0.85em" viewBox="0 0 62 85">
+            <path d="M 4 4 L 31 78 L 58 4" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/>
+          </svg>
+        </span>
+        <span>E</span>
+      </span>
+    </div>
+    <span class="label">REVERSE · ON INK</span>
+  </div>
+
+  <!-- Premium / forest -->
+  <div class="example" style="background: var(--cream);">
+    <div class="lockup-tag">
+      <img src="../assets/logo-forest.svg" width="64" height="64" alt="GLVE Forest">
+      <span class="glve-wordmark" style="font-size: 56px; color: var(--forest);">
+        <span>GL</span>
+        <span class="chev">
+          <svg width="0.62em" height="0.85em" viewBox="0 0 62 85">
+            <path d="M 4 4 L 31 78 L 58 4" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/>
+          </svg>
+        </span>
+        <span>E</span>
+      </span>
+    </div>
+    <span class="label" style="color: var(--forest);">FOREST · DECK COVER</span>
+  </div>
+
+  <!-- ====================================================== -->
+  <!-- ALL 16 VARIANTS · OVERVIEW                              -->
+  <!-- ====================================================== -->
+  <h2>[ 04 · ALL 16 VARIANTS · OVERVIEW ]</h2>
+  <p style="font-size: 14px; color: var(--ink-2); margin-bottom: 16px; max-width: 70ch;">Every sanctioned mark. Use the file name when referencing in code: <code style="font-family: var(--mono); font-size: 12px; background: var(--paper); padding: 2px 6px; border-radius: 3px;">../assets/logo-&lt;name&gt;.svg</code></p>
+
+  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+    <!-- System aligned -->
+    <div style="border: 1px solid var(--line); border-radius: 12px; padding: 16px; text-align: center;"><img src="../assets/logo-primary.svg" width="56" height="56"><div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--ink-3); margin-top: 10px;">primary</div></div>
+    <div style="border: 1px solid var(--line); border-radius: 12px; padding: 16px; text-align: center;"><img src="../assets/logo-amber-cufflink.svg" width="56" height="56"><div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--ink-3); margin-top: 10px;">amber-cufflink</div></div>
+    <div style="border: 1px solid var(--line); border-radius: 12px; padding: 16px; text-align: center;"><img src="../assets/logo-navy-cufflink.svg" width="56" height="56"><div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--ink-3); margin-top: 10px;">navy-cufflink</div></div>
+    <div style="border: 1px solid var(--line); border-radius: 12px; padding: 16px; text-align: center;"><img src="../assets/logo-light.svg" width="56" height="56"><div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--ink-3); margin-top: 10px;">light</div></div>
+    <!-- Accent-led -->
+    <div style="border: 1px solid var(--line); border-radius: 12px; padding: 16px; text-align: center;"><img src="../assets/logo-amber-band.svg" width="56" height="56"><div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--ink-3); margin-top: 10px;">amber-band</div></div>
+    <div style="border: 1px solid var(--line); border-radius: 12px; padding: 16px; text-align: center;"><img src="../assets/logo-navy-band.svg" width="56" height="56"><div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--ink-3); margin-top: 10px;">navy-band</div></div>
+    <div style="border: 1px solid var(--line); border-radius: 12px; padding: 16px; text-align: center;"><img src="../assets/logo-cream-band.svg" width="56" height="56"><div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--ink-3); margin-top: 10px;">cream-band</div></div>
+    <div style="border: 1px solid var(--line); border-radius: 12px; padding: 16px; text-align: center;"><img src="../assets/logo-tuxedo.svg" width="56" height="56"><div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--ink-3); margin-top: 10px;">tuxedo</div></div>
+    <!-- Color housing -->
+    <div style="border: 1px solid var(--line); border-radius: 12px; padding: 16px; text-align: center;"><img src="../assets/logo-amber-housing.svg" width="56" height="56"><div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--ink-3); margin-top: 10px;">amber-housing</div></div>
+    <div style="border: 1px solid var(--line); border-radius: 12px; padding: 16px; text-align: center;"><img src="../assets/logo-navy-housing.svg" width="56" height="56"><div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--ink-3); margin-top: 10px;">navy-housing</div></div>
+    <div style="border: 1px solid var(--line); border-radius: 12px; padding: 16px; text-align: center;"><img src="../assets/logo-cream-housing.svg" width="56" height="56"><div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--ink-3); margin-top: 10px;">cream-housing</div></div>
+    <div style="border: 1px solid var(--line); border-radius: 12px; padding: 16px; text-align: center;"><img src="../assets/logo-burgundy.svg" width="56" height="56"><div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--ink-3); margin-top: 10px;">burgundy</div></div>
+    <!-- Brand world -->
+    <div style="border: 1px solid var(--line); border-radius: 12px; padding: 16px; text-align: center; background: var(--cream);"><img src="../assets/logo-forest.svg" width="56" height="56"><div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--forest); margin-top: 10px;">forest</div></div>
+    <div style="border: 1px solid var(--line); border-radius: 12px; padding: 16px; text-align: center;"><img src="../assets/logo-sand.svg" width="56" height="56"><div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--ink-3); margin-top: 10px;">sand</div></div>
+    <div style="border: 1px solid var(--line); border-radius: 12px; padding: 16px; text-align: center;"><img src="../assets/logo-amber-pale.svg" width="56" height="56"><div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--ink-3); margin-top: 10px;">amber-pale</div></div>
+    <div style="border: 1px solid var(--line); border-radius: 12px; padding: 16px; text-align: center;"><img src="../assets/logo-outline.svg" width="56" height="56"><div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--ink-3); margin-top: 10px;">outline</div></div>
+  </div>
+
+  <!-- ====================================================== -->
+  <!-- 5 · FAVICON                                            -->
+  <!-- ====================================================== -->
+  <h2>[ 05 · FAVICON · 16PX ]</h2>
+
+  <div class="example">
+    <img src="../assets/favicon.svg" width="16" height="16" alt="GLVE">
+    <img src="../assets/favicon.svg" width="32" height="32" alt="GLVE">
+    <img src="../assets/favicon.svg" width="64" height="64" alt="GLVE">
+    <span class="label">SIMPLIFIED · DROPS INNER RING + STITCH</span>
+  </div>
+
+  <p style="font-size: 13px; color: var(--ink-3); margin-top: 16px; font-family: var(--mono); letter-spacing: 0.05em;">
+    LINK USAGE: &lt;link rel="icon" type="image/svg+xml" href="/favicon.svg"&gt;
+  </p>
+
+</body>
+</html>

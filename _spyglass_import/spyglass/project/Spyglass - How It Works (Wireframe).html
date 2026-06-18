@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spyglass · How It Works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#ffffff; --bg-card:#ffffff; --paper:#f5f5f4;
+    --ink:#0a0a0a; --ink-2:#525252; --ink-3:#a3a3a3; --ink-4:#d4d4d4;
+    --line:#e7e5e4; --line-soft:#ededeb;
+    --amber:#C2A24C; --amber-d:#A6862F; --amber-dd:#876B1E; --amber-pale:#F1E7C9; --amber-bg:#FAF6EA; --gold-line:#E5D29B;
+    --navy:#0A1F3D; --navy-mid:#4B6177; --navy-soft:#8FA3B8;
+    --conn:#d8d6d1; --conn-arrow:#a3a3a3;
+    --font:'Geist',-apple-system,BlinkMacSystemFont,sans-serif;
+    --mono:'Geist Mono',ui-monospace,Menlo,monospace;
+    --r-2:8px; --r-3:12px; --r-4:14px; --r-5:16px; --r-6:20px;
+    --sh-card:0 12px 32px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.04);
+    --sh-hover:0 18px 40px rgba(0,0,0,0.09), 0 3px 8px rgba(0,0,0,0.05);
+    --ease:cubic-bezier(0.16,1,0.3,1);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{font-family:var(--font);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;letter-spacing:-0.01em;}
+  ::selection{background:var(--ink);color:#fff;}
+  .wrap{max-width:1140px;margin:0 auto;padding:46px 40px 130px;}
+
+  /* mono helpers */
+  .mono{font-family:var(--mono);}
+  .eyebrow{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3);}
+
+  /* ---------- header ---------- */
+  .masthead{display:flex;justify-content:space-between;align-items:flex-start;gap:34px;flex-wrap:wrap;padding-bottom:30px;border-bottom:1px solid var(--line);}
+  .brandrow{display:flex;align-items:center;gap:13px;margin-bottom:26px;}
+  .wordmark{font-weight:900;font-size:21px;letter-spacing:-0.07em;line-height:1;}
+  .brandrow .cap{font-family:var(--mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-3);font-weight:500;border-left:1px solid var(--line);padding-left:13px;}
+  h1.title{font-weight:800;font-size:54px;line-height:0.98;letter-spacing:-0.045em;margin:0;}
+  h1.title .lt{color:var(--ink-3);font-weight:400;}
+  .sub{font-size:17px;line-height:1.5;color:var(--ink-2);max-width:42ch;margin:20px 0 0;}
+  .stamp{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber-dd);background:var(--amber-bg);border:1px solid var(--gold-line);border-radius:var(--r-2);padding:8px 12px;white-space:nowrap;}
+
+  /* ---------- legend ---------- */
+  .legend{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:26px 0 0;}
+  .legend .lbl{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-3);margin-right:4px;}
+  .lchip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:100px;padding:6px 13px 6px 10px;font-size:13px;font-weight:500;color:var(--ink-2);background:var(--bg-card);white-space:nowrap;}
+  .sw{width:11px;height:11px;border-radius:4px;flex-shrink:0;}
+  .sw.r{background:var(--ink);} .sw.m{background:var(--amber);} .sw.c{background:var(--navy);}
+  .sw.ai{background:conic-gradient(var(--amber) 0 90deg,#fff 0 180deg,var(--amber) 0 270deg,#fff 0);border:1px solid var(--gold-line);}
+  .sw.cand{background:#fff;border:1.5px dashed var(--navy-mid);}
+
+  /* ---------- tabs ---------- */
+  .tabs{display:inline-flex;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-3);padding:4px;gap:4px;margin:34px 0 8px;}
+  .tab{font-family:var(--font);font-size:14.5px;font-weight:600;letter-spacing:-0.01em;cursor:pointer;border:none;background:transparent;color:var(--ink-2);padding:9px 18px;border-radius:9px;transition:all .2s var(--ease);display:inline-flex;align-items:center;gap:8px;white-space:nowrap;}
+  .tab:hover{color:var(--ink);}
+  .tab.on{background:var(--ink);color:#fff;}
+
+  /* ---------- phase header ---------- */
+  .phase{display:flex;align-items:center;gap:15px;margin:54px 0 26px;}
+  .phase .pn{font-family:var(--mono);font-size:12px;font-weight:600;color:#fff;background:var(--ink);border-radius:var(--r-2);width:30px;height:30px;display:grid;place-items:center;letter-spacing:0;flex-shrink:0;}
+  .phase .pt{font-size:25px;font-weight:700;letter-spacing:-0.03em;line-height:1;}
+  .phase .pd{font-size:14.5px;color:var(--ink-3);margin-top:3px;}
+  .phase .rule{flex:1;height:1px;background:var(--line);margin-left:6px;}
+
+  /* ---------- node card ---------- */
+  .col{max-width:560px;margin:0 auto;}
+  .node{position:relative;background:var(--bg-card);border:1px solid var(--line);border-radius:var(--r-5);box-shadow:var(--sh-card);padding:20px 22px;transition:box-shadow .25s var(--ease),transform .25s var(--ease);}
+  .node:hover{box-shadow:var(--sh-hover);transform:translateY(-2px);}
+  .nhd{display:flex;align-items:center;gap:11px;margin-bottom:15px;}
+  .nacc{width:18px;height:18px;border-radius:6px;flex-shrink:0;}
+  .nacc.r{background:var(--ink);} .nacc.m{background:var(--amber);} .nacc.c{background:var(--navy);}
+  .nacc.ai{background:conic-gradient(var(--amber) 0 90deg,#efe3c0 0 180deg,var(--amber) 0 270deg,#efe3c0 0);}
+  .nacc.cand{background:#fff;border:1.5px dashed var(--navy-mid);}
+  .naccs{display:inline-flex;gap:4px;align-items:center;flex-shrink:0;}
+  .naccs .sw{width:15px;height:15px;border-radius:5px;}
+  .lc .swrow{display:flex;gap:4px;margin-bottom:9px;}
+  .lc .swrow .sw{width:13px;height:13px;border-radius:4px;}
+  .nt{font-size:19px;font-weight:700;letter-spacing:-0.025em;line-height:1;white-space:nowrap;}
+  .ntag{margin-left:auto;font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;padding:4px 8px;border-radius:var(--r-2);white-space:nowrap;}
+  .ntag.r{background:var(--paper);color:var(--ink-2);border:1px solid var(--line);}
+  .ntag.m{background:var(--amber-bg);color:var(--amber-dd);border:1px solid var(--gold-line);}
+  .ntag.c{background:rgba(10,31,61,0.06);color:var(--navy);border:1px solid rgba(10,31,61,0.16);}
+  .ntag.ai{background:var(--amber-bg);color:var(--amber-dd);border:1px solid var(--gold-line);}
+  .ntag.cand{background:#fff;color:var(--navy-mid);border:1px dashed var(--navy-mid);}
+
+  .fields{display:flex;flex-direction:column;gap:9px;}
+  .fields.two{display:grid;grid-template-columns:1fr 1fr;gap:9px 22px;}
+  .f{display:flex;gap:10px;font-size:14.5px;color:var(--ink-2);line-height:1.3;}
+  .f::before{content:"—";color:var(--ink-4);flex-shrink:0;}
+  .nnote{font-size:13px;color:var(--ink-3);margin-top:14px;padding-top:13px;border-top:1px solid var(--line-soft);}
+
+  /* in-node buttons (brand) */
+  .btnrow{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px;}
+  .btn{font-family:var(--font);font-size:13px;font-weight:600;letter-spacing:-0.01em;padding:9px 15px;border-radius:var(--r-3);border:1px solid var(--line);background:transparent;color:var(--ink);}
+  .btn.solid{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .btn.ink{background:var(--ink);border-color:var(--ink);color:#fff;}
+
+  /* connectors */
+  .conn{display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 0;}
+  .conn .seg{width:1.5px;height:26px;background:var(--conn);}
+  .conn .chev{margin-top:-2px;color:var(--conn-arrow);display:block;}
+  .conn .clab{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-3);margin-top:8px;}
+
+  /* ---------- master matrix hub ---------- */
+  .hub{max-width:420px;margin:0 auto;background:var(--ink);color:#fff;border-radius:var(--r-6);padding:24px 28px;text-align:center;box-shadow:0 20px 48px rgba(0,0,0,0.22);}
+  .hub .heyebrow{font-family:var(--mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--amber);display:flex;align-items:center;justify-content:center;gap:8px;}
+  .hub .ht{font-size:25px;font-weight:800;letter-spacing:-0.03em;margin-top:10px;}
+  .hub .hs{font-size:13.5px;color:rgba(255,255,255,0.62);margin-top:5px;}
+
+  /* ---------- fork ---------- */
+  .forklab{text-align:center;font-family:var(--mono);font-size:10px;letter-spacing:0.13em;text-transform:uppercase;color:var(--ink-3);margin:20px 0 0;}
+  .branch{position:relative;height:34px;margin:4px auto 0;}
+  .branch .stem{position:absolute;left:50%;top:0;width:1.5px;height:17px;background:var(--conn);transform:translateX(-50%);}
+  .branch .bar{position:absolute;top:16px;left:25%;right:25%;height:1.5px;background:var(--conn);}
+  .branch .bar::before,.branch .bar::after{content:"";position:absolute;top:0;width:1.5px;height:18px;background:var(--conn);}
+  .branch .bar::before{left:0;} .branch .bar::after{right:0;}
+  .fork{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;}
+  .merge{position:relative;height:34px;margin:0 auto 0;}
+  .merge .bar{position:absolute;top:0;left:25%;right:25%;height:1.5px;background:var(--conn);}
+  .merge .bar::before,.merge .bar::after{content:"";position:absolute;bottom:0;top:-18px;width:1.5px;background:var(--conn);}
+  .merge .bar::before{left:0;} .merge .bar::after{right:0;}
+  .merge .stem{position:absolute;left:50%;top:16px;width:1.5px;height:18px;background:var(--conn);transform:translateX(-50%);}
+
+  /* ---------- pipeline kanban ---------- */
+  .kanban{display:flex;gap:7px;}
+  .kcol{flex:1;min-width:0;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-3);padding:9px 7px;display:flex;flex-direction:column;gap:6px;}
+  .kcol .kt{font-family:var(--mono);font-size:8.5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--ink-3);text-align:center;line-height:1.2;min-height:21px;display:flex;align-items:center;justify-content:center;}
+  .kcard{height:16px;border-radius:5px;background:#fff;border:1px solid var(--line);}
+  .kcol.ready{background:var(--amber-bg);border-color:var(--gold-line);}
+  .kcol.ready .kt{color:var(--amber-dd);}
+  .kcol.ready .kcard{background:#fff;border-color:var(--gold-line);}
+
+  /* ---------- client 2x2 ---------- */
+  .cgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+  .ccard{border:1px solid var(--line);border-radius:var(--r-3);background:var(--bg-card);padding:11px;display:flex;gap:11px;align-items:center;box-shadow:0 1px 2px rgba(0,0,0,0.03);}
+  .ccard svg{flex-shrink:0;}
+  .ccard .cl{flex:1;display:flex;flex-direction:column;gap:6px;}
+  .ccard .cl i{height:7px;border-radius:3px;background:var(--line);display:block;}
+  .ccard .cl i:first-child{width:80%;background:var(--ink-4);}
+  .ccard .cl i:last-child{width:55%;}
+
+  /* ---------- placement ---------- */
+  .placement{max-width:380px;margin:0 auto;background:var(--amber-bg);border:1px solid var(--gold-line);border-radius:var(--r-6);padding:24px 28px;text-align:center;}
+  .placement .ht{font-size:23px;font-weight:800;letter-spacing:-0.03em;color:var(--amber-ddd,#6B541A);}
+  .placement .prow{display:flex;justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap;}
+  .pchip{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--gold-line);border-radius:100px;padding:7px 14px;font-size:13.5px;font-weight:600;color:var(--amber-dd);white-space:nowrap;}
+
+  /* ---------- callouts ---------- */
+  .callouts{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:60px;}
+  .callout{border-radius:var(--r-5);padding:24px 26px;}
+  .callout.a{background:var(--paper);border:1px solid var(--line);}
+  .callout.b{background:var(--navy);}
+  .callout .ceye{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:12px;display:block;}
+  .callout.a .ceye{color:var(--amber-dd);}
+  .callout.b .ceye{color:var(--navy-soft);}
+  .callout p{margin:0;font-size:16px;line-height:1.55;}
+  .callout.a p{color:var(--ink-2);} .callout.a p b{color:var(--ink);font-weight:700;}
+  .callout.b p{color:rgba(255,255,255,0.75);} .callout.b p b{color:#fff;font-weight:700;}
+  .signalbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
+  .sg{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;border-radius:var(--r-2);padding:6px 11px;}
+  .callout.a .sg{background:var(--amber-bg);color:var(--amber-dd);border:1px solid var(--gold-line);}
+  .callout.b .sg{background:rgba(255,255,255,0.08);color:var(--navy-on,#93c5fd);border:1px solid rgba(255,255,255,0.18);}
+
+  /* ---------- swimlanes ---------- */
+  .lanes{display:none;flex-direction:column;margin-top:18px;border:1px solid var(--line);border-radius:var(--r-6);overflow:hidden;box-shadow:var(--sh-card);}
+  .lanes.on{display:flex;}
+  .lane{position:relative;display:grid;grid-template-columns:188px 1fr;border-bottom:1px solid var(--line);}
+  .lane:last-child{border-bottom:none;}
+  .lane:nth-child(even){background:#fcfcfb;}
+  .lanehd{padding:24px 20px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:7px;}
+  .lanehd .lname{font-size:21px;font-weight:700;letter-spacing:-0.025em;display:flex;align-items:center;gap:10px;}
+  .lanehd .lwho{font-size:13px;color:var(--ink-3);padding-left:25px;line-height:1.35;}
+  .lanecards{padding:22px 20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+  .lc{width:184px;border:1px solid var(--line);border-radius:var(--r-4);background:var(--bg-card);padding:14px 15px;box-shadow:0 1px 2px rgba(0,0,0,0.03);}
+  .lc h4{margin:0 0 9px;font-size:16px;font-weight:700;letter-spacing:-0.02em;}
+  .lc ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px;}
+  .lc li{font-size:13px;color:var(--ink-2);line-height:1.3;display:flex;gap:7px;}
+  .lc li::before{content:"—";color:var(--ink-4);}
+  .hop{font-family:var(--mono);font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);text-align:center;line-height:1.5;display:flex;flex-direction:column;align-items:center;gap:3px;}
+  .hop svg{color:var(--ink-4);}
+  .footnote{margin-top:30px;font-size:15px;color:var(--ink-2);text-align:center;line-height:1.6;}
+  .footnote .k{color:var(--amber-dd);font-weight:600;}
+
+  @media(max-width:760px){
+    .fork{grid-template-columns:1fr;gap:18px;}
+    .branch,.merge{display:none;}
+    .fields.two{grid-template-columns:1fr;}
+    .callouts{grid-template-columns:1fr;}
+    .lane{grid-template-columns:1fr;}
+    .lanehd{border-right:none;border-bottom:1px solid var(--line);}
+    h1.title{font-size:42px;}
+  }
+</style>
+</head>
+<body>
+<template id="__bundler_thumbnail" data-bg-color="#0a0a0a">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#0a0a0a"/>
+    <g transform="translate(550,300)">
+      <rect width="100" height="100" rx="28" fill="#0A1F3D"/>
+      <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"/>
+      <line x1="20" y1="50" x2="62" y2="50" stroke="#0A1F3D" stroke-width="1.4" stroke-dasharray="3 3"/>
+      <circle cx="72" cy="50" r="9" fill="#C2A24C"/>
+      <circle cx="72" cy="50" r="5" fill="#0A1F3D"/>
+      <circle cx="72" cy="50" r="2" fill="#C2A24C"/>
+    </g>
+    <text x="600" y="470" text-anchor="middle" font-family="Geist, sans-serif" font-weight="800" font-size="44" letter-spacing="-2" fill="#ffffff">SPYGLASS</text>
+    <text x="600" y="510" text-anchor="middle" font-family="monospace" font-size="18" letter-spacing="4" fill="#C2A24C">HOW IT WORKS</text>
+  </svg>
+</template>
+<div class="wrap">
+
+  <div class="masthead">
+    <div>
+      <div class="brandrow">
+        <svg viewBox="0 0 100 100" width="34" height="34" aria-label="Spyglass">
+          <rect width="100" height="100" rx="28" fill="#0A1F3D"></rect>
+          <rect x="14" y="38" width="72" height="24" rx="3" fill="#fff"></rect>
+          <line x1="20" y1="50" x2="62" y2="50" stroke="#0A1F3D" stroke-width="1.4" stroke-dasharray="3 3"></line>
+          <circle cx="72" cy="50" r="9" fill="#C2A24C"></circle>
+          <circle cx="72" cy="50" r="5" fill="#0A1F3D"></circle>
+          <circle cx="72" cy="50" r="2" fill="#C2A24C"></circle>
+        </svg>
+        <span class="wordmark">SPYGLASS</span>
+        <span class="cap">PROJECT MATRIX · SYSTEM FLOW</span>
+      </div>
+      <h1 class="title">How it works<span class="lt">.</span></h1>
+      <p class="sub">Intake becomes a Master Matrix. The Matrix splits into a recruiter copy and a candidate-facing copy, drives the pipeline, and a redacted shortlist reaches the client.</p>
+    </div>
+    <div class="stamp">Overview map</div>
+  </div>
+
+  <div class="legend">
+    <span class="lbl">Actors</span>
+    <span class="lchip"><span class="sw r"></span>Recruiter</span>
+    <span class="lchip"><span class="sw m"></span>Manager</span>
+    <span class="lchip"><span class="sw c"></span>Client</span>
+    <span class="lchip"><span class="sw ai"></span>AI generated</span>
+    <span class="lchip"><span class="sw cand"></span>Candidate-facing</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" data-view="flow">The flow</button>
+    <button class="tab" data-view="lanes">By persona</button>
+  </div>
+
+  <!-- ===================== VIEW 1 — FLOW MAP ===================== -->
+  <div id="flow">
+
+    <!-- PHASE 1 -->
+    <div class="phase">
+      <span class="pn">01</span>
+      <div><div class="pt">Capture</div><div class="pd">The brief, in the client's own words</div></div>
+      <span class="rule"></span>
+    </div>
+
+    <div class="col">
+      <div class="node">
+        <div class="nhd"><span class="naccs"><span class="sw c"></span><span class="sw r"></span><span class="sw m"></span></span><span class="nt">Client Intake</span><span class="ntag m">Manager-led</span></div>
+        <div class="fields two">
+          <div class="f">Job Description</div>
+          <div class="f">Intake Notes</div>
+          <div class="f">Soft Skills</div>
+          <div class="f">Compensation</div>
+          <div class="f">Timeline</div>
+        </div>
+        <div class="nnote">A three-way kickoff — the Manager leads, the Recruiter joins, the Client briefs.</div>
+      </div>
+      <div class="conn"><span class="seg"></span><svg class="chev" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+
+    <!-- PHASE 2 -->
+    <div class="phase">
+      <span class="pn">02</span>
+      <div><div class="pt">Generate &amp; split</div><div class="pd">One Master Matrix, two controlled copies</div></div>
+      <span class="rule"></span>
+    </div>
+
+    <div class="col">
+      <div class="node">
+        <div class="nhd"><span class="nacc ai"></span><span class="nt">AI Matrix Generation</span><span class="ntag ai">✦ AI</span></div>
+        <div class="fields two">
+          <div class="f">Role Summary</div>
+          <div class="f">Must Haves</div>
+          <div class="f">Nice To Haves</div>
+          <div class="f">Screening Questions</div>
+          <div class="f">Search Strategy</div>
+          <div class="f">Target Titles</div>
+          <div class="f">Boolean Search Assets</div>
+          <div class="f">Watch Outs</div>
+        </div>
+      </div>
+      <div class="conn"><span class="seg"></span><svg class="chev" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="hub">
+        <div class="heyebrow">✦ Single source of truth</div>
+        <div class="ht">MASTER MATRIX</div>
+        <div class="hs">everything downstream inherits from here</div>
+      </div>
+    </div>
+
+    <div class="forklab">— it splits into two views of the same record —</div>
+    <div class="branch"><span class="stem"></span><span class="bar"></span></div>
+
+    <div class="fork">
+      <div class="node">
+        <div class="nhd"><span class="nacc r"></span><span class="nt">Recruiter Matrix</span><span class="ntag r">Internal</span></div>
+        <div class="fields">
+          <div class="f">Job Description</div>
+          <div class="f">Must Haves</div>
+          <div class="f">Nice To Haves</div>
+          <div class="f">Questions</div>
+          <div class="f">Strategy</div>
+          <div class="f">Boolean</div>
+          <div class="f">Watch Outs</div>
+        </div>
+        <div class="nnote">Full strategy — never leaves the building.</div>
+      </div>
+
+      <div class="node">
+        <div class="nhd"><span class="nacc cand"></span><span class="nt">Candidate Form</span><span class="ntag cand">Candidate-facing</span></div>
+        <div class="fields">
+          <div class="f">Job Description</div>
+          <div class="f">Qualification Qs</div>
+          <div class="f">Resume Upload</div>
+          <div class="f">LinkedIn</div>
+          <div class="f">Compensation</div>
+          <div class="f">Availability</div>
+        </div>
+        <div class="nnote">The redacted, outward-facing slice.</div>
+      </div>
+    </div>
+
+    <div class="merge"><span class="bar"></span><span class="stem"></span></div>
+    <div class="conn" style="padding-top:0;"><svg class="chev" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="clab">both feed the workspace</span></div>
+
+    <!-- PHASE 3 -->
+    <div class="phase">
+      <span class="pn">03</span>
+      <div><div class="pt">Work the pipeline</div><div class="pd">Source, screen, write up, sign off</div></div>
+      <span class="rule"></span>
+    </div>
+
+    <div class="col">
+      <div class="node">
+        <div class="nhd"><span class="nacc r"></span><span class="nt">Recruiter Workspace</span><span class="ntag r">Recruiter</span></div>
+        <div class="kanban">
+          <div class="kcol"><span class="kt">Prospect</span><span class="kcard"></span><span class="kcard"></span></div>
+          <div class="kcol"><span class="kt">Contacted</span><span class="kcard"></span></div>
+          <div class="kcol"><span class="kt">Screening</span><span class="kcard"></span><span class="kcard"></span></div>
+          <div class="kcol"><span class="kt">Qualified</span><span class="kcard"></span></div>
+          <div class="kcol"><span class="kt">Internal Review</span><span class="kcard"></span></div>
+          <div class="kcol ready"><span class="kt">Client Ready</span><span class="kcard"></span></div>
+        </div>
+        <div class="nnote">Candidate pipeline — every card scored against the Matrix signals.</div>
+      </div>
+      <div class="conn"><span class="seg"></span><svg class="chev" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="node">
+        <div class="nhd"><span class="nacc ai"></span><span class="nt">AI Candidate Dossier</span><span class="ntag ai">✦ AI</span></div>
+        <div class="fields two">
+          <div class="f">Candidate Summary</div>
+          <div class="f">Matrix Alignment</div>
+          <div class="f">Areas To Validate</div>
+          <div class="f">Recruiter Notes</div>
+          <div class="f">Resume</div>
+        </div>
+      </div>
+      <div class="conn"><span class="seg"></span><svg class="chev" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="node">
+        <div class="nhd"><span class="nacc m"></span><span class="nt">Internal Approval</span><span class="ntag m">Manager</span></div>
+        <div class="f" style="margin-bottom:2px;">Recruiter manager review — the gate before the client.</div>
+        <div class="btnrow">
+          <span class="btn solid">Approve</span>
+          <span class="btn">Return for revision</span>
+        </div>
+      </div>
+      <div class="conn"><span class="seg"></span><svg class="chev" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="clab">released to client</span></div>
+    </div>
+
+    <!-- PHASE 4 -->
+    <div class="phase">
+      <span class="pn">04</span>
+      <div><div class="pt">Client decides &amp; close</div><div class="pd">Sanitized shortlist, feedback, placement</div></div>
+      <span class="rule"></span>
+    </div>
+
+    <div class="col">
+      <div class="node">
+        <div class="nhd"><span class="nacc c"></span><span class="nt">Client Portal</span><span class="ntag c">Client</span></div>
+        <div class="fields two" style="margin-bottom:15px;">
+          <div class="f">Editorial Header</div>
+          <div class="f">Search Progress</div>
+        </div>
+        <div class="cgrid">
+          <div class="ccard"><svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="11" fill="none" stroke="#e7e5e4" stroke-width="2.5"/><circle cx="13" cy="13" r="11" fill="none" stroke="#0A1F3D" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="55 69" transform="rotate(-90 13 13)"/></svg><span class="cl"><i></i><i></i></span></div>
+          <div class="ccard"><svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="11" fill="none" stroke="#e7e5e4" stroke-width="2.5"/><circle cx="13" cy="13" r="11" fill="none" stroke="#0A1F3D" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="48 69" transform="rotate(-90 13 13)"/></svg><span class="cl"><i></i><i></i></span></div>
+          <div class="ccard"><svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="11" fill="none" stroke="#e7e5e4" stroke-width="2.5"/><circle cx="13" cy="13" r="11" fill="none" stroke="#0A1F3D" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="42 69" transform="rotate(-90 13 13)"/></svg><span class="cl"><i></i><i></i></span></div>
+          <div class="ccard"><svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="11" fill="none" stroke="#e7e5e4" stroke-width="2.5"/><circle cx="13" cy="13" r="11" fill="none" stroke="#0A1F3D" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="36 69" transform="rotate(-90 13 13)"/></svg><span class="cl"><i></i><i></i></span></div>
+        </div>
+        <div class="nnote">Candidate grid (2×2) — internal strategy stripped out.</div>
+      </div>
+      <div class="conn"><span class="seg"></span><svg class="chev" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="node">
+        <div class="nhd"><span class="nacc c"></span><span class="nt">Expanded Candidate Dossier</span><span class="ntag c">Client</span></div>
+        <div class="fields">
+          <div class="f">Recruiter Write-Up</div>
+          <div class="f">Full Bio</div>
+          <div class="f">Resume Download</div>
+          <div class="f">Questions for Spyglass &nbsp;<span class="mono" style="font-size:11px;color:var(--ink-3);">[ text box ]</span></div>
+        </div>
+        <div class="btnrow">
+          <span class="btn">Pass</span>
+          <span class="btn">Continue review</span>
+          <span class="btn solid">Advance candidate</span>
+        </div>
+      </div>
+      <div class="conn"><span class="seg"></span><svg class="chev" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="node">
+        <div class="nhd"><span class="naccs"><span class="sw m"></span><span class="sw c"></span></span><span class="nt">Feedback Loop</span><span class="ntag m">Manager · Client</span></div>
+        <div class="fields">
+          <div class="f">Client Feedback</div>
+          <div class="f">Recruiter Notification</div>
+          <div class="f">Search Adjustments</div>
+        </div>
+        <div class="nnote">Adjustments feed back up into the Matrix &amp; pipeline ↺</div>
+      </div>
+      <div class="conn"><span class="seg"></span><svg class="chev" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="placement">
+        <div class="ht">PLACEMENT</div>
+        <div class="prow">
+          <span class="pchip"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7.5l3.2 3.2L12 4" stroke="#876B1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Offer</span>
+          <span class="pchip"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7.5l3.2 3.2L12 4" stroke="#876B1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Accepted</span>
+          <span class="pchip"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7.5l3.2 3.2L12 4" stroke="#876B1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Search Closed</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- callouts -->
+    <div class="callouts">
+      <div class="callout a">
+        <span class="ceye">The fork is the whole product</span>
+        <p><b>One record, two faces.</b> The Master Matrix is generated once, then projected into a Recruiter copy (full strategy) and a Candidate-facing copy. Same source — different audiences see different fields.</p>
+      </div>
+      <div class="callout b">
+        <span class="ceye">What carries through</span>
+        <p><b>The Matrix signals follow every candidate</b> — from the pipeline, into the AI dossier, through the manager's gate, and onto the client's grid.</p>
+        <div class="signalbar">
+          <span class="sg">Owned complexity</span>
+          <span class="sg">Real mentoring</span>
+          <span class="sg">Stability</span>
+          <span class="sg">Composure</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== VIEW 2 — SWIMLANES ===================== -->
+  <div id="lanes" class="lanes">
+
+    <div class="lane">
+      <div class="lanehd"><div class="lname"><span class="sw r"></span>Recruiter</div><div class="lwho">Joins intake, then runs the search end to end</div></div>
+      <div class="lanecards">
+        <div class="lc"><h4>Recruiter Matrix</h4><ul><li>Strategy + boolean</li><li>Questions</li><li>Watch outs</li></ul></div>
+        <span class="hop"><svg width="20" height="10" viewBox="0 0 20 10" fill="none"><path d="M1 5h16M14 1.5L18 5l-4 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="lc"><h4>Workspace</h4><ul><li>Pipeline, 6 stages</li><li>AI dossiers</li><li>Score vs signals</li></ul></div>
+        <span class="hop">place<svg width="20" height="10" viewBox="0 0 20 10" fill="none"><path d="M19 5H3M6 1.5L2 5l4 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+    </div>
+
+    <div class="lane">
+      <div class="lanehd"><div class="lname"><span class="sw cand"></span>Candidate</div><div class="lwho">The outward-facing form</div></div>
+      <div class="lanecards">
+        <span class="hop">redacted copy<svg width="10" height="20" viewBox="0 0 10 20" fill="none"><path d="M5 1v16M1.5 14L5 18l3.5-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="lc" style="border-style:dashed;border-color:var(--navy-mid);"><h4>Candidate Form</h4><ul><li>JD + qualification Qs</li><li>Resume / LinkedIn</li><li>Comp &amp; availability</li></ul></div>
+        <span class="hop">feeds pipeline<svg width="10" height="20" viewBox="0 0 10 20" fill="none"><path d="M5 19V3M1.5 6L5 2l3.5 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+    </div>
+
+    <div class="lane">
+      <div class="lanehd"><div class="lname"><span class="sw m"></span>Manager</div><div class="lwho">Leads the intake; the gate before the client</div></div>
+      <div class="lanecards">
+        <div class="lc" style="border-color:var(--gold-line);"><div class="swrow"><span class="sw c"></span><span class="sw r"></span><span class="sw m"></span></div><h4>Client Intake</h4><ul><li>Manager-led kickoff</li><li>Recruiter joins</li><li>Client briefs</li></ul></div>
+        <span class="hop">later<svg width="20" height="10" viewBox="0 0 20 10" fill="none"><path d="M1 5h16M14 1.5L18 5l-4 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="lc" style="border-color:var(--gold-line);"><h4>Internal Approval</h4><ul><li>Reviews dossier</li><li>Approve</li><li>Return for revision</li></ul></div>
+        <span class="hop">released<svg width="10" height="20" viewBox="0 0 10 20" fill="none"><path d="M5 1v16M1.5 14L5 18l3.5-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+    </div>
+
+    <div class="lane">
+      <div class="lanehd"><div class="lname"><span class="sw c"></span>Client</div><div class="lwho">The decision maker</div></div>
+      <div class="lanecards">
+        <div class="lc" style="border-color:rgba(10,31,61,0.2);"><h4>Client Portal</h4><ul><li>Editorial header</li><li>Search progress</li><li>2×2 grid</li></ul></div>
+        <span class="hop"><svg width="20" height="10" viewBox="0 0 20 10" fill="none"><path d="M1 5h16M14 1.5L18 5l-4 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="lc" style="border-color:rgba(10,31,61,0.2);"><h4>Expanded Dossier</h4><ul><li>Write-up + bio</li><li>Pass / Continue</li><li>Advance candidate</li></ul></div>
+        <span class="hop"><svg width="20" height="10" viewBox="0 0 20 10" fill="none"><path d="M1 5h16M14 1.5L18 5l-4 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="lc" style="border-color:var(--gold-line);"><div class="swrow"><span class="sw m"></span><span class="sw c"></span></div><h4>Feedback</h4><ul><li>Client feedback</li><li>Manager loops in</li><li>Search adjusts ↺</li></ul></div>
+        <span class="hop"><svg width="20" height="10" viewBox="0 0 20 10" fill="none"><path d="M1 5h16M14 1.5L18 5l-4 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="lc" style="background:var(--amber-bg);border-color:var(--gold-line);"><h4>Placement</h4><ul><li>Offer → accepted</li><li>Search closed</li></ul></div>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="footnote" id="lanefoot" style="display:none;">Four actors, one shared record. The <span class="k">Master Matrix</span> is the spine — the fork into recruiter vs candidate copies is what keeps internal strategy from ever reaching the wrong eyes.</p>
+
+</div>
+
+<script>
+  const tabs=document.querySelectorAll('.tab');
+  const flow=document.getElementById('flow');
+  const lanes=document.getElementById('lanes');
+  const lanefoot=document.getElementById('lanefoot');
+  function setView(v){
+    tabs.forEach(t=>t.classList.toggle('on',t.dataset.view===v));
+    flow.style.display = v==='flow' ? 'block':'none';
+    lanes.classList.toggle('on', v==='lanes');
+    lanefoot.style.display = v==='lanes' ? 'block':'none';
+    try{localStorage.setItem('spg_wf_view',v);}catch(e){}
+  }
+  tabs.forEach(t=>t.addEventListener('click',()=>setView(t.dataset.view)));
+  let saved='flow'; try{saved=localStorage.getItem('spg_wf_view')||'flow';}catch(e){}
+  setView(saved);
+</script>
+</body>
+</html>

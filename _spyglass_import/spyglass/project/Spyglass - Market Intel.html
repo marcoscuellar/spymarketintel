@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spyglass · Market Intel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #ffffff; font-family: 'Geist', sans-serif; }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+
+  <script>
+    (function () {
+      var L = window.lucide || {};
+      function makeIcon(name) {
+        return function Icon(props) {
+          props = props || {};
+          var size = props.size || 24, color = props.color || 'currentColor', sw = props.strokeWidth != null ? props.strokeWidth : 2;
+          var rest = {}; for (var k in props) { if (['size','color','strokeWidth'].indexOf(k) === -1) rest[k] = props[k]; }
+          var node = (L.icons && L.icons[name]) || L[name];
+          var children = (Array.isArray(node) && Array.isArray(node[2])) ? node[2] : [];
+          var kids = children.map(function (child, i) { return (Array.isArray(child) && child[0]) ? React.createElement(child[0], Object.assign({ key: i }, child[1] || {})) : null; });
+          return React.createElement('svg', Object.assign({ width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: sw, strokeLinecap: 'round', strokeLinejoin: 'round' }, rest), kids);
+        };
+      }
+      window.LucideIcons = new Proxy({}, { get: function (_, name) { return makeIcon(name); } });
+    })();
+  </script>
+
+  <script type="text/babel" src="app_preview/role-view.jsx"></script>
+  <script type="text/babel">
+    const { BRAND, THEMES, ROLE, SearchBrief, Mark, monoS } = window.SpyglassRoom;
+
+    function StandaloneIntel() {
+      const P = { ...BRAND, ...THEMES.light };
+      return (
+        <div style={{ fontFamily: P.font, color: P.pgText, background: P.pgBg, minHeight: "100vh", padding: "0 0 72px" }}>
+          <div style={{ maxWidth: 980, margin: "0 auto", padding: "0 32px" }}>
+            {/* top bar */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "26px 0 20px", gap: 20 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <Mark size={28} dark={P.pageDark} />
+                <span style={{ fontFamily: P.font, fontWeight: 900, fontSize: 17, letterSpacing: "-0.07em", color: P.pgText }}>SPYGLASS</span>
+                <span style={{ width: 1, height: 18, background: P.pgLine, margin: "0 4px" }} />
+                <span style={{ ...monoS(P, { fontSize: 11, color: P.pgText3 }) }}>Search intel</span>
+              </div>
+              <span style={{ ...monoS(P, { fontSize: 11, color: P.pgText3 }) }}>For {ROLE.client} · Confidential</span>
+            </div>
+            <div style={{ height: 1, background: P.pgLine }} />
+
+            {/* masthead */}
+            <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 32, flexWrap: "wrap", padding: "40px 0 36px" }}>
+              <div>
+                <div style={{ fontFamily: P.mono, fontSize: 13, fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", color: P.pgGold, marginBottom: 18 }}>{ROLE.eyebrow}</div>
+                <h1 style={{ fontWeight: 800, fontSize: "clamp(38px, 5.2vw, 60px)", lineHeight: 1.0, letterSpacing: "-0.04em", margin: 0, color: P.pgText, maxWidth: "16ch" }}>{ROLE.title}</h1>
+              </div>
+              <div style={{ display: "flex", gap: 32 }}>
+                {ROLE.funnel.map((s, i) => (
+                  <div key={i}>
+                    <div style={{ fontFamily: P.font, fontWeight: 800, fontSize: 30, letterSpacing: "-0.035em", lineHeight: 1, color: P.pgText }}>{s.n}</div>
+                    <div style={{ ...monoS(P, { fontSize: 10, marginTop: 7, color: P.pgText3 }) }}>{s.l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <SearchBrief P={P} />
+          </div>
+        </div>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(StandaloneIntel));
+  </script>
+</body>
+</html>
