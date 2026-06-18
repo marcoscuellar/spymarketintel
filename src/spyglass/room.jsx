@@ -246,9 +246,10 @@ function CompChart({ P }) {
   );
 }
 
-function SearchBrief({ P, hideIntro, impact = ROLE.impact }) {
+function SearchBrief({ P, hideIntro, impact = ROLE.impact, editing = false, onChangeCard, onAddCard, onRemoveCard }) {
   const mobile = useIsMobile();
   const hasAccent = impact.some((s) => s.accent);
+  const editField = { width: "100%", boxSizing: "border-box", border: `1px solid ${P.line}`, borderRadius: 6, background: P.bg, color: P.text, outline: "none", fontFamily: P.font };
   return (
     <div>
       {/* Why this search matters */}
@@ -262,11 +263,30 @@ function SearchBrief({ P, hideIntro, impact = ROLE.impact }) {
       {/* impact tiles */}
       <div style={{ display: "grid", gridTemplateColumns: mobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: 1, background: P.line, border: `1px solid ${P.cardBd}`, borderRadius: 14, overflow: "hidden", marginBottom: 28 }}>
         {impact.map((s, i) => (
-          <div key={i} style={{ background: P.statTile, padding: "18px 16px" }}>
-            <div style={{ fontFamily: P.font, fontWeight: 800, fontSize: 30, letterSpacing: "-0.04em", lineHeight: 1, color: (hasAccent ? s.accent : i === impact.length - 1) ? P.goldTxt : P.text }}>{s.n}</div>
-            <div style={{ ...monoS(P, { fontSize: 9.5, marginTop: 9, lineHeight: 1.4 }) }}>{s.l}</div>
+          <div key={i} style={{ background: P.statTile, padding: editing ? "14px 14px" : "18px 16px", position: "relative" }}>
+            {editing ? (
+              <React.Fragment>
+                <input value={s.n} placeholder="42" onChange={(e) => onChangeCard(i, "n", e.target.value)}
+                  style={{ ...editField, fontWeight: 800, fontSize: 26, letterSpacing: "-0.04em", padding: "4px 8px", marginBottom: 7, color: (hasAccent ? s.accent : i === impact.length - 1) ? P.goldTxt : P.text }} />
+                <input value={s.l} placeholder="Label" onChange={(e) => onChangeCard(i, "l", e.target.value)}
+                  style={{ ...editField, ...monoS(P, { fontSize: 9.5 }), padding: "5px 8px" }} />
+                <button onClick={() => onRemoveCard(i)} aria-label="Remove card"
+                  style={{ position: "absolute", top: 6, right: 6, width: 18, height: 18, lineHeight: "16px", textAlign: "center", borderRadius: 5, border: `1px solid ${P.line}`, background: P.bg, color: P.text3, cursor: "pointer", fontFamily: P.font, fontSize: 13, padding: 0 }}>×</button>
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <div style={{ fontFamily: P.font, fontWeight: 800, fontSize: 30, letterSpacing: "-0.04em", lineHeight: 1, color: (hasAccent ? s.accent : i === impact.length - 1) ? P.goldTxt : P.text }}>{s.n}</div>
+                <div style={{ ...monoS(P, { fontSize: 9.5, marginTop: 9, lineHeight: 1.4 }) }}>{s.l}</div>
+              </React.Fragment>
+            )}
           </div>
         ))}
+        {editing && (
+          <button onClick={onAddCard}
+            style={{ background: P.statTile, padding: "18px 16px", border: "none", cursor: "pointer", display: "grid", placeItems: "center", ...monoS(P, { fontSize: 11, color: P.goldTxt }) }}>
+            + Add card
+          </button>
+        )}
       </div>
 
       <GrowthGapChart P={P} />

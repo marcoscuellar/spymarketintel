@@ -3,14 +3,11 @@ import { RoleView } from "./spyglass/room.jsx";
 import { PortfolioView } from "./spyglass/portfolio.jsx";
 import { CandidateDossier } from "./spyglass/dossier.jsx";
 
-/* The three client-facing surfaces of the Dossier Specs preview.
-   (Placeability Gauge intentionally omitted.) */
-const VIEWS = [
-  { id: "portfolio", label: "Client Home" },
-  { id: "role", label: "Search Room" },
-  { id: "dossier", label: "Candidate Dossier" },
-];
-
+/* Client-facing portal. The default surface is the Client Home; the other
+   surfaces are reached through the page's own in-context navigation
+   (clicking a role row, "Open full dossier", "All searches", etc.) which the
+   views dispatch as window events. The internal spec-preview toolbar has been
+   removed. */
 export default function App() {
   const [view, setView] = useState("portfolio");
 
@@ -19,7 +16,6 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
-  // The view components navigate between surfaces by dispatching window events.
   useEffect(() => {
     const onDossier = () => go("dossier");
     const onRoom = () => go("role");
@@ -37,19 +33,5 @@ export default function App() {
   const Active =
     view === "portfolio" ? PortfolioView : view === "role" ? RoleView : CandidateDossier;
 
-  return (
-    <>
-      <div id="toolbar">
-        <span className="label">Spyglass · spec preview</span>
-        <div className="seg">
-          {VIEWS.map((v) => (
-            <button key={v.id} data-on={String(view === v.id)} onClick={() => go(v.id)}>
-              {v.label}
-            </button>
-          ))}
-        </div>
-      </div>
-      <Active />
-    </>
-  );
+  return <Active />;
 }

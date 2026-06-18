@@ -93,6 +93,17 @@ function PortfolioView() {
   const P = { ...BRAND, ...THEMES.light };
   const mono = monoS;
 
+  // Edit mode — lets the team edit/add the Client Home intel cards in place.
+  // (In-memory for now; this is where a save-to-backend hook will go later.)
+  const [editing, setEditing] = useState(
+    () => typeof window !== "undefined" && new URLSearchParams(window.location.search).get("edit") === "1"
+  );
+  const [cards, setCards] = useState(COMPANY_INTEL);
+  const onChangeCard = (i, key, val) =>
+    setCards((cs) => cs.map((c, idx) => (idx === i ? { ...c, [key]: val } : c)));
+  const onAddCard = () => setCards((cs) => [...cs, { n: "", l: "" }]);
+  const onRemoveCard = (i) => setCards((cs) => cs.filter((_, idx) => idx !== i));
+
   const groups = [
     { key: "decide", title: "Needs your decision" },
     { key: "progress", title: "In progress" },
@@ -110,7 +121,21 @@ function PortfolioView() {
             <span style={{ width: 1, height: 18, background: P.pgLine, margin: "0 4px" }} />
             <span style={{ ...mono(P, { fontSize: 11, color: P.pgText3 }) }}>Client home</span>
           </div>
-          <span style={{ ...mono(P, { fontSize: 11, color: P.pgText3 }) }}>Procare · Confidential</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <span style={{ ...mono(P, { fontSize: 11, color: P.pgText3 }) }}>Procare · Confidential</span>
+            <button
+              onClick={() => setEditing((e) => !e)}
+              style={{
+                ...mono(P, { fontSize: 10, color: editing ? "#241a05" : P.pgText3 }),
+                background: editing ? P.gold : "transparent",
+                border: `1px solid ${editing ? P.gold : P.pgLine}`,
+                padding: "6px 13px", borderRadius: 8, cursor: "pointer",
+                transition: `all .18s ${P.ease}`,
+              }}
+            >
+              {editing ? "Done" : "Edit"}
+            </button>
+          </div>
         </div>
         <div style={{ height: 1, background: P.pgLine }} />
 
@@ -138,7 +163,8 @@ function PortfolioView() {
             <span style={{ ...sectionH(P, { fontSize: 19 }) }}>Market intel</span>
             <span style={{ ...mono(P, { fontSize: 10 }) }}>Across your open roles</span>
           </div>
-          <SearchBrief P={P} hideIntro impact={COMPANY_INTEL} />
+          <SearchBrief P={P} hideIntro impact={cards} editing={editing}
+            onChangeCard={onChangeCard} onAddCard={onAddCard} onRemoveCard={onRemoveCard} />
         </div>
 
         {/* BREAKDOWN OF THE ROLES */}
