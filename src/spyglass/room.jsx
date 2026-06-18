@@ -260,10 +260,10 @@ function SearchBrief({ P, hideIntro, impact = ROLE.impact, editing = false, onCh
         </React.Fragment>
       )}
 
-      {/* impact tiles */}
-      <div style={{ display: "grid", gridTemplateColumns: mobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: 1, background: P.line, border: `1px solid ${P.cardBd}`, borderRadius: 14, overflow: "hidden", marginBottom: 28 }}>
+      {/* impact tiles — individual elevated cards */}
+      <div style={{ display: "grid", gridTemplateColumns: mobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: 14, marginBottom: 28 }}>
         {impact.map((s, i) => (
-          <div key={i} style={{ background: P.statTile, padding: editing ? "14px 14px" : "18px 16px", position: "relative" }}>
+          <div key={i} style={{ background: P.card, border: `1px solid ${P.cardBd}`, borderRadius: 14, boxShadow: P.sh, padding: editing ? "14px 14px" : "20px 18px", position: "relative" }}>
             {editing ? (
               <React.Fragment>
                 <input value={s.n} placeholder="42" onChange={(e) => onChangeCard(i, "n", e.target.value)}
@@ -283,7 +283,7 @@ function SearchBrief({ P, hideIntro, impact = ROLE.impact, editing = false, onCh
         ))}
         {editing && (
           <button onClick={onAddCard}
-            style={{ background: P.statTile, padding: "18px 16px", border: "none", cursor: "pointer", display: "grid", placeItems: "center", ...monoS(P, { fontSize: 11, color: P.goldTxt }) }}>
+            style={{ background: P.card, padding: "20px 18px", border: `1px dashed ${P.goldLine}`, borderRadius: 14, boxShadow: P.sh, cursor: "pointer", display: "grid", placeItems: "center", ...monoS(P, { fontSize: 11, color: P.goldTxt }) }}>
             + Add card
           </button>
         )}
