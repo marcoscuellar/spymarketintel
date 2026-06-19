@@ -2,21 +2,9 @@ import React, { useState } from "react";
 import { ArrowRight, TrendingUp } from "lucide-react";
 import { useIsMobile } from "./useIsMobile.js";
 import { BRAND, THEMES, monoS, sectionH, cardS, FitRing, SearchBrief } from "./room.jsx";
+import { SEARCHES, CLIENT } from "./searches.js";
 
 const STAGES = ["Intake", "Sourcing", "Screening", "Presented", "Offer", "Placed"];
-
-const SEARCHES = [
-  { role: "Sr. Full-Stack Engineer", dept: "Clarent platform", loc: "Nearshore · UTC−3", stageIdx: 3, lead: { name: "Mateo Ríos", fit: 92 }, presented: 5, group: "decide", status: "awaiting", awaiting: 5, room: true },
-  { role: "Sr. Data Engineer", dept: "Clarent platform", loc: "Nearshore · UTC−5", stageIdx: 3, lead: { name: "Valentina Cruz", fit: 88 }, presented: 4, group: "decide", status: "awaiting", awaiting: 4 },
-  { role: "ML / AI Engineer", dept: "AI scorecard", loc: "Nearshore · UTC−6", stageIdx: 4, lead: { name: "Diego Herrera", fit: 85 }, presented: 2, group: "decide", status: "offer", awaiting: 1 },
-  { role: "Full-Stack Engineer", dept: "Product", loc: "Nearshore · UTC−3", stageIdx: 3, lead: { name: "Camila Soto", fit: 82 }, presented: 3, group: "decide", status: "awaiting", awaiting: 3 },
-  { role: "DevOps / Platform Engineer", dept: "Infrastructure", loc: "Nearshore · UTC−5", stageIdx: 2, metric: "9 screened", group: "progress", status: "progress" },
-  { role: "Integrations Engineer", dept: "Clarent platform", loc: "Nearshore · UTC−4", stageIdx: 2, metric: "7 screened", group: "progress", status: "progress" },
-  { role: "QA Automation Engineer", dept: "Quality", loc: "Nearshore · UTC−5", stageIdx: 1, metric: "Sourcing", group: "progress", status: "progress" },
-  { role: "Product Designer", dept: "Product", loc: "Nearshore · UTC−3", stageIdx: 1, metric: "Sourcing", group: "progress", status: "progress" },
-  { role: "Engineering Manager", dept: "Clarent platform", loc: "Nearshore · UTC−5", stageIdx: 5, lead: { name: "Lucía Fernández", fit: 90 }, presented: 0, group: "closed", status: "placed" },
-  { role: "Technical Writer", dept: "Docs", loc: "Nearshore · UTC−6", stageIdx: 1, metric: "Paused by client", group: "closed", status: "hold" },
-];
 
 function statusChip(P, s) {
   if (s.status === "awaiting") return { t: `${s.awaiting} awaiting you`, color: P.goldTxt, bg: P.goldBg, bd: P.goldLine };
@@ -48,7 +36,7 @@ function SearchRow({ P, s, mono, FitRing, last }) {
   const [hover, setHover] = useState(false);
   const mobile = useIsMobile();
   const chip = statusChip(P, s);
-  const onClick = () => { if (s.room) window.dispatchEvent(new CustomEvent("spg-open-room")); };
+  const onClick = () => { if (s.room) window.dispatchEvent(new CustomEvent("spg-open-room", { detail: { searchId: s.id } })); };
   return (
     <button onClick={onClick} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
       style={{ display: "grid", gridTemplateColumns: mobile ? "1fr auto" : "minmax(0,1.5fr) minmax(0,1.3fr) 168px 168px", gap: mobile ? 12 : 20, alignItems: "center", width: "100%", textAlign: "left",
@@ -144,7 +132,7 @@ function PortfolioView() {
           <span style={{ fontSize: 14.5, color: P.text, lineHeight: 1.4 }}><strong style={{ color: P.goldTxt, fontWeight: 700 }}>Growth signal:</strong> senior-care demand plus the Clarent + AI build are expanding Procare's headcount needs faster than it can hire onshore.</span>
         </div>
         <div style={{ marginBottom: 50 }}>
-          <SearchBrief P={P} hideIntro companyLevel editable={editMode} />
+          <SearchBrief P={P} hideIntro companyLevel editable={editMode} facts={CLIENT.facts} />
         </div>
         </div>
 

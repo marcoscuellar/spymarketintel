@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Mic, FileText, DollarSign, MapPin, ShieldCheck, Quote, Calendar, MessageSquareText, XCircle, Send, GraduationCap, Award, Briefcase, Plus, StickyNote, Search, Sparkles } from "lucide-react";
 import { matrixToText, MATRIX_LABEL } from "./matrix-data.js";
+import { getCandidate, getSearch, firstRoomSearch, CLIENT } from "./searches.js";
 
 /* The live matrix, pre-loaded so adding a candidate is just pasting their résumé. */
 const MATRIX_SEED = matrixToText();
@@ -61,16 +62,23 @@ const DEFAULT_DATA = {
   ],
 };
 
-const DOSSIERS_KEY = "spg-dossiers";       // the full candidate list
+const DOSSIERS_KEY = "spg-dossiers-v2";     // the full candidate list (v2: seeded from searches)
 const ACTIVE_KEY = "spg-active-dossier";   // which candidate is open
 const MATRIX_KEY = "spg-matrix";           // the matrix, remembered + reused across candidates
-const LEGACY_DOSSIER_KEY = "spg-dossier";  // pre-multi-candidate single dossier
-const LEGACY_NOTES_KEY = "spg-dossier-notes";
 
 function load(key, fallback) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; }
 }
 const uid = () => "c" + Math.random().toString(36).slice(2, 9);
+
+/* A dossier object for a candidate from a search (its own id + per-candidate notes). */
+function fromCandidate(c) {
+  const base = c.dossier || {
+    candidate: { name: c.name, current: `${c.role}${c.company ? " — " + c.company : ""}`, salary: "", location: c.location || "", pitch: c.blurb || "", compliance: "" },
+    criteria: [], why: (c.why || []).slice(), resume: [], education: "", certifications: [], references: [],
+  };
+  return { id: c.id, ...base, notes: [] };
+}
 
 /* A not-yet-generated candidate. The Generate tab fills it in from the résumé. */
 function blankDossier() {
@@ -78,13 +86,12 @@ function blankDossier() {
     criteria: [], why: [], resume: [], education: "", certifications: [], references: [], notes: [] };
 }
 
-/* Load the candidate list, migrating a pre-multi-candidate single dossier if present. */
+/* Load the candidate list, seeding from the live search's roster on first run. */
 function loadDossiers() {
   const list = load(DOSSIERS_KEY, null);
   if (Array.isArray(list) && list.length) return list.map((d) => ({ ...d, id: d.id || uid(), notes: d.notes || [] }));
-  const legacy = load(LEGACY_DOSSIER_KEY, null);
-  if (legacy) return [{ ...legacy, id: uid(), notes: load(LEGACY_NOTES_KEY, []) }];
-  return [{ ...DEFAULT_DATA, id: uid(), notes: [{ id: 1, ts: "Jun 16, 2:10 PM", text: "Strong Clarent analog — want Paul to meet him before we line up the pod." }] }];
+  const seed = (firstRoomSearch().candidates || []).map(fromCandidate);
+  return seed.length ? seed : [{ ...DEFAULT_DATA, id: uid(), notes: [] }];
 }
 
 /* ── The Spyglass mark (cufflink housing) — navy + gold ── */
@@ -122,14 +129,30 @@ const arc = (rO, rI, a0, a1) => {
   return `M ${x1} ${y1} A ${rO} ${rO} 0 ${L} 1 ${x2} ${y2} L ${x3} ${y3} A ${rI} ${rI} 0 ${L} 0 ${x4} ${y4} Z`;
 };
 
-function CandidateDossier() {
+function CandidateDossier({ searchId, candidateId }) {
   const [tab, setTab] = useState("overview");
   const [active, setActive] = useState(null);
   const [composer, setComposer] = useState(null);
   const [editing, setEditing] = useState(false);
   const [dossiers, setDossiers] = useState(loadDossiers);
-  const [activeId, setActiveId] = useState(() => load(ACTIVE_KEY, null));
+  const [activeId, setActiveId] = useState(() => candidateId || load(ACTIVE_KEY, null));
   const [draft, setDraft] = useState("");
+
+  // Which search this dossier belongs to (drives the hero).
+  const search = getSearch(searchId) || firstRoomSearch();
+
+  // Bridge: when a candidate is opened from a Search Room, make sure it's in
+  // the list and select it (without losing edits to one already present).
+  useEffect(() => {
+    if (!candidateId) return;
+    setDossiers((list) => {
+      if (list.some((d) => d.id === candidateId)) return list;
+      const c = getCandidate(searchId, candidateId);
+      return c ? [...list, fromCandidate(c)] : list;
+    });
+    setActiveId(candidateId);
+    setActive(null); setComposer(null); setTab("overview");
+  }, [searchId, candidateId]);
 
   // Generate-from-Matrix inputs + status. The matrix is shared across candidates
   // and remembered, so adding a candidate is just pasting their résumé.
@@ -241,7 +264,7 @@ function CandidateDossier() {
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <span style={{ fontFamily: T.font, fontWeight: 900, fontSize: 17, letterSpacing: "-0.07em", color: T.ink }}>SPYGLASS PARTNERS</span>
               <span style={{ width: 1, height: 18, background: T.line, margin: "0 4px" }} />
-              <button onClick={() => window.dispatchEvent(new CustomEvent("spg-open-room"))} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: T.mono, fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: T.ink3, display: "inline-flex", alignItems: "center", gap: 6 }}>← Search room</button>
+              <button onClick={() => window.dispatchEvent(new CustomEvent("spg-open-room", { detail: { searchId: search.id } }))} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: T.mono, fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: T.ink3, display: "inline-flex", alignItems: "center", gap: 6 }}>← Search room</button>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
               <button onClick={() => setEditing((e) => !e)}
@@ -259,13 +282,13 @@ function CandidateDossier() {
 
           <div style={{ padding: "56px 0 48px", paddingLeft: "clamp(0px, 5vw, 90px)" }}>
             <div style={{ fontFamily: T.mono, fontSize: 14, fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase", color: T.goldText, marginBottom: 26 }}>
-              Nearshore Build · Clarent Platform
+              {CLIENT.name} · {search.eyebrow}
             </div>
             <h1 style={{ fontWeight: 800, fontSize: "clamp(46px, 7.5vw, 94px)", lineHeight: 0.95, letterSpacing: "-0.045em", margin: 0, color: T.ink }}>
-              Nearshore<br />Engineering Pod
+              {search.h1[0]}<br />{search.h1[1]}
             </h1>
             <p style={{ fontSize: "clamp(18px, 2.1vw, 24px)", lineHeight: 1.5, color: T.ink2, maxWidth: "38ch", marginTop: 28 }}>
-              Procare HR — a 62-person senior-care PEO that bought the Clarent data platform and is building an AI workforce scorecard. A <strong style={{ color: T.ink, fontWeight: 700 }}>nearshore engineering pod</strong> to ship that roadmap in US time zones, at a fraction of Minneapolis cost.
+              {search.lede}
             </p>
           </div>
         </header>
