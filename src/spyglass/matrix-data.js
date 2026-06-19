@@ -1,52 +1,53 @@
-/* The live Spyglass matrix — Senior Tax Manager · Meridian Wealth Advisors.
-   Mirrors the structured matrix authored in the project data, serialized to the
-   text the dossier's Generate flow scores a candidate against.
+/* The live Spyglass matrix — VP of Human Resources · Procare HR.
+   Mirrors the structured matrix authored for the search, serialized to the text
+   the dossier's Generate flow scores a candidate against.
 
-   NOTE: the confidential intake notes (comp hold-backs, the unannounced
-   manager departure) are deliberately excluded — generation output is
+   This is a working draft of the criteria — edit it in the Generate tab's
+   matrix field (it's saved and reused for every candidate you add). Any
+   confidential intake notes are deliberately kept out: generation output is
    client-facing, so only the JD, the look-for signals, and the qualifying
    questions are fed in. */
 export const MATRIX = {
-  role: "Senior Tax Manager",
-  client: "Meridian Wealth Advisors",
+  role: "VP of Human Resources",
+  client: "Procare HR",
   statedNeed:
-    "Lead the private-client tax practice — own complex returns for the firm's ultra-high-net-worth households and mentor a small associate team.",
+    "Build and lead the people function for a fast-growing senior-care PEO — own HR strategy and multi-state compliance, and partner with leadership to roll out a data-driven workforce scorecard across client accounts.",
   softSkills: [
-    { label: "Client-facing polish", note: "Sits across from UHNW families. Must read a room, not just a return." },
-    { label: "Mentor, not just doer", note: "Three junior associates need shaping. The hire grows the bench." },
-    { label: "Calm in busy season", note: "April is brutal here. They want steady, not heroics." },
+    { label: "Executive presence", note: "A seat at the leadership table — partners with the founder/CEO on workforce strategy, not just HR admin." },
+    { label: "Builder, not caretaker", note: "Procare is scaling. They need someone who stands up HR infrastructure, not someone who maintains a finished one." },
+    { label: "Calm under compliance pressure", note: "Senior-care is heavily regulated and multi-state. They want steady judgment, not firefighting." },
   ],
   jd: {
     summary:
-      "Meridian Wealth Advisors is seeking a Senior Tax Manager to lead tax strategy and compliance for our private-client practice. You will own the most complex engagements, review the work of junior staff, and partner directly with clients and advisors.",
+      "Procare HR is hiring a VP of Human Resources to lead the people function for a growing senior-care PEO. You will own HR strategy, multi-state compliance, and benefits and payroll operations, and partner directly with leadership.",
     summary2:
-      "This is a senior, client-facing seat on a tight-knit private-client team. You will set the standard for technical quality, carry the firm's most sensitive ultra-high-net-worth households, and build the bench beneath you as the practice grows through busy season and beyond.",
+      "This is a senior, founder-facing seat. You will set the standard for how Procare hires, pays, and retains caregivers across client accounts — and help roll out a data-driven workforce scorecard on the Clarent platform as the business scales.",
     mustHave: [
-      "CPA required; 8+ years in public accounting or private client tax.",
-      "Deep experience with HNW / UHNW individual and trust taxation.",
-      "Demonstrated team leadership or mentoring experience.",
-      "Multi-state return experience.",
+      "10+ years in HR, with 3+ at Director or VP level.",
+      "PEO, staffing, or multi-employer / co-employment experience.",
+      "Deep multi-state employment law and compliance knowledge.",
+      "Track record building or scaling an HR function.",
     ],
     niceToHave: [
-      "Exposure to family-office or estate-planning structures.",
-      "Experience with partnership K-1s and pass-through entities.",
-      "Background in a fee-based wealth advisory environment.",
-      "Active in a professional network (AICPA, state society).",
+      "Senior-care, healthcare, or home-care industry background.",
+      "Experience with HRIS / people-analytics platforms (Clarent-style data).",
+      "SHRM-SCP or SPHR certification.",
+      "Benefits and payroll operations at scale.",
     ],
   },
   // The scorecard: each look-for is a weighted evaluation criterion.
   lookFor: [
-    { signal: "Owned complexity", detail: "Personally owned UHNW / multi-state returns — not just supervised." },
-    { signal: "Real mentoring", detail: "Concrete examples of growing junior staff, not just \"managed a team.\"" },
-    { signal: "Stability", detail: "No pattern of < 2-year stints. Their retention problem makes this non-negotiable." },
-    { signal: "Composure", detail: "Evidence of staying measured under deadline pressure and difficult clients." },
+    { signal: "People-function builder", detail: "Stood up or scaled HR infrastructure end to end — not just administered an existing one." },
+    { signal: "Compliance depth", detail: "Owns multi-state employment law, wage & hour, and the regulatory load of a senior-care PEO." },
+    { signal: "Data-driven HR", detail: "Runs the people function on metrics — fits the Clarent platform and the AI workforce scorecard." },
+    { signal: "Executive partnership", detail: "Operates as a strategic peer to the founder/CEO, owning hard people calls — not an HR administrator." },
   ],
   questions: [
-    { q: "Walk me through the most complex return you have personally owned end-to-end.", surfaces: "Depth of hands-on complexity" },
-    { q: "Tell me about a junior associate you developed. Where are they now?", surfaces: "Genuine mentoring vs. delegation" },
-    { q: "Describe a busy season that went sideways. What did you do?", surfaces: "Composure under pressure" },
-    { q: "A client disputes your tax position in a meeting. Walk me through it.", surfaces: "Client-facing judgment" },
-    { q: "What does your ideal next role look like for the next five years?", surfaces: "Stability & intent" },
+    { q: "Walk me through an HR function you built or scaled from the ground up.", surfaces: "Builder vs. caretaker" },
+    { q: "How have you managed multi-state compliance in a highly regulated industry?", surfaces: "Compliance depth" },
+    { q: "Tell me about a workforce decision you drove with data.", surfaces: "Data-driven HR" },
+    { q: "Describe partnering with a founder or CEO on a hard people call.", surfaces: "Executive partnership" },
+    { q: "How do you keep teams steady through rapid growth and change?", surfaces: "Stability under pressure" },
   ],
 };
 

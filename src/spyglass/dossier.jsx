@@ -133,7 +133,12 @@ function CandidateDossier() {
 
   // Generate-from-Matrix inputs + status. The matrix is shared across candidates
   // and remembered, so adding a candidate is just pasting their résumé.
-  const [gMatrix, setGMatrix] = useState(() => { const s = load(MATRIX_KEY, ""); return s && s.trim() ? s : MATRIX_SEED; });
+  const [gMatrix, setGMatrix] = useState(() => {
+    const s = load(MATRIX_KEY, "");
+    // Use the live matrix if nothing is saved, or if the saved copy is a retired search.
+    if (!s || !s.trim() || /Meridian Wealth Advisors|Senior Tax Manager/.test(s)) return MATRIX_SEED;
+    return s;
+  });
   const [gNotes, setGNotes] = useState("");
   const [gResume, setGResume] = useState("");
   const [gLoading, setGLoading] = useState(false);
@@ -475,6 +480,16 @@ function CandidateDossier() {
                   <p style={{ fontSize: 14.5, color: T.ink2, lineHeight: 1.55, marginBottom: 22, maxWidth: "70ch" }}>
                     Fills <strong style={{ color: T.ink }}>{data.candidate?.name || "this candidate"}</strong> from the <strong>Matrix</strong> (scorecard + strategy), your <strong>candidate notes</strong>, and the <strong>résumé</strong>. The matrix is remembered between candidates — to add another, hit <strong>Add candidate</strong> and just paste their résumé. You review and edit before sending.
                   </p>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 18, padding: "10px 14px", borderRadius: T.r.panel, background: T.goldBg, border: `1px solid ${T.goldLine}` }}>
+                    <span style={{ fontSize: 13.5, color: T.ink }}>
+                      <span style={{ ...mono, fontSize: 10, color: T.goldText, marginRight: 8 }}>Matrix on file</span>
+                      <strong style={{ fontWeight: 700 }}>{MATRIX_LABEL}</strong>
+                    </span>
+                    <button onClick={() => setGMatrix(MATRIX_SEED)}
+                      style={{ ...mono, fontSize: 10, color: T.goldText, cursor: "pointer", border: `1px solid ${T.goldLine}`, background: T.bg, padding: "6px 11px", borderRadius: 8 }}>
+                      ↻ Reset to live matrix
+                    </button>
+                  </div>
                   {[
                     { label: "Matrix — scorecard + search strategy · saved & reused", value: gMatrix, set: setGMatrix, ph: "Paste the Matrix once: the evaluation criteria, their weights, and the search strategy. It's remembered for every candidate you add…" },
                     { label: "Candidate notes", value: gNotes, set: setGNotes, ph: "Interview notes, screen context, references mentioned…" },
