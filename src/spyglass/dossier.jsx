@@ -1,5 +1,9 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Mic, FileText, DollarSign, MapPin, ShieldCheck, Quote, Calendar, MessageSquareText, XCircle, Send, GraduationCap, Award, Briefcase, Plus, StickyNote, Search, Sparkles } from "lucide-react";
+import { matrixToText, MATRIX_LABEL } from "./matrix-data.js";
+
+/* The live matrix, pre-loaded so adding a candidate is just pasting their résumé. */
+const MATRIX_SEED = matrixToText();
 
 /* ── Spyglass brand · white surfaces, ink text, metallic-gold accent, navy structure, red = Pass only ── */
 const T = {
@@ -129,7 +133,7 @@ function CandidateDossier() {
 
   // Generate-from-Matrix inputs + status. The matrix is shared across candidates
   // and remembered, so adding a candidate is just pasting their résumé.
-  const [gMatrix, setGMatrix] = useState(() => load(MATRIX_KEY, ""));
+  const [gMatrix, setGMatrix] = useState(() => { const s = load(MATRIX_KEY, ""); return s && s.trim() ? s : MATRIX_SEED; });
   const [gNotes, setGNotes] = useState("");
   const [gResume, setGResume] = useState("");
   const [gLoading, setGLoading] = useState(false);
