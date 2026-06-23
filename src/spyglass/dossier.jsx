@@ -77,21 +77,21 @@ function fromCandidate(c) {
     candidate: { name: c.name, current: `${c.role}${c.company ? " — " + c.company : ""}`, salary: "", location: c.location || "", pitch: c.blurb || "", compliance: "" },
     criteria: [], why: (c.why || []).slice(), resume: [], education: "", certifications: [], references: [],
   };
-  return { id: c.id, ...base, notes: [] };
+  return { id: c.id, ...base, notes: [], decisions: [] };
 }
 
 /* A not-yet-generated candidate. The Generate tab fills it in from the résumé. */
 function blankDossier() {
   return { id: uid(), candidate: { name: "New candidate", current: "", salary: "", location: "", pitch: "", compliance: "" },
-    criteria: [], why: [], resume: [], education: "", certifications: [], references: [], notes: [] };
+    criteria: [], why: [], resume: [], education: "", certifications: [], references: [], notes: [], decisions: [] };
 }
 
 /* Load the candidate list, seeding from the live search's roster on first run. */
 function loadDossiers() {
   const list = load(DOSSIERS_KEY, null);
-  if (Array.isArray(list) && list.length) return list.map((d) => ({ ...d, id: d.id || uid(), notes: d.notes || [] }));
+  if (Array.isArray(list) && list.length) return list.map((d) => ({ ...d, id: d.id || uid(), notes: d.notes || [], decisions: d.decisions || [] }));
   const seed = (firstRoomSearch().candidates || []).map(fromCandidate);
-  return seed.length ? seed : [{ ...DEFAULT_DATA, id: uid(), notes: [] }];
+  return seed.length ? seed : [{ ...DEFAULT_DATA, id: uid(), notes: [], decisions: [] }];
 }
 
 /* ── The Spyglass mark (cufflink housing) — navy + gold ── */
@@ -179,7 +179,7 @@ function CandidateDossier({ searchId, candidateId }) {
   const activeIdx = Math.max(0, dossiers.findIndex((d) => d.id === activeId));
   const data = dossiers[activeIdx] || dossiers[0];
   const setData = (updater) => setDossiers((list) => list.map((d) =>
-    d.id === data.id ? (typeof updater === "function" ? updater(d) : { ...updater, id: d.id, notes: d.notes }) : d));
+    d.id === data.id ? (typeof updater === "function" ? updater(d) : { ...updater, id: d.id, notes: d.notes, decisions: d.decisions }) : d));
 
   useEffect(() => { try { localStorage.setItem(DOSSIERS_KEY, JSON.stringify(dossiers)); } catch (e) {} }, [dossiers]);
   useEffect(() => { if (data) try { localStorage.setItem(ACTIVE_KEY, JSON.stringify(data.id)); } catch (e) {} }, [data]);
@@ -187,6 +187,18 @@ function CandidateDossier({ searchId, candidateId }) {
 
   const notes = data.notes || [];
   const setNotes = (updater) => setData((d) => ({ ...d, notes: typeof updater === "function" ? updater(d.notes || []) : updater }));
+
+  // The client's decisions / messages to Spyglass (Book · Question · Pass). Saved
+  // with the dossier, so they sync to the server and you see them too.
+  const decisions = data.decisions || [];
+  const [msg, setMsg] = useState("");
+  const stamp = () => new Date().toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  const addDecision = (kind, text) => {
+    setData((d) => ({ ...d, decisions: [{ id: Date.now(), kind, text: (text || "").trim(), ts: stamp() }, ...(d.decisions || [])] }));
+    setMsg(""); setComposer(null);
+  };
+  const DECISION_LABEL = { book: "Interview requested", q: "Question sent", pass: "Passed" };
+  const DECISION_COLOR = { book: T.goldText, q: T.goldText, pass: T.red };
 
   // Add a fresh candidate and jump to Generate (matrix stays filled, résumé/notes clear).
   const addCandidate = () => {
@@ -369,16 +381,36 @@ function CandidateDossier({ searchId, candidateId }) {
             {composer && (
               <div style={{ marginTop: 14 }}>
                 {composer === "book" ? (
-                  <div style={{ fontSize: 13.5, color: T.ink, background: T.card2, border: `1px solid ${T.line}`, borderRadius: T.r.panel, padding: 14, display: "flex", gap: 10, alignItems: "flex-start", lineHeight: 1.45 }}>
-                    <Calendar size={16} color={T.gold} style={{ flexShrink: 0, marginTop: 1 }} /> Spyglass will coordinate {first}'s interview with your team — suggested next Tue/Wed AM.
+                  <div style={{ background: T.card2, border: `1px solid ${T.line}`, borderRadius: T.r.panel, padding: 14 }}>
+                    <div style={{ fontSize: 13.5, color: T.ink, display: "flex", gap: 10, alignItems: "flex-start", lineHeight: 1.45, marginBottom: 11 }}>
+                      <Calendar size={16} color={T.gold} style={{ flexShrink: 0, marginTop: 1 }} /> Spyglass will coordinate {first}'s interview with your team — suggested next Tue/Wed AM.
+                    </div>
+                    <button onClick={() => addDecision("book", `Interview requested for ${cand.name}`)} style={{ ...btn(T, "primary"), padding: "10px 12px" }}><Calendar size={15} strokeWidth={1.8} />Request this interview</button>
                   </div>
                 ) : (
                   <div style={{ background: T.card2, border: `1px solid ${composer === "pass" ? T.red : T.line}`, borderRadius: T.r.panel, padding: 14 }}>
                     <div style={{ ...mono, fontSize: 11, marginBottom: 9, color: composer === "pass" ? T.red : T.goldText }}>{composer === "pass" ? "Pass — tell us why" : "Question for Spyglass"}</div>
-                    <textarea rows={3} placeholder={composer === "pass" ? "e.g. want more AI depth / a different time zone…" : `Ask anything about ${first} or the pod…`} style={ta(T)} />
-                    <button style={{ ...btn(T, "primary"), marginTop: 9, padding: "10px 12px" }}><Send size={15} strokeWidth={1.8} />Send</button>
+                    <textarea rows={3} value={msg} onChange={(e) => setMsg(e.target.value)} placeholder={composer === "pass" ? "e.g. want more AI depth / a different time zone…" : `Ask anything about ${first} or the pod…`} style={ta(T)} />
+                    <button onClick={() => { if (composer === "pass" || msg.trim()) addDecision(composer, msg); }} style={{ ...btn(T, "primary"), marginTop: 9, padding: "10px 12px" }}><Send size={15} strokeWidth={1.8} />Send</button>
                   </div>
                 )}
+              </div>
+            )}
+
+            {decisions.length > 0 && (
+              <div style={{ marginTop: 18 }}>
+                <div style={{ ...mono, fontSize: 10, marginBottom: 9 }}>Your decisions on {first}</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {decisions.map((d) => (
+                    <div key={d.id} style={{ background: T.card2, border: `1px solid ${T.line}`, borderRadius: T.r.chip, padding: "9px 12px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
+                        <span style={{ ...mono, fontSize: 9.5, color: DECISION_COLOR[d.kind] || T.ink2 }}>{DECISION_LABEL[d.kind] || "Note"}</span>
+                        <span style={{ ...mono, fontSize: 9.5, color: T.ink3 }}>{d.ts}</span>
+                      </div>
+                      {d.text && <div style={{ fontSize: 13.5, color: T.ink, lineHeight: 1.45, marginTop: 4 }}>{d.text}</div>}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </aside>
