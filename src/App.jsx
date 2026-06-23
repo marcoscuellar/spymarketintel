@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { RoleView } from "./spyglass/room.jsx";
 import { PortfolioView } from "./spyglass/portfolio.jsx";
 import { CandidateDossier } from "./spyglass/dossier.jsx";
+import { firstRoomSearch } from "./spyglass/searches.js";
 
-/* Client-facing portal. The default surface is the Client Home; the other
-   surfaces are reached through the page's own in-context navigation
-   (clicking a role row, "Open full dossier", "All searches", etc.) which the
-   views dispatch as window events. The internal spec-preview toolbar has been
-   removed. */
+/* Client-facing portal — a drill-down: Client Home → Search Room → Candidate
+   Dossier. Navigation carries the selected searchId / candidateId so each
+   screen renders the thing that was clicked. The views dispatch window events
+   (with detail); App holds the selection state. */
 const VALID_VIEWS = ["portfolio", "role", "dossier"];
 function initialView() {
   if (typeof window === "undefined") return "portfolio";
@@ -17,6 +17,8 @@ function initialView() {
 
 export default function App() {
   const [view, setView] = useState(initialView);
+  const [searchId, setSearchId] = useState(() => firstRoomSearch().id);
+  const [candidateId, setCandidateId] = useState(null);
 
   const go = (v) => {
     setView(v);
@@ -24,8 +26,17 @@ export default function App() {
   };
 
   useEffect(() => {
-    const onDossier = () => go("dossier");
-    const onRoom = () => go("role");
+    const onDossier = (e) => {
+      const d = e.detail || {};
+      if (d.searchId) setSearchId(d.searchId);
+      if (d.candidateId) setCandidateId(d.candidateId);
+      go("dossier");
+    };
+    const onRoom = (e) => {
+      const d = e.detail || {};
+      if (d.searchId) setSearchId(d.searchId);
+      go("role");
+    };
     const onPortfolio = () => go("portfolio");
     window.addEventListener("spg-open-dossier", onDossier);
     window.addEventListener("spg-open-room", onRoom);
@@ -37,8 +48,7 @@ export default function App() {
     };
   }, []);
 
-  const Active =
-    view === "portfolio" ? PortfolioView : view === "role" ? RoleView : CandidateDossier;
-
-  return <Active />;
+  if (view === "portfolio") return <PortfolioView />;
+  if (view === "role") return <RoleView searchId={searchId} />;
+  return <CandidateDossier searchId={searchId} candidateId={candidateId} />;
 }

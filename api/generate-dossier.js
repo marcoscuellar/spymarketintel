@@ -81,7 +81,8 @@ const SYSTEM = `You are a senior recruiting analyst at Spyglass Partners buildin
 You are given three inputs: the MATRIX (the search strategy and scorecard — it defines the evaluation criteria and their weights), the candidate NOTES (interview notes, screen context), and the RÉSUMÉ.
 
 Produce a complete, client-ready dossier:
-- Score each scorecard criterion 0–100 for this candidate, grounded only in what the inputs support. Use the criteria and weights from the Matrix (weights sum to ~100). Mark each criterion 'matrix' (derived from documents) or 'live' (interview-scored).
+- The scorecard MUST be the Matrix's criteria — nothing else. Build one criterion for each thing the Matrix asks for: its "what to look for" signals, its must-have / nice-to-have requirements, and the traits its qualifying questions surface. Do NOT invent criteria the Matrix does not ask for, and do NOT drop one it does. If the Matrix gives explicit weights, use them; otherwise assign sensible weights that sum to ~100, weighting must-haves and core signals highest.
+- Score each criterion 0–100 for this candidate, grounded only in what the inputs support. Mark each criterion 'matrix' (assessable from the résumé/documents) or 'live' (only confirmable in an interview). In each criterion's meaning, tie the score back to the specific Matrix requirement it measures.
 - Write the "why they fit" read as 3–4 tight paragraphs, including one honest watch-out — do not oversell.
 - Structure the résumé into roles with bullet points, plus education and certifications.
 - Include only references actually present in the notes; otherwise return an empty references array.

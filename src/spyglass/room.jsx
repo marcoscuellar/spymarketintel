@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { MapPin, Users, Clock, TrendingUp, Briefcase, Search, ArrowRight, Calendar, AlertTriangle } from "lucide-react";
 import { useIsMobile } from "./useIsMobile.js";
+import { getSearch, firstRoomSearch, CLIENT } from "./searches.js";
 
 /* ── Brand constants (accent + type) ── */
 const BRAND = {
@@ -375,7 +376,7 @@ function NewsIntel({ P, editable, onEdit }) {
   );
 }
 
-function SearchBrief({ P, hideIntro, companyLevel, editable }) {
+function SearchBrief({ P, hideIntro, companyLevel, editable, facts = ROLE.impact, context = ROLE.context }) {
   const mobile = useIsMobile();
   const [, forceTick] = useState(0);
   const onEdit = () => forceTick(t => t + 1);
@@ -386,18 +387,18 @@ function SearchBrief({ P, hideIntro, companyLevel, editable }) {
       {!hideIntro && (
         <React.Fragment>
           <div style={{ ...sectionH(P, { marginBottom: 14, fontSize: 26 }) }}>Why this search matters now</div>
-          <p style={{ fontSize: 18, color: P.text, lineHeight: 1.6, maxWidth: "60ch", margin: "0 0 22px", fontWeight: 400 }}>{ROLE.context}</p>
+          <p style={{ fontSize: 18, color: P.text, lineHeight: 1.6, maxWidth: "60ch", margin: "0 0 22px", fontWeight: 400 }}>{context}</p>
         </React.Fragment>
       )}
 
       {/* four facts — full-width row (elevated cards on Client Home) */}
       <div style={{ display: "grid", gridTemplateColumns: mobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: companyLevel ? 14 : 1, ...(companyLevel ? {} : { background: P.line, border: `1px solid ${P.cardBd}`, borderRadius: 14, overflow: "hidden" }), marginBottom: 32 }}>
-        {ROLE.impact.map((s, i) => (
+        {facts.map((s, i) => (
           <div key={i} style={companyLevel
             ? { background: P.card, border: `1px solid ${P.cardBd}`, borderRadius: 14, boxShadow: P.sh, padding: "20px 18px" }
             : { background: P.statTile, padding: "18px 16px" }}>
-            <div style={{ fontFamily: P.font, fontWeight: 800, fontSize: 30, letterSpacing: "-0.04em", lineHeight: 1, color: i === ROLE.impact.length - 1 ? P.goldTxt : P.text }}><EditableText P={P} id={`fact-${i}-n`} fallback={s.n} editable={editable} onEdit={onEdit} /></div>
-            <div style={{ ...monoS(P, { fontSize: 9.5, marginTop: 9, lineHeight: 1.4 }) }}><EditableText P={P} id={`fact-${i}-l`} fallback={s.l} editable={editable} onEdit={onEdit} /></div>
+            <div style={{ fontFamily: P.font, fontWeight: 800, fontSize: 30, letterSpacing: "-0.04em", lineHeight: 1, color: i === facts.length - 1 ? P.goldTxt : P.text }}>{companyLevel ? <EditableText P={P} id={`fact-${i}-n`} fallback={s.n} editable={editable} onEdit={onEdit} /> : s.n}</div>
+            <div style={{ ...monoS(P, { fontSize: 9.5, marginTop: 9, lineHeight: 1.4 }) }}>{companyLevel ? <EditableText P={P} id={`fact-${i}-l`} fallback={s.l} editable={editable} onEdit={onEdit} /> : s.l}</div>
           </div>
         ))}
       </div>
@@ -511,18 +512,15 @@ function RoomIntelSummary({ P }) {
   );
 }
 
-function RoleView() {
+function RoleView({ searchId }) {
   const theme = "light"; // production: single Light theme (prototype theme switcher dropped)
-  const [selected, setSelected] = useState(null);
   const mobile = useIsMobile();
   const P = useMemo(() => ({ ...BRAND, ...THEMES[theme] }), [theme]);
-  const sorted = useMemo(() => [...CANDS].sort((a, b) => b.fit - a.fit), []);
-  const sel = selected ? CANDS.find(c => c.id === selected) : null;
-  React.useEffect(() => {
-    const onKey = (e) => { if (e.key === "Escape") setSelected(null); };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  const search = useMemo(() => getSearch(searchId) || firstRoomSearch(), [searchId]);
+  const roster = (search.candidates && search.candidates.length) ? search.candidates : CANDS;
+  const sorted = useMemo(() => [...roster].sort((a, b) => b.fit - a.fit), [roster]);
+  // Clicking a candidate drills straight to their dossier (no inline preview).
+  const openCandidate = (c) => window.dispatchEvent(new CustomEvent("spg-open-dossier", { detail: { searchId: search.id, candidateId: c.id } }));
 
   return (
     <div style={{ fontFamily: P.font, color: P.pgText, background: P.pgBg, minHeight: "100vh", padding: "0 0 56px", transition: "background .3s" }}>
@@ -535,49 +533,38 @@ function RoleView() {
               <span style={{ display: "inline-flex", transform: "rotate(180deg)" }}><ArrowRight size={12} strokeWidth={2} /></span> All searches
             </button>
           </div>
-          <span style={{ ...monoS(P, { fontSize: 11, color: P.pgText3 }) }}>For {ROLE.client} · Confidential</span>
+          <span style={{ ...monoS(P, { fontSize: 11, color: P.pgText3 }) }}>For {CLIENT.name} · Confidential</span>
         </div>
         <div style={{ height: 1, background: P.pgLine }} />
 
         <div style={{ padding: mobile ? "40px 0 32px" : "56px 0 48px", paddingLeft: mobile ? 0 : "clamp(0px, 5vw, 90px)" }}>
           <div style={{ fontFamily: P.mono, fontSize: 14, fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase", color: P.pgGold, marginBottom: 26 }}>
-            {ROLE.client} · {ROLE.eyebrow}
+            {CLIENT.name} · {search.eyebrow}
           </div>
           <h1 style={{ fontWeight: 800, fontSize: "clamp(46px, 7.5vw, 94px)", lineHeight: 0.95, letterSpacing: "-0.045em", margin: 0, color: P.pgText }}>
-            Nearshore<br />Engineering Pod
+            {search.h1[0]}<br />{search.h1[1]}
           </h1>
           <p style={{ fontSize: "clamp(18px, 2.1vw, 24px)", lineHeight: 1.5, color: P.pgText2, maxWidth: "38ch", marginTop: 28 }}>
-            Procare HR — a 62-person senior-care PEO that bought the Clarent data platform and is building an AI workforce scorecard. A <strong style={{ color: P.pgText, fontWeight: 700 }}>nearshore engineering pod</strong> to ship that roadmap in US time zones, at a fraction of Minneapolis cost.
+            {search.lede}
           </p>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "366px 1fr", gap: 22, alignItems: "start" }}>
           <aside style={{ ...cardS(P), overflow: "hidden", position: mobile ? "static" : "sticky", top: 16 }}>
-            <button onClick={() => setSelected(null)}
-              style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", textAlign: "left", cursor: "pointer",
-                padding: "16px 16px 16px 14px", border: "none", borderLeft: `3px solid ${!sel ? P.gold : "transparent"}`,
-                background: !sel ? P.raise : "transparent", borderBottom: `1px solid ${P.line}` }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%",
+                padding: "16px 16px 16px 14px", borderLeft: `3px solid ${P.gold}`, background: P.raise, borderBottom: `1px solid ${P.line}` }}>
               <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <TrendingUp size={17} strokeWidth={1.8} color={P.goldTxt} />
                 <span style={{ fontFamily: P.font, fontWeight: 700, fontSize: 15.5, color: P.text }}>Search intel</span>
               </span>
               <span style={{ ...monoS(P, { fontSize: 9.5 }) }}>The brief</span>
-            </button>
+            </div>
             <div style={{ ...monoS(P, { fontSize: 10, padding: "14px 16px 8px" }) }}>Shortlist · {sorted.length} presented</div>
-            {sorted.map((c, i) => <RosterRow key={c.id} P={P} c={c} rank={i + 1} selected={selected === c.id} onSelect={() => setSelected(c.id)} />)}
+            {sorted.map((c, i) => <RosterRow key={c.id} P={P} c={c} rank={i + 1} selected={false} onSelect={() => openCandidate(c)} />)}
           </aside>
           <main style={{ ...cardS(P), padding: 30, minHeight: 620, overflow: "hidden" }}>
-            <div key={sel ? sel.id : "intel"} style={{ animation: "spgPop .42s cubic-bezier(0.34,1.56,0.64,1)" }}>
-              {sel ? (
-                <React.Fragment>
-                  <button onClick={() => setSelected(null)} style={{ display: "inline-flex", alignItems: "center", gap: 7, background: "none", border: "none", cursor: "pointer", padding: 0, marginBottom: 22, ...monoS(P, { fontSize: 10, color: P.text3 }) }}>
-                    <span style={{ display: "inline-flex", transform: "rotate(180deg)" }}><ArrowRight size={13} strokeWidth={2} /></span> Back to market intel
-                  </button>
-                  <CandidatePreview P={P} c={sel} />
-                </React.Fragment>
-              ) : (
-                <SearchBrief P={P} />
-              )}
+            <div style={{ animation: "spgPop .42s cubic-bezier(0.34,1.56,0.64,1)" }}>
+              <SearchBrief P={P} context={search.context} facts={search.facts} />
             </div>
           </main>
         </div>

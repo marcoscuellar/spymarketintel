@@ -1,5 +1,10 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Mic, FileText, DollarSign, MapPin, ShieldCheck, Quote, Calendar, MessageSquareText, XCircle, Send, GraduationCap, Award, Briefcase, Plus, StickyNote, Search, Sparkles } from "lucide-react";
+import { matrixToText, MATRIX_LABEL } from "./matrix-data.js";
+import { getCandidate, getSearch, firstRoomSearch, CLIENT } from "./searches.js";
+
+/* The live matrix, pre-loaded so adding a candidate is just pasting their résumé. */
+const MATRIX_SEED = matrixToText();
 
 /* ── Spyglass brand · white surfaces, ink text, metallic-gold accent, navy structure, red = Pass only ── */
 const T = {
@@ -57,10 +62,36 @@ const DEFAULT_DATA = {
   ],
 };
 
-const DOSSIER_KEY = "spg-dossier";
-const NOTES_KEY = "spg-dossier-notes";
+const DOSSIERS_KEY = "spg-dossiers-v2";     // the full candidate list (v2: seeded from searches)
+const ACTIVE_KEY = "spg-active-dossier";   // which candidate is open
+const MATRIX_KEY = "spg-matrix";           // the matrix, remembered + reused across candidates
+
 function load(key, fallback) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; }
+}
+const uid = () => "c" + Math.random().toString(36).slice(2, 9);
+
+/* A dossier object for a candidate from a search (its own id + per-candidate notes). */
+function fromCandidate(c) {
+  const base = c.dossier || {
+    candidate: { name: c.name, current: `${c.role}${c.company ? " — " + c.company : ""}`, salary: "", location: c.location || "", pitch: c.blurb || "", compliance: "" },
+    criteria: [], why: (c.why || []).slice(), resume: [], education: "", certifications: [], references: [],
+  };
+  return { id: c.id, ...base, notes: [] };
+}
+
+/* A not-yet-generated candidate. The Generate tab fills it in from the résumé. */
+function blankDossier() {
+  return { id: uid(), candidate: { name: "New candidate", current: "", salary: "", location: "", pitch: "", compliance: "" },
+    criteria: [], why: [], resume: [], education: "", certifications: [], references: [], notes: [] };
+}
+
+/* Load the candidate list, seeding from the live search's roster on first run. */
+function loadDossiers() {
+  const list = load(DOSSIERS_KEY, null);
+  if (Array.isArray(list) && list.length) return list.map((d) => ({ ...d, id: d.id || uid(), notes: d.notes || [] }));
+  const seed = (firstRoomSearch().candidates || []).map(fromCandidate);
+  return seed.length ? seed : [{ ...DEFAULT_DATA, id: uid(), notes: [] }];
 }
 
 /* ── The Spyglass mark (cufflink housing) — navy + gold ── */
@@ -98,24 +129,74 @@ const arc = (rO, rI, a0, a1) => {
   return `M ${x1} ${y1} A ${rO} ${rO} 0 ${L} 1 ${x2} ${y2} L ${x3} ${y3} A ${rI} ${rI} 0 ${L} 0 ${x4} ${y4} Z`;
 };
 
-function CandidateDossier() {
+function CandidateDossier({ searchId, candidateId }) {
   const [tab, setTab] = useState("overview");
   const [active, setActive] = useState(null);
   const [composer, setComposer] = useState(null);
   const [editing, setEditing] = useState(false);
-  const [data, setData] = useState(() => load(DOSSIER_KEY, DEFAULT_DATA));
-  const [notes, setNotes] = useState(() => load(NOTES_KEY, [{ id: 1, ts: "Jun 16, 2:10 PM", text: "Strong Clarent analog — want Paul to meet him before we line up the pod." }]));
+  const [dossiers, setDossiers] = useState(loadDossiers);
+  const [activeId, setActiveId] = useState(() => candidateId || load(ACTIVE_KEY, null));
   const [draft, setDraft] = useState("");
 
-  // Generate-from-Matrix inputs + status
-  const [gMatrix, setGMatrix] = useState("");
+  // Which search this dossier belongs to (drives the hero).
+  const search = getSearch(searchId) || firstRoomSearch();
+
+  // Bridge: when a candidate is opened from a Search Room, make sure it's in
+  // the list and select it (without losing edits to one already present).
+  useEffect(() => {
+    if (!candidateId) return;
+    setDossiers((list) => {
+      if (list.some((d) => d.id === candidateId)) return list;
+      const c = getCandidate(searchId, candidateId);
+      return c ? [...list, fromCandidate(c)] : list;
+    });
+    setActiveId(candidateId);
+    setActive(null); setComposer(null); setTab("overview");
+  }, [searchId, candidateId]);
+
+  // Generate-from-Matrix inputs + status. The matrix is shared across candidates
+  // and remembered, so adding a candidate is just pasting their résumé.
+  const [gMatrix, setGMatrix] = useState(() => {
+    const s = load(MATRIX_KEY, "");
+    // Use the live matrix if nothing is saved, or if the saved copy is a retired search.
+    if (!s || !s.trim() || /Meridian Wealth Advisors|Senior Tax Manager/.test(s)) return MATRIX_SEED;
+    return s;
+  });
   const [gNotes, setGNotes] = useState("");
   const [gResume, setGResume] = useState("");
   const [gLoading, setGLoading] = useState(false);
   const [gError, setGError] = useState(null);
 
-  useEffect(() => { try { localStorage.setItem(DOSSIER_KEY, JSON.stringify(data)); } catch (e) {} }, [data]);
-  useEffect(() => { try { localStorage.setItem(NOTES_KEY, JSON.stringify(notes)); } catch (e) {} }, [notes]);
+  // Resolve the active candidate, falling back to the first.
+  const activeIdx = Math.max(0, dossiers.findIndex((d) => d.id === activeId));
+  const data = dossiers[activeIdx] || dossiers[0];
+  const setData = (updater) => setDossiers((list) => list.map((d) =>
+    d.id === data.id ? (typeof updater === "function" ? updater(d) : { ...updater, id: d.id, notes: d.notes }) : d));
+
+  useEffect(() => { try { localStorage.setItem(DOSSIERS_KEY, JSON.stringify(dossiers)); } catch (e) {} }, [dossiers]);
+  useEffect(() => { if (data) try { localStorage.setItem(ACTIVE_KEY, JSON.stringify(data.id)); } catch (e) {} }, [data]);
+  useEffect(() => { try { localStorage.setItem(MATRIX_KEY, JSON.stringify(gMatrix)); } catch (e) {} }, [gMatrix]);
+
+  const notes = data.notes || [];
+  const setNotes = (updater) => setData((d) => ({ ...d, notes: typeof updater === "function" ? updater(d.notes || []) : updater }));
+
+  // Add a fresh candidate and jump to Generate (matrix stays filled, résumé/notes clear).
+  const addCandidate = () => {
+    const nd = blankDossier();
+    setDossiers((list) => [...list, nd]);
+    setActiveId(nd.id);
+    setGNotes(""); setGResume(""); setGError(null);
+    setActive(null); setEditing(false); setTab("generate");
+  };
+  const removeCandidate = (id) => {
+    if (dossiers.length <= 1) return;
+    if (!window.confirm("Remove this candidate from the dossier?")) return;
+    const rest = dossiers.filter((d) => d.id !== id);
+    setDossiers(rest);
+    if (id === data.id) setActiveId(rest[0]?.id || null);
+    setActive(null); setTab("overview");
+  };
+  const selectCandidate = (id) => { setActiveId(id); setActive(null); setComposer(null); setTab("overview"); };
 
   const cand = data.candidate;
   const first = (cand.name || "the candidate").split(" ")[0];
@@ -183,7 +264,7 @@ function CandidateDossier() {
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <span style={{ fontFamily: T.font, fontWeight: 900, fontSize: 17, letterSpacing: "-0.07em", color: T.ink }}>SPYGLASS PARTNERS</span>
               <span style={{ width: 1, height: 18, background: T.line, margin: "0 4px" }} />
-              <button onClick={() => window.dispatchEvent(new CustomEvent("spg-open-room"))} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: T.mono, fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: T.ink3, display: "inline-flex", alignItems: "center", gap: 6 }}>← Search room</button>
+              <button onClick={() => window.dispatchEvent(new CustomEvent("spg-open-room", { detail: { searchId: search.id } }))} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: T.mono, fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: T.ink3, display: "inline-flex", alignItems: "center", gap: 6 }}>← Search room</button>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
               <button onClick={() => setEditing((e) => !e)}
@@ -201,16 +282,42 @@ function CandidateDossier() {
 
           <div style={{ padding: "56px 0 48px", paddingLeft: "clamp(0px, 5vw, 90px)" }}>
             <div style={{ fontFamily: T.mono, fontSize: 14, fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase", color: T.goldText, marginBottom: 26 }}>
-              Nearshore Build · Clarent Platform
+              {CLIENT.name} · {search.eyebrow}
             </div>
             <h1 style={{ fontWeight: 800, fontSize: "clamp(46px, 7.5vw, 94px)", lineHeight: 0.95, letterSpacing: "-0.045em", margin: 0, color: T.ink }}>
-              Nearshore<br />Engineering Pod
+              {search.h1[0]}<br />{search.h1[1]}
             </h1>
             <p style={{ fontSize: "clamp(18px, 2.1vw, 24px)", lineHeight: 1.5, color: T.ink2, maxWidth: "38ch", marginTop: 28 }}>
-              Procare HR — a 62-person senior-care PEO that bought the Clarent data platform and is building an AI workforce scorecard. A <strong style={{ color: T.ink, fontWeight: 700 }}>nearshore engineering pod</strong> to ship that roadmap in US time zones, at a fraction of Minneapolis cost.
+              {search.lede}
             </p>
           </div>
         </header>
+
+        {/* ── CANDIDATE SWITCHER ── */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", padding: "24px 0 18px" }}>
+          <span style={{ ...mono, fontSize: 11, marginRight: 4 }}>Candidates</span>
+          {dossiers.map((d) => {
+            const on = d.id === data.id;
+            return (
+              <span key={d.id} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "8px 6px 8px 14px",
+                borderRadius: 999, border: `1px solid ${on ? T.gold : T.line}`, background: on ? T.goldBg : T.bg, transition: `all .18s ${T.ease}` }}>
+                <button onClick={() => selectCandidate(d.id)} style={{ border: "none", background: "none", cursor: "pointer", padding: 0,
+                  fontFamily: T.font, fontSize: 14, fontWeight: on ? 700 : 500, color: on ? T.goldText : T.ink2 }}>
+                  {d.candidate?.name || "New candidate"}
+                </button>
+                {dossiers.length > 1 && (
+                  <button onClick={() => removeCandidate(d.id)} title="Remove candidate" aria-label="Remove candidate"
+                    style={{ border: "none", background: "none", cursor: "pointer", padding: "0 5px", lineHeight: 1, fontSize: 16, color: on ? T.goldText : T.ink3 }}>×</button>
+                )}
+              </span>
+            );
+          })}
+          <button onClick={addCandidate} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "9px 15px",
+            borderRadius: 999, border: `1px dashed ${T.gold}`, background: T.bg, cursor: "pointer",
+            fontFamily: T.font, fontSize: 14, fontWeight: 600, color: T.goldText }}>
+            <Plus size={15} strokeWidth={2} /> Add candidate
+          </button>
+        </div>
 
         {/* ── BODY ── */}
         <div style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: 20, alignItems: "start" }}>
@@ -394,10 +501,20 @@ function CandidateDossier() {
                 <div>
                   <div style={{ ...sectionH, marginBottom: 8, display: "flex", alignItems: "center", gap: 10 }}><Sparkles size={19} strokeWidth={1.9} />Draft the dossier with AI</div>
                   <p style={{ fontSize: 14.5, color: T.ink2, lineHeight: 1.55, marginBottom: 22, maxWidth: "70ch" }}>
-                    Paste the <strong>Matrix</strong> (scorecard + strategy), your <strong>candidate notes</strong>, and the <strong>résumé</strong>. Spyglass drafts the scorecard, the written read, the résumé, and references — then you review and edit before sending.
+                    Fills <strong style={{ color: T.ink }}>{data.candidate?.name || "this candidate"}</strong> from the <strong>Matrix</strong> (scorecard + strategy), your <strong>candidate notes</strong>, and the <strong>résumé</strong>. The matrix is remembered between candidates — to add another, hit <strong>Add candidate</strong> and just paste their résumé. You review and edit before sending.
                   </p>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 18, padding: "10px 14px", borderRadius: T.r.panel, background: T.goldBg, border: `1px solid ${T.goldLine}` }}>
+                    <span style={{ fontSize: 13.5, color: T.ink }}>
+                      <span style={{ ...mono, fontSize: 10, color: T.goldText, marginRight: 8 }}>Matrix on file</span>
+                      <strong style={{ fontWeight: 700 }}>{MATRIX_LABEL}</strong>
+                    </span>
+                    <button onClick={() => setGMatrix(MATRIX_SEED)}
+                      style={{ ...mono, fontSize: 10, color: T.goldText, cursor: "pointer", border: `1px solid ${T.goldLine}`, background: T.bg, padding: "6px 11px", borderRadius: 8 }}>
+                      ↻ Reset to live matrix
+                    </button>
+                  </div>
                   {[
-                    { label: "Matrix — scorecard + search strategy", value: gMatrix, set: setGMatrix, ph: "Paste the Matrix: the evaluation criteria, their weights, and the search strategy…" },
+                    { label: "Matrix — scorecard + search strategy · saved & reused", value: gMatrix, set: setGMatrix, ph: "Paste the Matrix once: the evaluation criteria, their weights, and the search strategy. It's remembered for every candidate you add…" },
                     { label: "Candidate notes", value: gNotes, set: setGNotes, ph: "Interview notes, screen context, references mentioned…" },
                     { label: "Résumé", value: gResume, set: setGResume, ph: "Paste the candidate's résumé text…" },
                   ].map((f) => (
@@ -411,7 +528,7 @@ function CandidateDossier() {
                   )}
                   <button onClick={generate} disabled={gLoading || (!gMatrix.trim() && !gNotes.trim() && !gResume.trim())}
                     style={{ ...btn(T, "primary"), width: "auto", padding: "13px 22px", background: T.gold, borderColor: T.gold, color: "#241a05", opacity: gLoading ? 0.7 : 1, cursor: gLoading ? "default" : "pointer" }}>
-                    <Sparkles size={16} strokeWidth={2} />{gLoading ? "Generating…" : "Generate dossier"}
+                    <Sparkles size={16} strokeWidth={2} />{gLoading ? "Generating…" : (data.criteria?.length ? "Regenerate dossier" : "Generate dossier")}
                   </button>
                   <div style={{ ...mono, fontSize: 10, marginTop: 14, color: T.ink3 }}>Runs Claude (Opus 4.8) server-side · requires ANTHROPIC_API_KEY in the deploy environment</div>
                 </div>
