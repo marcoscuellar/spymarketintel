@@ -120,6 +120,14 @@ function Ed({ editing, value, onChange, style, block }) {
   );
 }
 
+/* How generous the displayed match reads. The raw rubric (weight × score)
+   can land stingy; this gently lifts scores toward a warmer range without
+   ever passing 100 and without changing their order. 1 = raw rubric,
+   lower = more generous. Applied everywhere a score is shown so the
+   headline %, the donut, and each wedge always agree. */
+const GENEROSITY = 0.62;
+const lift = (v) => Math.round(100 * Math.pow(Math.min(100, Math.max(0, +v || 0)) / 100, GENEROSITY));
+
 /* SVG donut — gold fill, paper track, height = score */
 const CX = 140, CY = 140, R_IN = 70, R_OUT = 128, GAP = 3;
 const polar = (r, d) => { const a = (d - 90) * Math.PI / 180; return [CX + r * Math.cos(a), CY + r * Math.sin(a)]; };
@@ -201,14 +209,15 @@ function CandidateDossier({ searchId, candidateId }) {
   const cand = data.candidate;
   const first = (cand.name || "the candidate").split(" ")[0];
   const totalW = data.criteria.reduce((a, c) => a + (+c.weight || 0), 0) || 1;
-  const overall = Math.round(data.criteria.reduce((a, c) => a + (+c.v || 0) * (+c.weight || 0), 0) / totalW);
+  const overall = Math.round(data.criteria.reduce((a, c) => a + lift(c.v) * (+c.weight || 0), 0) / totalW);
 
   const segs = useMemo(() => {
     let cum = 0;
     return data.criteria.map((c) => {
       const span = ((+c.weight || 0) / totalW) * 360, a0 = cum + GAP / 2, a1 = cum + span - GAP / 2;
       cum += span;
-      return { ...c, a0, a1, rScore: R_IN + ((+c.v || 0) / 100) * (R_OUT - R_IN) };
+      const v = lift(c.v);
+      return { ...c, v, a0, a1, rScore: R_IN + (v / 100) * (R_OUT - R_IN) };
     });
   }, [data, totalW]);
   const act = active != null ? segs[active] : null;
