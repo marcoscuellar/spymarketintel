@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { ArrowRight, TrendingUp } from "lucide-react";
 import { useIsMobile } from "./useIsMobile.js";
-import { BRAND, THEMES, monoS, sectionH, cardS, FitRing, SearchBrief } from "./room.jsx";
-import { SEARCHES, CLIENT } from "./searches.js";
+import { BRAND, THEMES, monoS, sectionH, cardS, FitRing, SearchBrief, EditableText } from "./room.jsx";
+import { SEARCHES, CLIENT, liveRoster } from "./searches.js";
 
 const STAGES = ["Intake", "Sourcing", "Screening", "Presented", "Offer", "Placed"];
 
@@ -82,6 +82,16 @@ function PortfolioView() {
   );
   const P = { ...BRAND, ...THEMES.light };
   const mono = monoS;
+  const [, forceTick] = useState(0);
+  const onEdit = () => forceTick((t) => t + 1);
+
+  // Reflect the candidates you actually saved into each search row (lead + count).
+  const displaySearches = SEARCHES.map((s) => {
+    if (!s.room) return s;
+    const r = liveRoster(s.id);
+    if (!r.length) return s;
+    return { ...s, lead: { name: r[0].name, fit: r[0].fit }, presented: r.length, awaiting: r.length };
+  });
 
   const groups = [
     { key: "decide", title: "Needs your decision" },
@@ -112,10 +122,10 @@ function PortfolioView() {
             Active engagement
           </div>
           <h1 style={{ fontWeight: 800, fontSize: "clamp(46px, 7.5vw, 94px)", lineHeight: 0.95, letterSpacing: "-0.045em", margin: 0, color: P.pgText }}>
-            Procare HR
+            <EditableText P={P} id="pg-client-name" fallback="Procare HR" editable={editMode} onEdit={onEdit} />
           </h1>
           <p style={{ fontSize: "clamp(18px, 2.1vw, 24px)", lineHeight: 1.5, color: P.pgText2, maxWidth: "42ch", marginTop: 28 }}>
-            A 62-person senior-care PEO building a data + AI platform. <strong style={{ color: P.pgText, fontWeight: 700 }}>Spyglass Partners</strong> is running the searches that staff that roadmap — here's where every one stands.
+            <EditableText P={P} id="pg-hero-lede" fallback="A 62-person senior-care PEO building a data + AI platform. Spyglass Partners is running the searches that staff that roadmap — here's where every one stands." editable={editMode} onEdit={onEdit} />
           </p>
         </div>
 
@@ -125,11 +135,11 @@ function PortfolioView() {
           <span style={{ ...sectionH(P, { fontSize: 19 }) }}>Market intel</span>
         </div>
         <p style={{ fontSize: 16.5, lineHeight: 1.6, color: P.text2, maxWidth: "70ch", margin: "0 0 16px" }}>
-          <strong style={{ color: P.text, fontWeight: 700 }}>Procare HR</strong> is a founder-led PEO that runs the entire people function — payroll, benefits, HR, and compliance — for senior-care operators across 36 states, covering 25,000+ employees under management. In 2024 it acquired the <strong style={{ color: P.text, fontWeight: 700 }}>Clarent</strong> analytics platform and began building an AI workforce scorecard, moving from a services firm toward a data-and-software company.
+          <EditableText P={P} id="pg-intel-writeup" editable={editMode} onEdit={onEdit} fallback="Procare HR is a founder-led PEO that runs the entire people function — payroll, benefits, HR, and compliance — for senior-care operators across 36 states, covering 25,000+ employees under management. In 2024 it acquired the Clarent analytics platform and began building an AI workforce scorecard, moving from a services firm toward a data-and-software company." />
         </p>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "11px 16px", borderRadius: 10, background: P.goldBg, border: `1px solid ${P.goldLine}`, marginBottom: 40 }}>
           <TrendingUp size={16} strokeWidth={2} color={P.goldTxt} />
-          <span style={{ fontSize: 14.5, color: P.text, lineHeight: 1.4 }}><strong style={{ color: P.goldTxt, fontWeight: 700 }}>Growth signal:</strong> senior-care demand plus the Clarent + AI build are expanding Procare's headcount needs faster than it can hire onshore.</span>
+          <span style={{ fontSize: 14.5, color: P.text, lineHeight: 1.4 }}><strong style={{ color: P.goldTxt, fontWeight: 700 }}>Growth signal:</strong> <EditableText P={P} id="pg-growth-signal" editable={editMode} onEdit={onEdit} fallback="senior-care demand plus the Clarent + AI build are expanding Procare's headcount needs faster than it can hire onshore." /></span>
         </div>
         <div style={{ marginBottom: 50 }}>
           <SearchBrief P={P} hideIntro companyLevel editable={editMode} facts={CLIENT.facts} />
@@ -139,7 +149,7 @@ function PortfolioView() {
         {/* BREAKDOWN OF THE ROLES */}
         <div style={{ ...sectionH(P, { fontSize: 19, marginBottom: 16 }) }}>Breakdown of the roles</div>
         {groups.map((g, gi) => {
-          const items = SEARCHES.filter((s) => s.group === g.key);
+          const items = displaySearches.filter((s) => s.group === g.key);
           if (!items.length) return null;
           return (
             <div key={g.key} style={{ marginBottom: 44, animation: "spgRise .6s both", animationDelay: `${0.22 + gi * 0.08}s` }}>

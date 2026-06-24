@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { Mic, FileText, DollarSign, MapPin, ShieldCheck, Quote, Calendar, MessageSquareText, XCircle, Send, GraduationCap, Award, Briefcase, Plus, StickyNote, Search, Sparkles } from "lucide-react";
 import { matrixToText, MATRIX_LABEL } from "./matrix-data.js";
 import { getCandidate, getSearch, firstRoomSearch, CLIENT } from "./searches.js";
+import { lift, overall as overallScore } from "./scoring.js";
 
 /* The live matrix, pre-loaded so adding a candidate is just pasting their résumé. */
 const MATRIX_SEED = matrixToText();
@@ -71,27 +72,29 @@ function load(key, fallback) {
 }
 const uid = () => "c" + Math.random().toString(36).slice(2, 9);
 
-/* A dossier object for a candidate from a search (its own id + per-candidate notes). */
-function fromCandidate(c) {
+/* A dossier object for a candidate from a search (its own id + searchId + notes). */
+function fromCandidate(c, searchId) {
   const base = c.dossier || {
     candidate: { name: c.name, current: `${c.role}${c.company ? " — " + c.company : ""}`, salary: "", location: c.location || "", pitch: c.blurb || "", compliance: "" },
     criteria: [], why: (c.why || []).slice(), resume: [], education: "", certifications: [], references: [],
   };
-  return { id: c.id, ...base, notes: [], decisions: [] };
+  return { id: c.id, searchId, ...base, notes: [], decisions: [] };
 }
 
 /* A not-yet-generated candidate. The Generate tab fills it in from the résumé. */
-function blankDossier() {
-  return { id: uid(), candidate: { name: "New candidate", current: "", salary: "", location: "", pitch: "", compliance: "" },
+function blankDossier(searchId) {
+  return { id: uid(), searchId, candidate: { name: "New candidate", current: "", salary: "", location: "", pitch: "", compliance: "" },
     criteria: [], why: [], resume: [], education: "", certifications: [], references: [], notes: [], decisions: [] };
 }
 
-/* Load the candidate list, seeding from the live search's roster on first run. */
+/* Load the candidate list, seeding from the live search's roster on first run.
+   Each candidate carries the searchId of the search it belongs to. */
 function loadDossiers() {
+  const homeId = firstRoomSearch().id;
   const list = load(DOSSIERS_KEY, null);
-  if (Array.isArray(list) && list.length) return list.map((d) => ({ ...d, id: d.id || uid(), notes: d.notes || [], decisions: d.decisions || [] }));
-  const seed = (firstRoomSearch().candidates || []).map(fromCandidate);
-  return seed.length ? seed : [{ ...DEFAULT_DATA, id: uid(), notes: [], decisions: [] }];
+  if (Array.isArray(list) && list.length) return list.map((d) => ({ ...d, id: d.id || uid(), searchId: d.searchId || homeId, notes: d.notes || [], decisions: d.decisions || [] }));
+  const seed = (firstRoomSearch().candidates || []).map((c) => fromCandidate(c, homeId));
+  return seed.length ? seed : [{ ...DEFAULT_DATA, id: uid(), searchId: homeId, notes: [], decisions: [] }];
 }
 
 /* ── The Spyglass mark (cufflink housing) — navy + gold ── */
@@ -119,14 +122,6 @@ function Ed({ editing, value, onChange, style, block }) {
     </span>
   );
 }
-
-/* How generous the displayed match reads. The raw rubric (weight × score)
-   can land stingy; this gently lifts scores toward a warmer range without
-   ever passing 100 and without changing their order. 1 = raw rubric,
-   lower = more generous. Applied everywhere a score is shown so the
-   headline %, the donut, and each wedge always agree. */
-const GENEROSITY = 0.62;
-const lift = (v) => Math.round(100 * Math.pow(Math.min(100, Math.max(0, +v || 0)) / 100, GENEROSITY));
 
 /* SVG donut — gold fill, paper track, height = score */
 const CX = 140, CY = 140, R_IN = 70, R_OUT = 128, GAP = 3;
@@ -156,7 +151,7 @@ function CandidateDossier({ searchId, candidateId }) {
     setDossiers((list) => {
       if (list.some((d) => d.id === candidateId)) return list;
       const c = getCandidate(searchId, candidateId);
-      return c ? [...list, fromCandidate(c)] : list;
+      return c ? [...list, fromCandidate(c, searchId)] : list;
     });
     setActiveId(candidateId);
     setActive(null); setComposer(null); setTab("overview");
@@ -179,7 +174,7 @@ function CandidateDossier({ searchId, candidateId }) {
   const activeIdx = Math.max(0, dossiers.findIndex((d) => d.id === activeId));
   const data = dossiers[activeIdx] || dossiers[0];
   const setData = (updater) => setDossiers((list) => list.map((d) =>
-    d.id === data.id ? (typeof updater === "function" ? updater(d) : { ...updater, id: d.id, notes: d.notes, decisions: d.decisions }) : d));
+    d.id === data.id ? (typeof updater === "function" ? updater(d) : { ...updater, id: d.id, searchId: d.searchId, notes: d.notes, decisions: d.decisions }) : d));
 
   useEffect(() => { try { localStorage.setItem(DOSSIERS_KEY, JSON.stringify(dossiers)); } catch (e) {} }, [dossiers]);
   useEffect(() => { if (data) try { localStorage.setItem(ACTIVE_KEY, JSON.stringify(data.id)); } catch (e) {} }, [data]);
@@ -202,7 +197,7 @@ function CandidateDossier({ searchId, candidateId }) {
 
   // Add a fresh candidate and jump to Generate (matrix stays filled, résumé/notes clear).
   const addCandidate = () => {
-    const nd = blankDossier();
+    const nd = blankDossier(search.id);
     setDossiers((list) => [...list, nd]);
     setActiveId(nd.id);
     setGNotes(""); setGResume(""); setGError(null);
@@ -221,7 +216,7 @@ function CandidateDossier({ searchId, candidateId }) {
   const cand = data.candidate;
   const first = (cand.name || "the candidate").split(" ")[0];
   const totalW = data.criteria.reduce((a, c) => a + (+c.weight || 0), 0) || 1;
-  const overall = Math.round(data.criteria.reduce((a, c) => a + lift(c.v) * (+c.weight || 0), 0) / totalW);
+  const overall = overallScore(data.criteria);
 
   const segs = useMemo(() => {
     let cum = 0;

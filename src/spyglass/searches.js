@@ -200,12 +200,7 @@ export const SEARCHES = [
     ],
     candidates: VP_HR_CANDIDATES,
   },
-  // Other open searches for the same client — summary rows on Client Home.
-  { id: "people-ops-mgr", role: "People Operations Manager", dept: "People & Compliance", loc: "Nearshore · UTC−6", stageIdx: 2, group: "progress", status: "progress", metric: "7 screened", room: false, candidates: [] },
-  { id: "benefits-lead", role: "Benefits & Payroll Lead", dept: "People & Compliance", loc: "Nearshore · UTC−6", stageIdx: 1, group: "progress", status: "progress", metric: "Sourcing", room: false, candidates: [] },
-  { id: "data-eng", role: "Sr. Data Engineer", dept: "Clarent platform", loc: "Nearshore · UTC−6", stageIdx: 4, group: "progress", status: "offer", awaiting: 1, metric: "Offer out", room: false, candidates: [] },
-  { id: "hris-analyst", role: "HRIS Analyst", dept: "Clarent platform", loc: "Nearshore · UTC−6", stageIdx: 5, group: "closed", status: "placed", metric: "Placed", room: false, candidates: [] },
-  { id: "recruiter", role: "Technical Recruiter", dept: "People & Compliance", loc: "Nearshore · UTC−6", stageIdx: 1, group: "closed", status: "hold", metric: "Paused by client", room: false, candidates: [] },
+  // One client, one active search for now. More can be added later.
 ];
 
 export function getSearch(id) {
@@ -218,4 +213,45 @@ export function getCandidate(searchId, candidateId) {
   const s = getSearch(searchId);
   if (!s) return null;
   return (s.candidates || []).find((c) => c.id === candidateId) || null;
+}
+
+/* ── Live roster: the candidates YOU actually saved, per search ──
+   Reads the persisted dossiers (spg-dossiers-v2) and returns roster cards for
+   one search. A candidate belongs to a search via its `searchId`; older saved
+   candidates without one fall under the first room (so nothing is orphaned).
+   This is what makes the portal grow: add a search, add candidates tagged to
+   it, and its room fills in — no code change. */
+import { overall } from "./scoring.js";
+
+const DOSSIERS_KEY = "spg-dossiers-v2";
+function initialsOf(name) {
+  const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "?";
+  return (parts[0][0] + (parts[1] ? parts[1][0] : "")).toUpperCase();
+}
+function readDossiers() {
+  if (typeof window === "undefined") return [];
+  try { const v = JSON.parse(window.localStorage.getItem(DOSSIERS_KEY) || "null"); return Array.isArray(v) ? v : []; }
+  catch (e) { return []; }
+}
+export function liveRoster(searchId) {
+  const homeId = (firstRoomSearch() || {}).id;
+  const cards = readDossiers()
+    .filter((d) => (d.searchId || homeId) === searchId)
+    .map((d) => {
+      const c = d.candidate || {};
+      return {
+        id: d.id,
+        name: c.name || "Candidate",
+        initials: initialsOf(c.name),
+        role: c.current || "",
+        blurb: c.pitch || "",
+        fit: overall(d.criteria),
+        status: "new",
+        tags: [],
+      };
+    })
+    .sort((a, b) => b.fit - a.fit);
+  if (cards.length) cards[0].lead = true;
+  return cards;
 }

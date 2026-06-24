@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { MapPin, Users, Clock, TrendingUp, Briefcase, Search, ArrowRight, Calendar, AlertTriangle } from "lucide-react";
 import { useIsMobile } from "./useIsMobile.js";
-import { getSearch, firstRoomSearch, CLIENT } from "./searches.js";
+import { getSearch, firstRoomSearch, CLIENT, liveRoster } from "./searches.js";
 
 /* ── Brand constants (accent + type) ── */
 const BRAND = {
@@ -478,7 +478,7 @@ function RosterRow({ P, c, rank, selected, onSelect }) {
           <span style={{ fontFamily: P.font, fontWeight: 700, fontSize: 16.5, letterSpacing: "-0.02em", color: P.text }}>{c.name}</span>
           {c.lead && <span style={{ width: 6, height: 6, borderRadius: 99, background: P.gold }} title="Lead candidate" />}
         </span>
-        <span style={{ display: "block", fontSize: 13.5, color: P.text3, margin: "2px 0 7px" }}>{c.role} · {c.years}y</span>
+        <span style={{ display: "block", fontSize: 13.5, color: P.text3, margin: "2px 0 7px" }}>{c.role}{c.years ? ` · ${c.years}y` : ""}</span>
         <span style={{ display: "block", fontSize: 13.5, color: P.text2, lineHeight: 1.4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.blurb}</span>
         <span style={{ display: "inline-flex", marginTop: 9, ...monoS(P, { fontSize: 9.5, color: st.color }), background: st.bg, border: `1px solid ${st.bd}`, padding: "3px 7px", borderRadius: 5 }}>{st.t}</span>
       </span>
@@ -517,7 +517,9 @@ function RoleView({ searchId }) {
   const mobile = useIsMobile();
   const P = useMemo(() => ({ ...BRAND, ...THEMES[theme] }), [theme]);
   const search = useMemo(() => getSearch(searchId) || firstRoomSearch(), [searchId]);
-  const roster = (search.candidates && search.candidates.length) ? search.candidates : CANDS;
+  // Prefer the candidates YOU saved for this search; fall back to seeded sample.
+  const live = liveRoster(search.id);
+  const roster = live.length ? live : ((search.candidates && search.candidates.length) ? search.candidates : CANDS);
   const sorted = useMemo(() => [...roster].sort((a, b) => b.fit - a.fit), [roster]);
   // Clicking a candidate drills straight to their dossier (no inline preview).
   const openCandidate = (c) => window.dispatchEvent(new CustomEvent("spg-open-dossier", { detail: { searchId: search.id, candidateId: c.id } }));
@@ -573,4 +575,4 @@ function RoleView({ searchId }) {
   );
 }
 
-export { BRAND, THEMES, ROLE, CANDS, SearchBrief, GrowthGapChart, CompChart, Mark, monoS, sectionH, cardS, FitRing, statusStyle, RoleView };
+export { BRAND, THEMES, ROLE, CANDS, SearchBrief, GrowthGapChart, CompChart, Mark, monoS, sectionH, cardS, FitRing, statusStyle, RoleView, EditableText, getEdit, writeEdit };
